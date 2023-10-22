@@ -1,9 +1,46 @@
-import 'package:bloc/bloc.dart';
+import 'package:flutter/material.dart';
+import 'package:pillpal/pantalla_inicial.dart';
+import 'package:pillpal/pantalla_pastillero.dart';
 
-class NavigationDrawerCubit extends Cubit<bool> {
-  NavigationDrawerCubit() : super(false); // Inicialmente, el cajón está cerrado.
+class MyDrawer extends StatelessWidget {
+  const MyDrawer({super.key});
 
-  void toggleDrawer() {
-    emit(!state); // Cambia el estado del cajón de abierto a cerrado o viceversa.
+  @override
+  Widget build(BuildContext context) {
+    return Drawer(
+      child: ListView(
+        padding: EdgeInsets.zero,
+        children: <Widget>[
+          const DrawerHeader(
+            decoration: BoxDecoration(
+              color: Colors.blue,
+            ),
+            child: Text('Menú de Navegación'),
+          ),
+          ListTile(
+            title: const Text('Medicación de hoy'),
+            onTap: () {
+              Navigator.pop(context); // Cierra el Drawer.
+
+              // Verifica si ya estás en HomePage y no realices una nueva navegación.
+              if (ModalRoute.of(context)!.settings.name != '/home') {
+                Navigator.pushReplacementNamed(context, '/home');
+              }
+            },
+          ),
+          ListTile(
+            title: const Text('Pastillero'),
+            onTap: () {
+              Navigator.pop(context); // Cierra el Drawer.
+
+              // Verifica si ya estás en HomePage y no realices una nueva navegación.
+              if (ModalRoute.of(context)!.settings.name != '/pastis') {
+                Navigator.pushReplacementNamed(context, '/pastis');
+              }
+            },
+          ),
+        ],
+      ),
+    );
   }
 }
