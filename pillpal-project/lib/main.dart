@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import 'navigation_drawer.dart';
 
 void main() {
   runApp(const MyApp());
@@ -28,10 +31,13 @@ class MyApp extends StatelessWidget {
         //
         // This works for code too, not just values: Most code changes can be
         // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: BlocProvider(
+        create: (context) => NavigationDrawerCubit(),
+        child: MyHomePage(title: 'Pill-Pal',),
+      ),
     );
   }
 }
@@ -51,10 +57,82 @@ class MyHomePage extends StatefulWidget {
   final String title;
 
   @override
+
+
   State<MyHomePage> createState() => _MyHomePageState();
+
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+
+  Widget build(BuildContext context) {
+    final drawerCubit = context.read<NavigationDrawerCubit>();
+
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        // Here we take the value from the MyHomePage object that was created by
+        // the App.build method, and use it to set our appbar title.
+        title: Text(widget.title),
+      ),
+      body: Center(
+        child: Text('Contenido de la página'),
+      ),
+      drawer: Drawer(
+        child: Column(
+          children: [
+            Container(
+              padding:  EdgeInsets.only(top: 100.0), // Añade relleno alrededor del elemento.
+              child: ListTile(
+                title: const Column(
+                  children: [
+                    Text(
+                      'Medicación de hoy',
+                      style: TextStyle(fontSize: 30.0),
+                    ),
+                    SizedBox(height: 40.0), // Ajusta la altura vertical entre el título y otros contenidos.
+                    // Agrega más contenido adicional si es necesario.
+                  ],
+                ),
+                onTap: () {
+                  // Realiza la acción deseada al hacer clic en el elemento del menú.
+                  drawerCubit.toggleDrawer();
+                },
+              ),
+            ),
+            Container(
+              margin: EdgeInsets.only(top: 50.0), // Controla la posición vertical.
+              child: ListTile(
+                title: const Align(
+                  alignment: Alignment.centerLeft,
+
+                  child: Column(
+                    children: [
+                      Text(
+                        'Pastillero',
+                        style: TextStyle(fontSize: 30.0),
+                      ),
+                      SizedBox(height: 40.0), // Ajusta la altura vertical entre el título y otros contenidos.
+                      // Agrega más contenido adicional si es necesario.
+                    ],
+                  ),
+                ),
+
+                onTap: () {
+                  // Realiza la acción deseada al hacer clic en el elemento del menú.
+                  drawerCubit.toggleDrawer();
+                },
+              ),
+            ),
+            // Agrega más elementos según sea necesario.
+
+          ],
+        ),
+      ),
+    );
+  }
+
+/*
   int _counter = 0;
 
   void _incrementCounter() {
@@ -122,4 +200,6 @@ class _MyHomePageState extends State<MyHomePage> {
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
+  */
+
 }
