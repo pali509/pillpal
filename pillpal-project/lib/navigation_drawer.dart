@@ -3,7 +3,7 @@ import 'package:pillpal/pantalla_inicial.dart';
 import 'package:pillpal/pantalla_pastillero.dart';
 
 class MyDrawer extends StatelessWidget {
-  const MyDrawer({super.key});
+  const MyDrawer({Key? key});
 
   @override
   Widget build(BuildContext context) {
@@ -11,36 +11,47 @@ class MyDrawer extends StatelessWidget {
       child: ListView(
         padding: EdgeInsets.zero,
         children: <Widget>[
-          const DrawerHeader(
-            decoration: BoxDecoration(
-              color: Colors.blue,
+          Container(
+            height: 80, // Altura personalizada del DrawerHeader
+              decoration: const BoxDecoration(
+                color: Colors.lightGreen,
+              ),
+          ),
+          Container(
+            height: 100,
+            child: ListTile(
+              title: const Text(
+                  'Medicación de hoy',
+                   style: TextStyle(fontSize: 30.0),
+              ),
+              contentPadding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),//Para que este centrado el texto
+              onTap: () {
+                Navigator.pop(context);
+                if (ModalRoute.of(context)!.settings.name != '/home') {
+                  Navigator.pushReplacementNamed(context, '/home');
+                }
+              },
             ),
-            child: Text('Menú de Navegación'),
           ),
-          ListTile(
-            title: const Text('Medicación de hoy'),
-            onTap: () {
-              Navigator.pop(context); // Cierra el Drawer.
-
-              // Verifica si ya estás en HomePage y no realices una nueva navegación.
-              if (ModalRoute.of(context)!.settings.name != '/home') {
-                Navigator.pushReplacementNamed(context, '/home');
-              }
-            },
-          ),
-          ListTile(
-            title: const Text('Pastillero'),
-            onTap: () {
-              Navigator.pop(context); // Cierra el Drawer.
-
-              // Verifica si ya estás en HomePage y no realices una nueva navegación.
-              if (ModalRoute.of(context)!.settings.name != '/pastis') {
-                Navigator.pushReplacementNamed(context, '/pastis');
-              }
-            },
+          Container(
+            height: 100,
+            child: ListTile(
+              title: const Text(
+                'Pastillero',
+                style: TextStyle(fontSize: 30.0),
+              ),
+              contentPadding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+              onTap: () {
+                Navigator.pop(context);
+                if (ModalRoute.of(context)!.settings.name != '/pastis') {
+                  Navigator.pushReplacementNamed(context, '/pastis');
+                }
+              },
+            ),
           ),
         ],
       ),
+
     );
   }
 }

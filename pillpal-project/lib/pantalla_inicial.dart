@@ -10,7 +10,13 @@ class PantallaInicial extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Medicación de hoy')),
+      appBar: AppBar(
+        title: const Text(
+          'Medicación de hoy',
+          style: TextStyle(fontSize: 25.0),
+        ),
+        backgroundColor: Colors.lightGreen,
+      ),
       drawer: MyDrawer(),
       body: Center(
         child: Text('Esta es la página de inicio'),
