@@ -1,22 +1,105 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'navigation_drawer.dart';
 
-class Pastillero extends StatelessWidget {
+class Pastillero extends StatefulWidget {
+  Pastillero({super.key});
+  @override
+  State<Pastillero> createState() => PastilleroState();
+
+}
+
+class PastilleroState extends State<Pastillero>{
+
+  final pastillaStream =
+  Supabase.instance.client.from('Pills').stream(primaryKey: ['pill_id']);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title: const Text(
-        'Pastillero',
-        style: TextStyle(fontSize: 25.0),
-      ),
-          backgroundColor: Colors.lightGreen,
-      ),
+        title: const Text('Pastillero', style: TextStyle(fontSize: 25.0)),
+        backgroundColor: Colors.lightGreen,),
       drawer: MyDrawer(),
-      body: const Center(
-        child: Text('Esta es otra página'),
+      //body: const Center(
+      body: StreamBuilder<List<Map<String, dynamic>>>(
+        stream: pastillaStream,
+        builder: (context, snapshot) {
+          if(!snapshot.hasData){
+            return const Center(child: CircularProgressIndicator());
+          }
+          const Text('Hay pastillas:');
+          final pastillas = snapshot.data!;
+          print(pastillas.length);
+          return ListView.builder(
+              itemCount: pastillas.length,
+              itemBuilder: (context, index){
+                return ListTile(
+                  title: Text(pastillas[index]['pill_name']),
+                );
+              }
+          );
+        },
+
       ),
+      //Boton para añadir pastis
+      floatingActionButton: ElevatedButton(
+        onPressed: (){
+          showDialog(context: context,
+            builder: (context){
+              String pillName = ''; // Variable para almacenar el nombre de la pastilla
+              int numberOfPills = 0; // Variable para almacenar el número de pastillas
+
+              return SimpleDialog(
+                contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+                children: [
+                  const SizedBox(height: 20),
+                  const Text('Nombre:'),
+                  TextFormField(
+                    onChanged: (value) {
+                      pillName = value; // Actualiza el nombre de la pastilla al escribir en el campo
+                    },
+                  ),
+                  const SizedBox(height: 15), // Agrega un espacio entre los campos
+                  const Text('Núm. pastillas:'), // Título para el siguiente campo
+                  TextFormField(
+                    keyboardType: TextInputType.number, // Teclado para ingresar solo números
+                    onChanged: (value) {
+                      numberOfPills = int.tryParse(value) ?? 0; // Actualiza el número de pastillas
+                    },
+
+                  ),
+                  const SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: () async {
+                      // Realiza la acción al presionar el botón
+                      await Supabase.instance.client.from('Pills').insert({
+                        'pill_name': pillName,
+                        'pill_quantity': numberOfPills,
+                      });
+                      Navigator.of(context).pop(); // Cierra el diálogo después de insertar
+                    },
+                    child: Text('Añadir pastilla'),
+                  ),
+                ],
+              );
+            },
+          );
+        },
+        child: Text('Añadir medicación'),
+      ),
+      //), (esto es de body: Center( )
+
+
     );
   }
 }
+
+/*
+-Mas bonito lo de añadir -> Boton grande y centrado
+-Que las pastillas las ponga centradas y mas grande
+-Que muestre num pastillas
+-Que se actualice automaticamente
+-La key va siempre ascendente aunque borre la nueva fila???
+ */
