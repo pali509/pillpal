@@ -14,7 +14,7 @@ class MyDrawer extends StatelessWidget {
           Container(
             height: 80, // Altura personalizada del DrawerHeader
               decoration: const BoxDecoration(
-                color: Colors.lightGreen,
+                color: Colors.blue,
               ),
           ),
           Container(

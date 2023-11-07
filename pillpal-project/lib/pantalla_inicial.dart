@@ -15,7 +15,7 @@ class PantallaInicial extends StatelessWidget {
           'Medicación de hoy',
           style: TextStyle(fontSize: 25.0),
         ),
-        backgroundColor: Colors.lightGreen,
+        backgroundColor: Colors.blue,
       ),
       drawer: MyDrawer(),
       body: Center(

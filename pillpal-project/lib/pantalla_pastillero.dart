@@ -20,8 +20,8 @@ class PastilleroState extends State<Pastillero>{
     return Scaffold(
       appBar: AppBar(
         title: const Text('Pastillero', style: TextStyle(fontSize: 25.0)),
-        backgroundColor: Colors.lightGreen,),
-      drawer: MyDrawer(),
+        backgroundColor: Colors.blue,),
+      drawer: const MyDrawer(),
 
       body: StreamBuilder<List<Map<String, dynamic>>>(
         stream: pastillaStream,
@@ -31,8 +31,9 @@ class PastilleroState extends State<Pastillero>{
           }
           final pastillas = snapshot.data!;
           return Container(
-              constraints: BoxConstraints(maxHeight: 650),
-          child: ListView.builder(
+            constraints: const BoxConstraints(maxHeight: 650),
+
+            child: ListView.builder(
             shrinkWrap: true,
             itemCount: pastillas.length,
             itemBuilder: (context, index) {
@@ -43,7 +44,7 @@ class PastilleroState extends State<Pastillero>{
                     color: Colors.transparent, // Color transparente para el Divider
                   ),
                   Container(
-                    padding: EdgeInsets.all(10), // Espacio alrededor de cada pastilla
+                    padding: const EdgeInsets.all(10), // Espacio alrededor de cada pastilla
                     decoration: BoxDecoration(
                       border: Border.all(color: Colors.grey), // Borde alrededor de cada pastilla
                     ),
@@ -54,7 +55,7 @@ class PastilleroState extends State<Pastillero>{
                           pastillas[index]['pill_name'],
                           style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                         ),
-                        SizedBox(height: 20, width: 200),
+                        const SizedBox(height: 20, width: 200),
                         Text("Num. Pastillas: ${pastillas[index]['pill_quantity']}",
                           style: const TextStyle(fontSize: 14),
                         ),
@@ -70,7 +71,10 @@ class PastilleroState extends State<Pastillero>{
       ),
 
       //Boton para añadir pastis
-      floatingActionButton: ElevatedButton(
+      floatingActionButton: Align(
+        alignment: Alignment.bottomCenter,
+        child:ElevatedButton(
+
         onPressed: (){
           showDialog(context: context,
             builder: (context){
@@ -113,18 +117,27 @@ class PastilleroState extends State<Pastillero>{
             },
           );
         },
-        child: Text('Añadir medicación'),
-      ),
 
+        child: Container(
+              width: 250, // Ajusta el ancho del botón
+              height: 50, //El largo
+              alignment: Alignment.center,
+              child: const Text(
+                'Añadir medicación',
+
+                textAlign: TextAlign.center, // Centra el texto horizontalmente
+                style: TextStyle(fontSize: 20), // Ajusta el tamaño del texto
+              ),
+        ),
+        ),
+      ),
 
     );
   }
 }
 
-/*
--Mas bonito lo de añadir -> Boton grande y centrado
--Que las pastillas las ponga centradas y mas grande -> Casi! 
--Que muestre num pastillas
--La key va siempre ascendente aunque borre la nueva fila???
--Que se actualice automaticamente
+/*TODO
+-Boton añadir -> No se centra :(
+-Pastillas -> Imagen y boton para eliminar pastilla
+-Num Pastillas -> Que sea modificable (?????)
  */
