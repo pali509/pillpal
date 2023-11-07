@@ -22,27 +22,53 @@ class PastilleroState extends State<Pastillero>{
         title: const Text('Pastillero', style: TextStyle(fontSize: 25.0)),
         backgroundColor: Colors.lightGreen,),
       drawer: MyDrawer(),
-      //body: const Center(
+
       body: StreamBuilder<List<Map<String, dynamic>>>(
         stream: pastillaStream,
         builder: (context, snapshot) {
           if(!snapshot.hasData){
             return const Center(child: CircularProgressIndicator());
           }
-          const Text('Hay pastillas:');
           final pastillas = snapshot.data!;
-          print(pastillas.length);
-          return ListView.builder(
-              itemCount: pastillas.length,
-              itemBuilder: (context, index){
-                return ListTile(
-                  title: Text(pastillas[index]['pill_name']),
-                );
-              }
+          return Container(
+              constraints: BoxConstraints(maxHeight: 650),
+          child: ListView.builder(
+            shrinkWrap: true,
+            itemCount: pastillas.length,
+            itemBuilder: (context, index) {
+              return Column(
+                children: [
+                  const Divider( // Separador entre las pastillas
+                    height: 20, // Espacio entre cada pastilla
+                    color: Colors.transparent, // Color transparente para el Divider
+                  ),
+                  Container(
+                    padding: EdgeInsets.all(10), // Espacio alrededor de cada pastilla
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey), // Borde alrededor de cada pastilla
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          pastillas[index]['pill_name'],
+                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                        SizedBox(height: 20, width: 200),
+                        Text("Num. Pastillas: ${pastillas[index]['pill_quantity']}",
+                          style: const TextStyle(fontSize: 14),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
           );
         },
-
       ),
+
       //Boton para añadir pastis
       floatingActionButton: ElevatedButton(
         onPressed: (){
@@ -89,7 +115,6 @@ class PastilleroState extends State<Pastillero>{
         },
         child: Text('Añadir medicación'),
       ),
-      //), (esto es de body: Center( )
 
 
     );
@@ -98,8 +123,8 @@ class PastilleroState extends State<Pastillero>{
 
 /*
 -Mas bonito lo de añadir -> Boton grande y centrado
--Que las pastillas las ponga centradas y mas grande
+-Que las pastillas las ponga centradas y mas grande -> Casi! 
 -Que muestre num pastillas
--Que se actualice automaticamente
 -La key va siempre ascendente aunque borre la nueva fila???
+-Que se actualice automaticamente
  */
