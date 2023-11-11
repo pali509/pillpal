@@ -49,6 +49,22 @@ class MyDrawer extends StatelessWidget {
               },
             ),
           ),
+          Container(
+            height: 100,
+            child: ListTile(
+              title: const Text(
+                'Prueba',
+                style: TextStyle(fontSize: 30.0),
+              ),
+              contentPadding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),//Para que este centrado el texto
+              onTap: () {
+                Navigator.pop(context);
+                if (ModalRoute.of(context)!.settings.name != '/prueba') {
+                  Navigator.pushReplacementNamed(context, '/prueba');
+                }
+              },
+            ),
+          ),
         ],
       ),
 
