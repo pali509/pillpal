@@ -74,12 +74,11 @@ class PastilleroState extends State<Pastillero>{
       floatingActionButton: Align(
         alignment: Alignment.bottomCenter,
         child:ElevatedButton(
-
-        onPressed: (){
-          showDialog(context: context,
-            builder: (context){
-              String pillName = ''; // Variable para almacenar el nombre de la pastilla
-              int numberOfPills = 0; // Variable para almacenar el número de pastillas
+          onPressed: (){
+            showDialog(context: context,
+              builder: (context){
+                String pillName = ''; // Variable para almacenar el nombre de la pastilla
+                int numberOfPills = 0; // Variable para almacenar el número de pastillas
 
               return SimpleDialog(
                 contentPadding: const EdgeInsets.symmetric(horizontal: 12),
@@ -114,21 +113,20 @@ class PastilleroState extends State<Pastillero>{
                   ),
                 ],
               );
+              },
+            );
             },
-          );
-        },
 
-        child: Container(
-              width: 250, // Ajusta el ancho del botón
-              height: 50, //El largo
-              alignment: Alignment.center,
-              child: const Text(
-                'Añadir medicación',
-
-                textAlign: TextAlign.center, // Centra el texto horizontalmente
-                style: TextStyle(fontSize: 20), // Ajusta el tamaño del texto
-              ),
-        ),
+          child: Container(
+                width: 250, // Ajusta el ancho del botón
+                height: 50, //El largo
+                alignment: Alignment.center,
+                child: const Text(
+                  'Añadir medicación',
+                  textAlign: TextAlign.center, // Centra el texto horizontalmente
+                  style: TextStyle(fontSize: 20), // Ajusta el tamaño del texto
+                ),
+          ),
         ),
       ),
 
