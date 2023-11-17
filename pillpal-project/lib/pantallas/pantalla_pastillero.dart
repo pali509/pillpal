@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pillpal/database/db_connections.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:pillpal/constants/colors.dart';
 
 import 'navigation_drawer.dart';
 
@@ -14,14 +15,14 @@ class Pastillero extends StatefulWidget {
 
 class PastilleroState extends State<Pastillero>{
 
-  final pastillaStream =
-  Supabase.instance.client.from('Pills').stream(primaryKey: ['pill_id']);
+  final pastillaStream = Supabase.instance.client.from('Pills').stream(primaryKey: ['pill_id']);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Pastillero', style: TextStyle(fontSize: 25.0)),
-        backgroundColor: Colors.blue,),
+        backgroundColor: ColorsApp.toolBarColor,),
       drawer: const MyDrawer(),
 
       body: StreamBuilder<List<Map<String, dynamic>>>(
@@ -42,12 +43,12 @@ class PastilleroState extends State<Pastillero>{
                 children: [
                   const Divider( // Separador entre las pastillas
                     height: 20, // Espacio entre cada pastilla
-                    color: Colors.transparent, // Color transparente para el Divider
+                    color: ColorsApp.listElementDividerColor, // Color transparente para el Divider
                   ),
                   Container(
                     padding: const EdgeInsets.all(10), // Espacio alrededor de cada pastilla
                     decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey), // Borde alrededor de cada pastilla
+                      border: Border.all(color: ColorsApp.listElementBorderColor), // Borde alrededor de cada pastilla
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -104,7 +105,7 @@ class PastilleroState extends State<Pastillero>{
                   ElevatedButton(
                     onPressed: () async {
                       // Realiza la acción al presionar el botón
-                      insertPill(pillName, numberOfPills, 1); //Ahora es 1 userId pero luego hay que cambiarlo
+                      insertPills(pillName, numberOfPills, 1); //Ahora es 1 userId pero luego hay que cambiarlo
                       Navigator.of(context).pop(); // Cierra el diálogo después de insertar
                     },
                     child: Text('Añadir pastilla'),
@@ -119,6 +120,7 @@ class PastilleroState extends State<Pastillero>{
                 width: 250, // Ajusta el ancho del botón
                 height: 50, //El largo
                 alignment: Alignment.center,
+                color: ColorsApp.buttonColor,
                 child: const Text(
                   'Añadir medicación',
                   textAlign: TextAlign.center, // Centra el texto horizontalmente

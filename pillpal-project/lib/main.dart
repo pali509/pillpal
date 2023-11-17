@@ -7,7 +7,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:pillpal/database/db_connections.dart';
 
   Future<void> main() async {
-    connecting();
+    initDatabaseConnection();
     runApp(MyApp());
   }
 

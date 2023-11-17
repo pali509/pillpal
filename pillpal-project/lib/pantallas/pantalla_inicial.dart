@@ -2,6 +2,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pillpal/constants/colors.dart';
 
 import 'navigation_drawer.dart';
 class PantallaInicial extends StatelessWidget {
@@ -15,7 +16,7 @@ class PantallaInicial extends StatelessWidget {
           'Medicación de hoy',
           style: TextStyle(fontSize: 25.0),
         ),
-        backgroundColor: Colors.blue,
+        backgroundColor: ColorsApp.toolBarColor,
       ),
       drawer: MyDrawer(),
       body: Center(

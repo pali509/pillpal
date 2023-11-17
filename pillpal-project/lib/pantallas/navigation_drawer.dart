@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:pillpal/pantallas/pantalla_inicial.dart';
 import 'package:pillpal/pantallas/pantalla_pastillero.dart';
+import 'package:pillpal/constants/colors.dart';
 
 class MyDrawer extends StatelessWidget {
   const MyDrawer({Key? key});
-
+  
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -14,7 +15,7 @@ class MyDrawer extends StatelessWidget {
           Container(
             height: 80, // Altura personalizada del DrawerHeader
               decoration: const BoxDecoration(
-                color: Colors.blue,
+                color: ColorsApp.toolBarColor,
               ),
           ),
           Container(

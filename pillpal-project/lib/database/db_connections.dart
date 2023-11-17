@@ -1,8 +1,25 @@
 import 'package:pillpal/database/pills.dart';
+import 'package:supabase/src/supabase_stream_builder.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:pillpal/database/pills.dart';
+import 'package:postgres/postgres.dart';
 
+
+var databaseConnection = PostgreSQLConnection(
+    'db.amwzytiutgstvnrpaiju.supabase.co',
+    5432,
+    'postgres',
+    queryTimeoutInSeconds: 3600,
+    timeoutInSeconds: 3600,
+    username: 'postgres',
+    password: 'PillPal19DB');
+
+initDatabaseConnection() async {
+  databaseConnection.open().then((value) {
+    debugPrint("Database Connected!");
+  });
+}
 
 Future<void> connecting() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -12,17 +29,24 @@ Future<void> connecting() async {
   );
 }
 
-Future<void> insertPill(String pillName, int numPills, int userId) async {
-  await Supabase.instance.client.from('Pills').insert({
-    'pill_name': pillName,
-    'pill_quantity': numPills,
-    'user_id': userId,
-  });
+Future<void> insertPills(String pillName, int numPills, int userId) async {
+  await databaseConnection.query("""
+    INSERT INTO "Pills"(pill_name, user_id, pill_quantity)
+    VALUES ('$pillName', $userId, $numPills);
+  """);
 }
 
-List<Pill>? getPills(int userId){
-    List<Pill> pills = [];
-
-    pills.add(new Pill(1,1,"",1));
-    return null;
+Future<List<Pill>> getPills(int userId) async {
+  List<Map<String, Map<String, dynamic>>> mapPills = await databaseConnection
+      .mappedResultsQuery("""
+      "SELECT * FROM "Pills" WHERE user_id = $userId """);
+  List<Pill>listPills = [];
+  for(int i = 0; i < mapPills.length; i++) {
+    listPills.add(Pill(mapPills.elementAt(i)['pill_id'] as int,
+        mapPills.elementAt(i)['pill_quantity'] as int,
+        mapPills.elementAt(i)['pill_name'] as String,
+        mapPills.elementAt(i)['user_id'] as int
+    ));
+  }
+  return listPills;
 }

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 
-class ColoresApp {
-  static const Color primaryColor = Colors.blue;
-  static const Color accentColor = Colors.green;
-  static const Color textColor = Colors.black;
+class ColorsApp {
+  static const Color buttonColor = Colors.green;
+  static const Color toolBarColor = Colors.pink;
   static const Color backgroundColor = Colors.white;
+  static const Color listElementBorderColor = Colors.grey;
+  static const Color listElementDividerColor = Colors.transparent;
 }
