@@ -8,6 +8,7 @@ import 'package:pillpal/database/db_connections.dart';
 
   Future<void> main() async {
     initDatabaseConnection();
+    connecting();
     runApp(MyApp());
   }
 

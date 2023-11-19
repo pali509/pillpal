@@ -36,16 +36,17 @@ Future<void> insertPills(String pillName, int numPills, int userId) async {
   """);
 }
 
-Future<List<Pill>> getPills(int userId) async {
-  List<Map<String, Map<String, dynamic>>> mapPills = await databaseConnection
+Future<List<Pill>>? getPills(int userId) async {
+  List<Map<String, dynamic>> mapPills = await databaseConnection
       .mappedResultsQuery("""
-      "SELECT * FROM "Pills" WHERE user_id = $userId """);
+      SELECT * FROM "Pills" WHERE user_id = $userId """);
   List<Pill>listPills = [];
   for(int i = 0; i < mapPills.length; i++) {
-    listPills.add(Pill(mapPills.elementAt(i)['pill_id'] as int,
-        mapPills.elementAt(i)['pill_quantity'] as int,
-        mapPills.elementAt(i)['pill_name'] as String,
-        mapPills.elementAt(i)['user_id'] as int
+    listPills.add(Pill(
+        mapPills[i]['Pills']['pill_id'],
+        mapPills[i]['Pills']['pill_quantity'],
+        mapPills[i]['Pills']['pill_name'],
+        mapPills[i]['Pills']['user_id']
     ));
   }
   return listPills;

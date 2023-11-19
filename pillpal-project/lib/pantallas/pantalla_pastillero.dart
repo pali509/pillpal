@@ -4,6 +4,7 @@ import 'package:pillpal/database/db_connections.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:pillpal/constants/colors.dart';
 
+import '../database/pills.dart';
 import 'navigation_drawer.dart';
 
 class Pastillero extends StatefulWidget {
@@ -15,9 +16,46 @@ class Pastillero extends StatefulWidget {
 
 class PastilleroState extends State<Pastillero>{
 
-  final pastillaStream = Supabase.instance.client.from('Pills').stream(primaryKey: ['pill_id']);
+  //final pastillaStream = Supabase.instance.client.from('Pills').stream(primaryKey: ['pill_id']);
+
+  final Future<List<Pill>>? listaDePills = getPills(1);
 
   @override
+   Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Título de la Aplicación'),
+      ),
+      body: FutureBuilder<List<Pill>>(
+        future: listaDePills,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return Center(child: Text('No hay datos disponibles.'));
+          } else {
+            List<Pill> pills = snapshot.data!;
+
+            return ListView.builder(
+              itemCount: pills.length,
+              itemBuilder: (context, index) {
+                Pill currentPill = pills[index];
+
+                return ListTile(
+                  title: Text(' ${currentPill.pillName}'),
+                  subtitle: Text('Cantidad: ${currentPill.numPills}'),
+                );
+              },
+            );
+          }
+        },
+      ),
+    );
+  }
+}
+/*
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -132,7 +170,8 @@ class PastilleroState extends State<Pastillero>{
 
     );
   }
-}
+
+   */
 
 /*TODO
 -Boton añadir -> No se centra :(
