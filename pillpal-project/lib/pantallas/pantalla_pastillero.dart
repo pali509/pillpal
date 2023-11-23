@@ -18,14 +18,15 @@ class PastilleroState extends State<Pastillero>{
 
   //final pastillaStream = Supabase.instance.client.from('Pills').stream(primaryKey: ['pill_id']);
 
-  final Future<List<Pill>>? listaDePills = getPills(1);
-
+  Future<List<Pill>>? listaDePills = getPills(1);
+  List<Pill> pills = [];
   @override
    Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Título de la Aplicación'),
       ),
+      drawer: MyDrawer(),
       body: FutureBuilder<List<Pill>>(
         future: listaDePills,
         builder: (context, snapshot) {
@@ -36,7 +37,7 @@ class PastilleroState extends State<Pastillero>{
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return Center(child: Text('No hay datos disponibles.'));
           } else {
-            List<Pill> pills = snapshot.data!;
+            pills = snapshot.data!;
 
             return ListView.builder(
               itemCount: pills.length,
@@ -47,13 +48,79 @@ class PastilleroState extends State<Pastillero>{
                   title: Text(' ${currentPill.pillName}'),
                   subtitle: Text('Cantidad: ${currentPill.numPills}'),
                 );
+
               },
             );
           }
         },
       ),
+      //Boton para añadir pastis
+      floatingActionButton: Align(
+        alignment: Alignment.bottomCenter,
+        child:ElevatedButton(
+          onPressed: (){
+            showDialog(context: context,
+              builder: (context){
+                String pillName = ''; // Variable para almacenar el nombre de la pastilla
+                int numberOfPills = 0; // Variable para almacenar el número de pastillas
+
+                return SimpleDialog(
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+                  children: [
+                    const SizedBox(height: 20),
+                    const Text('Nombre:'),
+                    TextFormField(
+                      onChanged: (value) {
+                        pillName = value; // Actualiza el nombre de la pastilla al escribir en el campo
+                      },
+                    ),
+                    const SizedBox(height: 15), // Agrega un espacio entre los campos
+                    const Text('Núm. pastillas:'), // Título para el siguiente campo
+                    TextFormField(
+                      keyboardType: TextInputType.number, // Teclado para ingresar solo números
+                      onChanged: (value) {
+                        numberOfPills = int.tryParse(value) ?? 0; // Actualiza el número de pastillas
+                      },
+
+                    ),
+                    const SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: () async {
+                        // Realiza la acción al presionar el botón
+                        insertPills(pillName, numberOfPills, 1); //Ahora es 1 userId pero luego hay que cambiarlo
+
+                        // Actualiza la lista de pastillas
+                        listaDePills = getPills(1);
+                        setState(() {});
+
+                        Navigator.of(context).pop(); // Cierra el diálogo después de insertar
+                      },
+                      child: Text('Añadir pastilla'),
+                    ),
+                  ],
+                );
+              },
+            );
+          },
+
+          child: Container(
+            width: 250, // Ajusta el ancho del botón
+            height: 50, //El largo
+            alignment: Alignment.center,
+            color: ColorsApp.buttonColor,
+            child: const Text(
+              'Añadir medicación',
+              textAlign: TextAlign.center, // Centra el texto horizontalmente
+              style: TextStyle(fontSize: 20), // Ajusta el tamaño del texto
+            ),
+          ),
+        ),
+      ),
+
+
     );
   }
+
 }
 /*
   Widget build(BuildContext context) {

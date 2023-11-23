@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pillpal/pantallas/pantalla_inicial.dart';
+import 'package:pillpal/pantallas/pantalla_login.dart';
 import 'package:pillpal/pantallas/pantalla_pastillero.dart';
 import 'package:pillpal/pantallas/navigation_drawer.dart';
+import 'package:pillpal/pantallas/pantalla_cuenta.dart';
+import 'package:pillpal/pantallas/pantalla_sesion.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:pillpal/database/db_connections.dart';
 
@@ -11,16 +14,19 @@ import 'package:pillpal/database/db_connections.dart';
     connecting();
     runApp(MyApp());
   }
-
+final supabase = Supabase.instance.client;
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      initialRoute: '/home', // Ruta inicial
+      initialRoute: '/cuenta', // Ruta inicial
       routes: {
         '/home': (context) => PantallaInicial(),
         '/pastis': (context) => Pastillero(),
+        '/cuenta': (context) => LoginDemo(),
+        '/login': (context) => LoginPage(),
+        '/account': (context) => AccountPage(),
       },
     );
   }
