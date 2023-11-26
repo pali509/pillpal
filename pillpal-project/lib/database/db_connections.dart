@@ -2,9 +2,8 @@ import 'package:pillpal/database/pills.dart';
 import 'package:supabase/src/supabase_stream_builder.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:pillpal/database/pills.dart';
 import 'package:postgres/postgres.dart';
-
+import 'package:pillpal/database/user.dart';
 
 var databaseConnection = PostgreSQLConnection(
     'db.amwzytiutgstvnrpaiju.supabase.co',
@@ -50,4 +49,34 @@ Future<List<Pill>>? getPills(int userId) async {
     ));
   }
   return listPills;
+}
+
+Future<bool> checkUser(String email, String pwd) async {
+  List<Map<String, dynamic>>? userList = await databaseConnection
+      .mappedResultsQuery("""
+      SELECT * FROM "Users" WHERE user_email = '$email' and user_pwd = '$pwd'""");
+  if(userList.isNotEmpty) {
+    setUser(userList[0]['Users']['user_id'], userList[0]['Users']['user_email'], userList[0]['Users']['user_name']);
+    return true;
+  }
+  else
+    return false;
+}
+
+Future<bool> userExists(String email) async {
+  List<Map<String, dynamic>>? userList = await databaseConnection
+      .mappedResultsQuery("""
+      SELECT * FROM "Users" WHERE user_email = '$email'""");
+  if(userList.isNotEmpty)
+    return true;
+  else
+    return false;
+}
+
+Future<void> insertUser(String nombre, String email, String pwd) async {
+  await databaseConnection.query("""
+    INSERT INTO "Users"(user_name, user_email, user_pwd)
+    VALUES ('$nombre', '$email', '$pwd');
+  """);
+  checkUser(email, pwd);
 }

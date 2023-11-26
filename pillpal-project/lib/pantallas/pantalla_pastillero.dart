@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pillpal/database/db_connections.dart';
+import 'package:pillpal/database/user.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:pillpal/constants/colors.dart';
 
@@ -18,14 +19,16 @@ class PastilleroState extends State<Pastillero>{
 
   //final pastillaStream = Supabase.instance.client.from('Pills').stream(primaryKey: ['pill_id']);
 
-  final Future<List<Pill>>? listaDePills = getPills(1);
-
+  Future<List<Pill>>? listaDePills = getPills(getUserId());
+  List<Pill> pills = [];
   @override
-   Widget build(BuildContext context) {
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Título de la Aplicación'),
+        title: Text('Pastillero', style: TextStyle(fontSize: 25.0)),
+        backgroundColor: ColorsApp.toolBarColor,
       ),
+      drawer: MyDrawer(),
       body: FutureBuilder<List<Pill>>(
         future: listaDePills,
         builder: (context, snapshot) {
@@ -36,7 +39,7 @@ class PastilleroState extends State<Pastillero>{
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return Center(child: Text('No hay datos disponibles.'));
           } else {
-            List<Pill> pills = snapshot.data!;
+            pills = snapshot.data!;
 
             return ListView.builder(
               itemCount: pills.length,
@@ -47,14 +50,90 @@ class PastilleroState extends State<Pastillero>{
                   title: Text(' ${currentPill.pillName}'),
                   subtitle: Text('Cantidad: ${currentPill.numPills}'),
                 );
+
               },
             );
           }
         },
       ),
+
+      //Boton para añadir pastis
+
+      floatingActionButton: Padding(
+          padding: EdgeInsets.only(left: 30.0, top:750.0), // Ajusta este valor según tus necesidades
+          child: Center(
+            child: ElevatedButton(
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (context) {
+                    String pillName = '';
+                    int numberOfPills = 0;
+
+                    return SimpleDialog(
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+                      children: [
+                        const SizedBox(height: 20),
+                        const Text('Nombre:'),
+                        TextFormField(
+                          onChanged: (value) {
+                            pillName = value;
+                          },
+                        ),
+                        const SizedBox(height: 15),
+                        const Text('Núm. pastillas:'),
+                        TextFormField(
+                          keyboardType: TextInputType.number,
+                          onChanged: (value) {
+                            numberOfPills = int.tryParse(value) ?? 0;
+                          },
+                        ),
+                        const SizedBox(height: 20),
+                        ElevatedButton(
+                          onPressed: () async {
+                            insertPills(pillName, numberOfPills, getUserId());
+                            listaDePills = getPills(getUserId());
+                            setState(() {});
+                            Navigator.of(context).pop();
+                          },
+                          child: Text('Añadir pastilla'),
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
+              child: Text('Añadir Medicación'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.purple,
+                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                textStyle: TextStyle(
+                  fontSize: 30,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+      ),
+
+
     );
   }
+
 }
+/*
+          child: Container(
+            width: 250, // Ajusta el ancho del botón
+            height: 50, //El largo
+            alignment: Alignment.center,
+            child: const Text(
+              'Añadir medicación',
+              textAlign: TextAlign.center, // Centra el texto horizontalmente
+              style: TextStyle(fontSize: 20), // Ajusta el tamaño del texto
+            ),
+          ),
+      */
+
 /*
   Widget build(BuildContext context) {
     return Scaffold(
