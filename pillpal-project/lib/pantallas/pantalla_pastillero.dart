@@ -33,11 +33,11 @@ class PastilleroState extends State<Pastillero>{
         future: listaDePills,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text('No hay datos disponibles.'));
+            return const Center(child: Text('No hay datos disponibles.'));
           } else {
             pills = snapshot.data!;
 
@@ -107,7 +107,7 @@ class PastilleroState extends State<Pastillero>{
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.purple,
                 padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-                textStyle: TextStyle(
+                textStyle: const TextStyle(
                   fontSize: 30,
                   fontWeight: FontWeight.bold,
                 ),
