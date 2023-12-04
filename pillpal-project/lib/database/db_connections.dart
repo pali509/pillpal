@@ -34,7 +34,13 @@ Future<void> insertPills(String pillName, int numPills, int userId) async {
     VALUES ('$pillName', $userId, $numPills);
   """);
 }
-
+Future<void> deletePill(Pill pill) async {
+  int? pillId = pill.getPillId();
+  await databaseConnection.query("""
+      DELETE FROM "Pills"
+    WHERE pill_id = $pillId;
+  """);
+}
 Future<List<Pill>>? getPills(int userId) async {
   List<Map<String, dynamic>> mapPills = await databaseConnection
       .mappedResultsQuery("""

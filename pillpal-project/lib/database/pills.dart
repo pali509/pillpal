@@ -9,5 +9,7 @@ class Pill{
     // Constructor
     Pill(this.pillId, this.numPills, this.pillName, this.userId);
     
-    
+    int? getPillId(){
+        return pillId;
+    }
 }

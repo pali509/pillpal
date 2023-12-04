@@ -23,41 +23,60 @@ class PastilleroState extends State<Pastillero>{
   List<Pill> pills = [];
   @override
   Widget build(BuildContext context) {
+
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Pastillero', style: TextStyle(fontSize: 25.0)),
         backgroundColor: ColorsApp.toolBarColor,
       ),
       drawer: MyDrawer(),
-      body: FutureBuilder<List<Pill>>(
-        future: listaDePills,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text('No hay datos disponibles.'));
-          } else {
-            pills = snapshot.data!;
+        body: FutureBuilder<List<Pill>>(
+          future: listaDePills,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return Center(child: Text('Error: ${snapshot.error}'));
+            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return const Center(child: Text('No hay datos disponibles.'));
+            } else {
+              pills = snapshot.data!;
 
-            return ListView.builder(
-              itemCount: pills.length,
-              itemBuilder: (context, index) {
-                Pill currentPill = pills[index];
+              return ListView.builder(
+                itemCount: pills.length,
+                itemBuilder: (context, index) {
+                  Pill currentPill = pills[index];
 
-                return ListTile(
-                  title: Text(' ${currentPill.pillName}'),
-                  subtitle: Text('Cantidad: ${currentPill.numPills}'),
-                );
+                  return Card(
+                    clipBehavior: Clip.hardEdge,
+                    child: InkWell(
+                      splashColor: Colors.grey,
+                      onTap: () {
+                        debugPrint('Card tapped.');
+                      },
+                      child: ListTile(
+                        leading: Icon(Icons.add_a_photo_rounded),
+                        title: Text(' ${currentPill.pillName}'),
+                        subtitle: Text('Cantidad: ${currentPill.numPills} ud.'),
+                        trailing: IconButton(
+                          icon: Icon(Icons.delete),
+                          color: Colors.redAccent,
+                          onPressed: () {
+                            _showDeleteConfirmationDialog(context, currentPill);
+                          },
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              );
+            }
+          },
+        ),
 
-              },
-            );
-          }
-        },
-      ),
 
-      //Boton para añadir pastis
+        //Boton para añadir pastis
 
       floatingActionButton: Padding(
           padding: EdgeInsets.only(left: 30.0, top:750.0), // Ajusta este valor según tus necesidades
@@ -118,9 +137,57 @@ class PastilleroState extends State<Pastillero>{
 
 
     );
-  }
 
+  }
+// Función para mostrar el diálogo de confirmación de eliminación
+  void _showDeleteConfirmationDialog(BuildContext context, Pill pill) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('¡Cuidado!'),
+          content: const Text(
+            'Esta acción eliminaría el medicamento seleccionado de la planificación. ¿Quieres continuar?',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Cerrar el diálogo
+              },
+              child: const Text('Cancelar'),
+              style: TextButton.styleFrom(
+                foregroundColor: Colors.purple,
+                textStyle: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                deletePill(pill);
+                listaDePills = getPills(getUserId());
+                setState(() {});
+                // Cerrar el diálogo después de realizar la acción
+                Navigator.of(context).pop();
+              },
+              child: Text('Aceptar'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.purple,
+                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                textStyle: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
 }
+
 /*
           child: Container(
             width: 250, // Ajusta el ancho del botón
