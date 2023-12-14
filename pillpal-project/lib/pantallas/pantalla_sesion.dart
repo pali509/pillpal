@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../database/db_connections.dart';
 import 'package:pillpal/constants/colors.dart';
 
+import '../email.dart';
 import '../main.dart';
 
 class Login extends StatefulWidget {
@@ -125,16 +126,25 @@ class _LoginDemoState extends State<Login> {
                             ),
                           ),
                           onPressed: () async {
-                            await supabase.auth.signInWithOtp( //tiene que ser otra cosa, esto es para enviar link
+                            email = _emailController.text;
+                            //String? pwd = await getPassword(email) as String?;
+                            String? pwd = "d";
+                            if(pwd == null){
+                              //Enseñar mensaje: Su usuario no está registrado.
+                            }
+                            else{
+                              sendPassword(email, pwd);
+                            }
+                            /*await supabase.auth.signInWithOtp( //tiene que ser otra cosa, esto es para enviar link
                               email: correo,
 
                             );
                             if (mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(content: Text('Contraseña enviada por correo')),
-                              );
-                              _emailController.clear();
-                            }
+                              );*/
+                            _emailController.clear();
+                            //}
                             Navigator.of(context).pop();
                           },
                           child: Text('Recuperar contraseña'),

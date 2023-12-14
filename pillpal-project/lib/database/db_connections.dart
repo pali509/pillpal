@@ -62,7 +62,8 @@ Future<bool> checkUser(String email, String pwd) async {
       .mappedResultsQuery("""
       SELECT * FROM "Users" WHERE user_email = '$email' and user_pwd = '$pwd'""");
   if(userList.isNotEmpty) {
-    setUser(userList[0]['Users']['user_id'], userList[0]['Users']['user_email'], userList[0]['Users']['user_name']);
+    debugPrint(userList[0]['Users']['user_role_id']);
+    setUser(userList[0]['Users']['user_id'], userList[0]['Users']['user_email'], userList[0]['Users']['user_name'], userList[0]['Users']['user_role_id']);
     return true;
   }
   else
@@ -79,10 +80,10 @@ Future<bool> userExists(String email) async {
     return false;
 }
 
-Future<void> insertUser(String nombre, String email, String pwd) async {
+Future<void> insertUser(String nombre, String email, String pwd, int rol) async {
   await databaseConnection.query("""
-    INSERT INTO "Users"(user_name, user_email, user_pwd)
-    VALUES ('$nombre', '$email', '$pwd');
+    INSERT INTO "Users"(user_name, user_email, user_pwd, user_role_id)
+    VALUES ('$nombre', '$email', '$pwd', $rol);
   """);
   checkUser(email, pwd);
 }
