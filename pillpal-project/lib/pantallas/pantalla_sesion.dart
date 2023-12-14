@@ -6,14 +6,14 @@ import 'package:pillpal/constants/colors.dart';
 
 import '../main.dart';
 
-class LoginDemo extends StatefulWidget {
-  const LoginDemo({Key? key}) : super(key: key);
+class Login extends StatefulWidget {
+  const Login({Key? key}) : super(key: key);
 
   @override
   _LoginDemoState createState() => _LoginDemoState();
 }
 
-class _LoginDemoState extends State<LoginDemo> {
+class _LoginDemoState extends State<Login> {
   TextEditingController _emailController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
   String? email, password;

@@ -19,7 +19,12 @@ class _RegistroState extends State<Registro> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return WillPopScope(
+        onWillPop: () async {
+          Navigator.of(context).pushReplacementNamed('/cuenta');
+          return true;
+        },
+    child: Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text("Nueva Cuenta"),
@@ -63,7 +68,7 @@ class _RegistroState extends State<Registro> {
               ),
             ),
             Padding(
-              padding: EdgeInsets.only(top: 30.0),
+              padding: EdgeInsets.only(top: 50.0),
               child: Container(
                 height: 50,
                 width: 250,
@@ -101,6 +106,7 @@ class _RegistroState extends State<Registro> {
           ],
         ),
       ),
+    ),
     );
   }
 

@@ -54,6 +54,7 @@ class PastilleroState extends State<Pastillero>{
                       splashColor: Colors.grey,
                       onTap: () {
                         debugPrint('Card tapped.');
+                        Navigator.of(context).pushReplacementNamed('/infoMed');
                       },
                       child: ListTile(
                         leading: Icon(Icons.add_a_photo_rounded),
@@ -125,6 +126,9 @@ class PastilleroState extends State<Pastillero>{
               child: Text('Añadir Medicación'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.purple,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
                 padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
                 textStyle: const TextStyle(
                   fontSize: 30,
