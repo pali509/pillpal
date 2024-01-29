@@ -30,7 +30,11 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  table_calendar: ^3.0.9
+
+  table_calendar:
+    git:
+      url: https://github.com/pali509/table_calendar.git
+
   postgres: ^2.4.3
   flutter_bloc: ^7.0.0
   equatable: ^2.0.2
