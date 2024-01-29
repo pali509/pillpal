@@ -62,7 +62,7 @@ Future<bool> checkUser(String email, String pwd) async {
       .mappedResultsQuery("""
       SELECT * FROM "Users" WHERE user_email = '$email' and user_pwd = '$pwd'""");
   if(userList.isNotEmpty) {
-    debugPrint(userList[0]['Users']['user_role_id']);
+    //debugPrint(userList[0]['Users']['user_role_id']);
     setUser(userList[0]['Users']['user_id'], userList[0]['Users']['user_email'], userList[0]['Users']['user_name'], userList[0]['Users']['user_role_id']);
     return true;
   }

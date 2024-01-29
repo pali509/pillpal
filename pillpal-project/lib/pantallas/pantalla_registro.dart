@@ -85,7 +85,7 @@ class _RegistroState extends State<Registro> {
                       );
 
                     } else{
-                      await insertUser(nombre!, email!, password!, 2); //AÑADIR LO DEL ROL!
+                      await insertUser(nombre!, email!, password!, 1); //AÑADIR LO DEL ROL!
                       // Navega a la pantalla '/home' con los datos ingresados
                       Navigator.of(context).pushReplacementNamed('/home');
                     }
