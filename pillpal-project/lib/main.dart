@@ -1,28 +1,46 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'pantalla_inicial.dart';
-import 'pantalla_pastillero.dart';
-import 'navigation_drawer.dart';
+import 'package:pillpal/pantallas/pantalla_informacionMed.dart';
+import 'package:pillpal/pantallas/pantalla_inicial.dart';
+
+import 'package:pillpal/pantallas/pantalla_pastillero.dart';
+import 'package:pillpal/pantallas/navigation_drawer.dart';
+import 'package:pillpal/pantallas/pantalla_registro.dart';
+
+import 'package:pillpal/pantallas/pantalla_sesion.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:pillpal/database/db_connections.dart';
 
-  Future<void> main() async {
-    WidgetsFlutterBinding.ensureInitialized();
-    await Supabase.initialize(url: 'https://amwzytiutgstvnrpaiju.supabase.co',
-      anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFtd3p5dGl1dGdzdHZucnBhaWp1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTgzNDA3MzQsImV4cCI6MjAxMzkxNjczNH0.-15tfv5ltd59NnnC00FKUL-IsCmWvrpk1y4ktfHA2Y4'
-      );
-      runApp(MyApp());
-  }
-
+Future<void> main() async {
+  initDatabaseConnection();
+  connecting();
+  runApp(MyApp());
+}
+final supabase = Supabase.instance.client;
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      initialRoute: '/home', // Ruta inicial
+      initialRoute: '/cuenta', // Ruta inicial
       routes: {
         '/home': (context) => PantallaInicial(),
         '/pastis': (context) => Pastillero(),
+        '/cuenta': (context) => Login(),
+        '/registro': (context) => Registro(),
+        '/infoMed': (context) => InfoMed(),
       },
+         /*
+
+         theme: ThemeData(
+        // Para cambiar la animacion de cambio de pantalla
+        pageTransitionsTheme: PageTransitionsTheme(builders: {
+        TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
+        TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+        }),
+        ),
+
+          */
     );
   }
 }
