@@ -6,6 +6,7 @@ import 'package:pillpal/pantallas/pantalla_inicial.dart';
 import 'package:pillpal/pantallas/pantalla_pastillero.dart';
 import 'package:pillpal/pantallas/navigation_drawer.dart';
 import 'package:pillpal/pantallas/pantalla_registro.dart';
+import 'package:pillpal/pantallas/pantalla_calendario.dart';
 
 import 'package:pillpal/pantallas/pantalla_sesion.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -29,6 +30,7 @@ class MyApp extends StatelessWidget {
         '/cuenta': (context) => Login(),
         '/registro': (context) => Registro(),
         '/infoMed': (context) => InfoMed(),
+        '/calendario': (context) => PantallaCalendario(),
       },
          /*
 
