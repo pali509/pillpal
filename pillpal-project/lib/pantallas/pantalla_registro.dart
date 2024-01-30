@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:pillpal/database/user.dart';
+import 'package:pillpal/pantallas/pantalla_registro_dependienteAsociado.dart';
 
 import '../constants/colors.dart';
 import '../database/db_connections.dart';
@@ -16,7 +18,7 @@ class _RegistroState extends State<Registro> {
   TextEditingController _passwordController = TextEditingController();
   TextEditingController _nombreController = TextEditingController();
   String? email, password, nombre;
-
+  String? rol;
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -50,8 +52,8 @@ class _RegistroState extends State<Registro> {
                 controller: _emailController,
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(),
-                  labelText: 'Email',
-                  hintText: 'Enter valid email id as abc@gmail.com',
+                  labelText: 'Correo',
+                  hintText: 'Inserta un correo valido como abc@gmail.com',
                 ),
               ),
             ),
@@ -62,11 +64,34 @@ class _RegistroState extends State<Registro> {
                 obscureText: true,
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(),
-                  labelText: 'Password',
-                  hintText: 'Enter secure password',
+                  labelText: 'Contraseña',
+                  hintText: 'Inserta una contraseña segura',
                 ),
               ),
             ),
+            const Padding(
+              padding: EdgeInsets.only(left: 0, right: 335, top: 35.0, bottom: 0),
+              child: Text("Rol",
+                  style: TextStyle(fontSize: 18.0)
+              ),
+
+            ),
+
+             Padding(
+              padding: EdgeInsets.only(left: 15, right: 200, top: 15.0, bottom: 0),
+              child:DropdownMenu<String>(
+                  onSelected: (String? value) {
+                    // This is called when the user selects an item.
+                    setState(() {
+                      rol = value!;
+                    });
+                  },
+                  dropdownMenuEntries: ['Autosuficiente', 'Dependiente', 'Supervisor'].map<DropdownMenuEntry<String>>((String value) {
+                    return DropdownMenuEntry<String>(value: value, label: value);
+                  }).toList(),
+                ),
+                ),
+
             Padding(
               padding: EdgeInsets.only(top: 50.0),
               child: Container(
@@ -79,15 +104,34 @@ class _RegistroState extends State<Registro> {
                     email = _emailController.text;
                     password = _passwordController.text;
                     nombre = _nombreController.text;
-                    if(await userExists(email!)) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Correo o contraseña incorrectas!')),
-                      );
+                    if(email != null && password != null && nombre != null && rol != null) {
+                      if (await userExists(email!)) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text(
+                              'Correo o contraseña incorrectas!')),
+                        );
+                      } else {
 
-                    } else{
-                      await insertUser(nombre!, email!, password!, 1); //AÑADIR LO DEL ROL!
-                      // Navega a la pantalla '/home' con los datos ingresados
-                      Navigator.of(context).pushReplacementNamed('/home');
+                        if(rol == 'Autosuficiente') {
+                          await insertUser(nombre!, email!, password!, rolAint(rol)); //FALTA METER NULL O ALGO PARA EL USER ASOCIADO
+                          // Navega a la pantalla '/home' con los datos ingresados
+                          Navigator.of(context).pushReplacementNamed('/home');
+                        }
+                        else if(rol == 'Dependiente') {
+                          await insertUser(nombre!, email!, password!, rolAint(rol)); //FALTA METER NULL O ALGO PARA EL USER ASOCIADO
+                          // Navega a la pantalla '/home' con los datos ingresados
+                          Navigator.of(context).pushReplacementNamed('/home'); //FALTA PONER LA PANTALLA NUEVA
+                        }
+                        else if(rol == 'Supervisor') {
+                          await insertUser(nombre!, email!, password!, rolAint(rol)); //FALTA METER NULL O ALGO PARA EL USER ASOCIADO
+                          // Navega a la pantalla '/home' con los datos ingresados
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => DependienteAsociado(id_asociado: getUserId())));
+
+                        }
+                      }
                     }
                   },
                   style: ElevatedButton.styleFrom(
@@ -108,6 +152,15 @@ class _RegistroState extends State<Registro> {
       ),
     ),
     );
+  }
+
+  int rolAint(String? rol) {
+    if(rol == 'Dependiente')
+      return 2;
+    else if(rol == 'Autosuficiente')
+      return 0;
+    else
+      return 1;
   }
 
 

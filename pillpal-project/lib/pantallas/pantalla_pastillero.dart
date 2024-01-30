@@ -21,7 +21,7 @@ class PastilleroState extends State<Pastillero>{
   int rol = getRoleId();
 
 
-  Future<List<Pill>>? listaDePills = getPills(getUserId());
+  Future<List<Pill>>? listaDePills = getPills(getUserAsociadoId());
   List<Pill> pills = [];
   @override
   Widget build(BuildContext context) {
@@ -41,7 +41,7 @@ class PastilleroState extends State<Pastillero>{
             } else if (snapshot.hasError) {
               return Center(child: Text('Error: ${snapshot.error}'));
             } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-              return const Center(child: Text('No hay datos disponibles.'));
+              return const Center(child: Text('No hay ningún medicamento registrado.'));
             } else {
               pills = snapshot.data!;
 
@@ -199,6 +199,7 @@ class PastilleroState extends State<Pastillero>{
       },
     );
   }
+
 }
 
 /*

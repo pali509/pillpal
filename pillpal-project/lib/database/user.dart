@@ -4,7 +4,7 @@ import 'package:flutter/cupertino.dart';
 int? user_id;
 String? user_email;
 String? user_name;
-int? role_id;
+int? role_id, user_asociado = 2;
 
 void setUser(int? id, String? email, String? name, int? role){
     user_id = id;
@@ -16,6 +16,9 @@ void setUser(int? id, String? email, String? name, int? role){
 
 int getUserId(){
     return user_id!;
+}
+int getUserAsociadoId(){
+    return user_asociado!;
 }
 
 String getUserEmail(){
