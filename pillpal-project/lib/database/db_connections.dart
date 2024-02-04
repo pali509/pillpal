@@ -6,12 +6,12 @@ import 'package:postgres/postgres.dart';
 import 'package:pillpal/database/user.dart';
 
 var databaseConnection = PostgreSQLConnection(
-    'db.amwzytiutgstvnrpaiju.supabase.co',
+    'aws-0-eu-central-1.pooler.supabase.com',
     5432,
     'postgres',
     queryTimeoutInSeconds: 3600,
     timeoutInSeconds: 3600,
-    username: 'postgres',
+    username: 'postgres.amwzytiutgstvnrpaiju',
     password: 'PillPal19DB');
 
 initDatabaseConnection() async {
@@ -63,7 +63,7 @@ Future<bool> checkUser(String email, String pwd) async {
       SELECT * FROM "Users" WHERE user_email = '$email' and user_pwd = '$pwd'""");
   if(userList.isNotEmpty) {
     //debugPrint(userList[0]['Users']['user_role_id']);
-    setUser(userList[0]['Users']['user_id'], userList[0]['Users']['user_email'], userList[0]['Users']['user_name'], userList[0]['Users']['user_role_id']);
+    setUser(userList[0]['Users']['user_id'], userList[0]['Users']['user_email'], userList[0]['Users']['user_name'], userList[0]['Users']['user_role_id'], userList[0]['Users']['user_asociado']);
     return true;
   }
   else
@@ -80,10 +80,20 @@ Future<bool> userExists(String email) async {
     return false;
 }
 
-Future<void> insertUser(String nombre, String email, String pwd, int rol) async {
+Future<void> insertUser(String nombre, String email, String pwd, int rol, int user_asociado) async {
   await databaseConnection.query("""
-    INSERT INTO "Users"(user_name, user_email, user_pwd, user_role_id)
-    VALUES ('$nombre', '$email', '$pwd', $rol);
+    INSERT INTO "Users"(user_name, user_email, user_pwd, user_role_id, user_asociado)
+    VALUES ('$nombre', '$email', '$pwd', $rol, $user_asociado);
   """);
   checkUser(email, pwd);
+}
+
+Future<int> getUsId(String email) async {
+  List<Map<String, dynamic>>? userList = await databaseConnection
+      .mappedResultsQuery("""
+      SELECT * FROM "Users" WHERE user_email = '$email'""");
+  if(userList.isNotEmpty)
+    return userList[0]['Users']['user_id'];
+  else
+    return 0;
 }

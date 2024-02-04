@@ -1,34 +1,47 @@
 import 'package:flutter/material.dart';
+import 'package:pillpal/database/user.dart';
 
-import '../constants/colors.dart';
-import '../database/db_connections.dart';
+import '../../constants/colors.dart';
+import '../../database/db_connections.dart';
 
-class DependienteAsociado extends StatefulWidget {
+class RegistroDepAsociado extends StatefulWidget {
   final int id_asociado;
-  const DependienteAsociado({Key? key, required this.id_asociado}) : super(key: key);
-
+  const RegistroDepAsociado({Key? key, required this.id_asociado}) : super(key: key);
 
   @override
-  _DepAsociadoState createState() => _DepAsociadoState();
+  _DepAsociadoState createState() {
+    return _DepAsociadoState(this.id_asociado);
+  }
+
 }
 
-class _DepAsociadoState extends State<DependienteAsociado> {
+class _DepAsociadoState extends State<RegistroDepAsociado> {
+  int id_asociado;
+  _DepAsociadoState(this.id_asociado);
+
   @override
   TextEditingController _emailController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
   TextEditingController _nombreController = TextEditingController();
   String? email, password, nombre;
+
+
+
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        Navigator.of(context).pushReplacementNamed('/registro');
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => RegistroDepAsociado(id_asociado: getUserId())));
         return true;
       },
       child: Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
-          title: const Text("Nueva Cuenta"),
+          title: const Text("Nueva Cuenta Dependiente"),
           backgroundColor: ColorsApp.toolBarColor,
         ),
         body: SingleChildScrollView(
@@ -87,7 +100,10 @@ class _DepAsociadoState extends State<DependienteAsociado> {
                         );
 
                       } else{
-                        await insertUser(nombre!, email!, password!, rolAint(rol));
+                        await insertUser(nombre!, email!, password!, 2, id_asociado); //2 porque es dependiente
+
+                        //FALTA CAMBIAR EL USER_ASOCIADO DE EL OTRO USER!
+
                         // Navega a la pantalla '/home' con los datos ingresados
                         Navigator.of(context).pushReplacementNamed('/home');
                       }
@@ -112,14 +128,6 @@ class _DepAsociadoState extends State<DependienteAsociado> {
     );
   }
 
-  int rolAint(String? rol) {
-    if(rol == 'Dependiente')
-      return 2;
-    else if(rol == 'Autosuficiente')
-      return 0;
-    else
-      return 1;
-  }
 
 
 

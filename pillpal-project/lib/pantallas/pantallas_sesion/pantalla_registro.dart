@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:pillpal/database/user.dart';
-import 'package:pillpal/pantallas/pantalla_registro_dependienteAsociado.dart';
+import 'package:pillpal/pantallas/pantallas_sesion/pantalla_login_dependienteAsociado.dart';
+import 'package:pillpal/pantallas/pantallas_sesion/pantalla_login_supervisorAsociado.dart';
+import 'package:pillpal/pantallas/pantallas_sesion/pantalla_registro_dependienteAsociado.dart';
 
-import '../constants/colors.dart';
-import '../database/db_connections.dart';
+
+import '../../constants/colors.dart';
+import '../../database/db_connections.dart';
 
 class Registro extends StatefulWidget {
   const Registro({Key? key}) : super(key: key);
@@ -113,22 +116,29 @@ class _RegistroState extends State<Registro> {
                       } else {
 
                         if(rol == 'Autosuficiente') {
-                          await insertUser(nombre!, email!, password!, rolAint(rol)); //FALTA METER NULL O ALGO PARA EL USER ASOCIADO
+                          await insertUser(nombre!, email!, password!, rolAint(rol), 0);
                           // Navega a la pantalla '/home' con los datos ingresados
+                          int id = await getUsId(email!);
+                          //await changeAsId(id); No llego a tanto
                           Navigator.of(context).pushReplacementNamed('/home');
                         }
                         else if(rol == 'Dependiente') {
-                          await insertUser(nombre!, email!, password!, rolAint(rol)); //FALTA METER NULL O ALGO PARA EL USER ASOCIADO
-                          // Navega a la pantalla '/home' con los datos ingresados
-                          Navigator.of(context).pushReplacementNamed('/home'); //FALTA PONER LA PANTALLA NUEVA
+                          await insertUser(nombre!, email!, password!, rolAint(rol), 0);
+                          // Navega a la pantalla con los datos ingresados
+                          int id = await getUsId(email!);
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => LoginSup(id_asociado: id)));
                         }
                         else if(rol == 'Supervisor') {
-                          await insertUser(nombre!, email!, password!, rolAint(rol)); //FALTA METER NULL O ALGO PARA EL USER ASOCIADO
-                          // Navega a la pantalla '/home' con los datos ingresados
+                          await insertUser(nombre!, email!, password!, rolAint(rol), 0);
+                          // Navega a la pantalla con los datos ingresados
+                          int id = await getUsId(email!);
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => DependienteAsociado(id_asociado: getUserId())));
+                              builder: (context) => LoginDep(id_asociado: id)));
 
                         }
                       }

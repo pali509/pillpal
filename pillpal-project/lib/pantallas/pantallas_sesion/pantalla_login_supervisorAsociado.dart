@@ -1,20 +1,24 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:pillpal/database/user.dart';
+import 'package:pillpal/pantallas/pantallas_sesion/pantalla_registro_dependienteAsociado.dart';
+import 'package:pillpal/pantallas/pantallas_sesion/pantalla_registro_supervisorAsociado.dart';
 
-import '../database/db_connections.dart';
+import '../../database/db_connections.dart';
+
 import 'package:pillpal/constants/colors.dart';
 
-import '../email.dart';
-import '../main.dart';
+import '../../email.dart';
 
-class Login extends StatefulWidget {
-  const Login({Key? key}) : super(key: key);
+class LoginSup extends StatefulWidget {
+  final int id_asociado;
+  const LoginSup({Key? key, required this.id_asociado}) : super(key: key);
 
   @override
-  _LoginDemoState createState() => _LoginDemoState();
+  _LoginSupState createState() => _LoginSupState();
 }
 
-class _LoginDemoState extends State<Login> {
+class _LoginSupState extends State<LoginSup> {
   TextEditingController _emailController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
   String? email, password;
@@ -24,7 +28,7 @@ class _LoginDemoState extends State<Login> {
     return Scaffold(
       backgroundColor: ColorsApp.backgroundColor,
       appBar: AppBar(
-        title: const Text("Inicio de sesión"),
+        title: const Text("Vincular supervisor asociado"),
         backgroundColor: ColorsApp.toolBarColor,
       ),
       body: SingleChildScrollView(
@@ -59,14 +63,14 @@ class _LoginDemoState extends State<Login> {
                 controller: _passwordController,
                 obscureText: true,
                 decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Contraseña'
+                    border: OutlineInputBorder(),
+                    labelText: 'Contraseña'
                 ),
               ),
             ),
 
             Padding(
-            padding: EdgeInsets.only(top: 30.0),
+              padding: EdgeInsets.only(top: 30.0),
               child: Container(
                 height: 50,
                 width: 250,
@@ -75,6 +79,7 @@ class _LoginDemoState extends State<Login> {
                     email = _emailController.text;
                     password = _passwordController.text;
                     if (await checkUser(email!, password!)) {
+                      //Asociar en la BD a este usuario con el dependiente
                       Navigator.of(context).pushReplacementNamed('/home');
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -104,38 +109,38 @@ class _LoginDemoState extends State<Login> {
                   showDialog(
                     context: context,
                     builder: (context) {
-                    String correo = '';
-                    return SimpleDialog(
-                      contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 12),
-                      children: [
-                        const SizedBox(height: 30),
-                        const Text('Correo registrado:', style: TextStyle(fontSize: 20)),
-                        TextFormField(
-                          onChanged: (value) {
-                            correo = value;
-                          },
-                        ),
-
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            //alignment: Alignment.center, ???
-                            backgroundColor: Colors.purple, // Ajusta el color del fondo aquí
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
-                            ),
+                      String correo = '';
+                      return SimpleDialog(
+                        contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 12),
+                        children: [
+                          const SizedBox(height: 30),
+                          const Text('Correo registrado:', style: TextStyle(fontSize: 20)),
+                          TextFormField(
+                            onChanged: (value) {
+                              correo = value;
+                            },
                           ),
-                          onPressed: () async {
-                            email = _emailController.text;
-                            //String? pwd = await getPassword(email) as String?;
-                            String? pwd = "d";
-                            if(pwd == null){
-                              //Enseñar mensaje: Su usuario no está registrado.
-                            }
-                            else{
-                              sendPassword(email, pwd);
-                            }
-                            /*await supabase.auth.signInWithOtp( //tiene que ser otra cosa, esto es para enviar link
+
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              //alignment: Alignment.center, ???
+                              backgroundColor: Colors.purple, // Ajusta el color del fondo aquí
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                            ),
+                            onPressed: () async {
+                              email = _emailController.text;
+                              //String? pwd = await getPassword(email) as String?;
+                              String? pwd = "d";
+                              if(pwd == null){
+                                //Enseñar mensaje: Su usuario no está registrado.
+                              }
+                              else{
+                                sendPassword(email, pwd);
+                              }
+                              /*await supabase.auth.signInWithOtp( //tiene que ser otra cosa, esto es para enviar link
                               email: correo,
 
                             );
@@ -143,15 +148,15 @@ class _LoginDemoState extends State<Login> {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(content: Text('Contraseña enviada por correo')),
                               );*/
-                            _emailController.clear();
-                            //}
-                            Navigator.of(context).pop();
-                          },
-                          child: Text('Recuperar contraseña'),
-                        ),
-                      ],
-                    );
-                  },
+                              _emailController.clear();
+                              //}
+                              Navigator.of(context).pop();
+                            },
+                            child: Text('Recuperar contraseña'),
+                          ),
+                        ],
+                      );
+                    },
                   );
                 },
                 child: const SizedBox(
@@ -165,8 +170,10 @@ class _LoginDemoState extends State<Login> {
               padding: EdgeInsets.only(top: 90.0),  // Ajusta el valor top según tus necesidades
               child: GestureDetector(
                 onTap: () {
-                  // Navegar a la nueva pantalla al pulsar el SizedBox
-                  Navigator.of(context).pushReplacementNamed('/registro');
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => RegistroSupAsociado(id_asociado: getUserId())));
                 },
                 child: const SizedBox(
                   height: 130,

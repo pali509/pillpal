@@ -5,10 +5,15 @@ import 'package:pillpal/pantallas/pantalla_inicial.dart';
 
 import 'package:pillpal/pantallas/pantalla_pastillero.dart';
 import 'package:pillpal/pantallas/navigation_drawer.dart';
-import 'package:pillpal/pantallas/pantalla_registro.dart';
+import 'package:pillpal/pantallas/pantallas_sesion/pantalla_login_dependienteAsociado.dart';
+import 'package:pillpal/pantallas/pantallas_sesion/pantalla_login_supervisorAsociado.dart';
+import 'package:pillpal/pantallas/pantallas_sesion/pantalla_registro.dart';
 import 'package:pillpal/pantallas/pantalla_calendario.dart';
+import 'package:pillpal/pantallas/pantallas_sesion/pantalla_registro_dependienteAsociado.dart';
+import 'package:pillpal/pantallas/pantallas_sesion/pantalla_registro_supervisorAsociado.dart';
 
-import 'package:pillpal/pantallas/pantalla_sesion.dart';
+
+import 'package:pillpal/pantallas/pantallas_sesion/pantalla_sesion.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:pillpal/database/db_connections.dart';
 
@@ -31,6 +36,13 @@ class MyApp extends StatelessWidget {
         '/registro': (context) => Registro(),
         '/infoMed': (context) => InfoMed(),
         '/calendario': (context) => PantallaCalendario(),
+
+        /*
+        '/loginDep': (context) => LoginDep(),
+        '/loginSup': (context) => LoginSup(),
+        '/registroDep': (context) => RegistroDepAsociado(),
+        '/registroSup': (context) => RegistroSupAsociado(),
+        */
       },
          /*
 

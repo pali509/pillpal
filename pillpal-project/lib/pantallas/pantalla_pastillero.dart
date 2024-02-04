@@ -20,14 +20,15 @@ class PastilleroState extends State<Pastillero>{
   //final pastillaStream = Supabase.instance.client.from('Pills').stream(primaryKey: ['pill_id']);
   int rol = getRoleId();
 
-
   Future<List<Pill>>? listaDePills = getPills(getUserAsociadoId());
+
   List<Pill> pills = [];
   @override
   Widget build(BuildContext context) {
 
 
     return Scaffold(
+      
       appBar: AppBar(
         title: Text('Pastillero', style: TextStyle(fontSize: 25.0)),
         backgroundColor: ColorsApp.toolBarColor,
