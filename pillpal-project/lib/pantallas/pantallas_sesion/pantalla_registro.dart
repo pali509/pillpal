@@ -116,14 +116,14 @@ class _RegistroState extends State<Registro> {
                       } else {
 
                         if(rol == 'Autosuficiente') {
-                          await insertUser(nombre!, email!, password!, rolAint(rol), 0);
+                          await insertUser(nombre!, email!, password!, rolAint(rol));
                           // Navega a la pantalla '/home' con los datos ingresados
                           int id = await getUsId(email!);
                           //await changeAsId(id); No llego a tanto
                           Navigator.of(context).pushReplacementNamed('/home');
                         }
                         else if(rol == 'Dependiente') {
-                          await insertUser(nombre!, email!, password!, rolAint(rol), 0);
+                          await insertUser(nombre!, email!, password!, rolAint(rol));
                           // Navega a la pantalla con los datos ingresados
                           int id = await getUsId(email!);
                           Navigator.push(
@@ -132,7 +132,7 @@ class _RegistroState extends State<Registro> {
                                   builder: (context) => LoginSup(id_asociado: id)));
                         }
                         else if(rol == 'Supervisor') {
-                          await insertUser(nombre!, email!, password!, rolAint(rol), 0);
+                          await insertUser(nombre!, email!, password!, rolAint(rol));
                           // Navega a la pantalla con los datos ingresados
                           int id = await getUsId(email!);
                           Navigator.push(

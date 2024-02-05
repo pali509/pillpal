@@ -100,7 +100,7 @@ class _DepAsociadoState extends State<RegistroDepAsociado> {
                         );
 
                       } else{
-                        await insertUser(nombre!, email!, password!, 2, id_asociado); //2 porque es dependiente
+                        await insertUser(nombre!, email!, password!, 2); //2 porque es dependiente
 
                         //FALTA CAMBIAR EL USER_ASOCIADO DE EL OTRO USER!
 

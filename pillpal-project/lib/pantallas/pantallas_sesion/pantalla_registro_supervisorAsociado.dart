@@ -97,7 +97,7 @@ class _SupAsociadoState extends State<RegistroSupAsociado> {
                         );
 
                       } else{
-                        await insertUser(nombre!, email!, password!, 1, id_asociado); //1 porque es supervisor
+                        await insertUser(nombre!, email!, password!, 1); //1 porque es supervisor
                         // Navega a la pantalla '/home' con los datos ingresados
                         Navigator.of(context).pushReplacementNamed('/home');
                       }
@@ -121,8 +121,4 @@ class _SupAsociadoState extends State<RegistroSupAsociado> {
       ),
     );
   }
-
-
-
-
 }

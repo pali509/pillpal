@@ -80,10 +80,10 @@ Future<bool> userExists(String email) async {
     return false;
 }
 
-Future<void> insertUser(String nombre, String email, String pwd, int rol, int user_asociado) async {
+Future<void> insertUser(String nombre, String email, String pwd, int rol) async {
   await databaseConnection.query("""
-    INSERT INTO "Users"(user_name, user_email, user_pwd, user_role_id, user_asociado)
-    VALUES ('$nombre', '$email', '$pwd', $rol, $user_asociado);
+    INSERT INTO "Users"(user_name, user_email, user_pwd, user_role_id)
+    VALUES ('$nombre', '$email', '$pwd', $rol);
   """);
   checkUser(email, pwd);
 }
@@ -91,9 +91,30 @@ Future<void> insertUser(String nombre, String email, String pwd, int rol, int us
 Future<int> getUsId(String email) async {
   List<Map<String, dynamic>>? userList = await databaseConnection
       .mappedResultsQuery("""
-      SELECT * FROM "Users" WHERE user_email = '$email'""");
+      SELECT user_id FROM "Users" WHERE user_email = '$email'""");
   if(userList.isNotEmpty)
     return userList[0]['Users']['user_id'];
   else
     return 0;
+}
+
+Future<void> addRelationship(int idSup, int idDep) async {
+  await databaseConnection.query("""
+    INSERT INTO "Relationships"(cuidador_id, paciente_id)
+    VALUES ($idSup, $idDep);
+  """);
+}
+
+Future<void> deleteRelationship(int id) async {
+  await databaseConnection.query("""
+      DELETE FROM "Relationships"
+      WHERE cuidador_id = $id OR paciente_id = $id;
+  """);
+}
+
+Future<void> deleteUser(int id) async {
+  await databaseConnection.query("""
+      DELETE FROM "Users"
+      WHERE user_id = $id;
+  """);
 }
