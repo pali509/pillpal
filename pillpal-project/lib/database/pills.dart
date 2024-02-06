@@ -12,4 +12,8 @@ class Pill{
     int? getPillId(){
         return pillId;
     }
+
+    int? getUserId() {
+        return userId;
+    }
 }

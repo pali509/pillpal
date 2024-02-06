@@ -1,3 +1,4 @@
+import 'package:pillpal/database/horario.dart';
 import 'package:pillpal/database/pills.dart';
 import 'package:supabase/src/supabase_stream_builder.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -20,13 +21,13 @@ initDatabaseConnection() async {
   });
 }
 
-Future<void> connecting() async {
+/*Future<void> connecting() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Supabase.initialize(
     url: 'https://amwzytiutgstvnrpaiju.supabase.co',
     anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFtd3p5dGl1dGdzdHZucnBhaWp1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTgzNDA3MzQsImV4cCI6MjAxMzkxNjczNH0.-15tfv5ltd59NnnC00FKUL-IsCmWvrpk1y4ktfHA2Y4',
   );
-}
+}*/
 
 Future<void> insertPills(String pillName, int numPills, int userId) async {
   await databaseConnection.query("""
@@ -34,13 +35,21 @@ Future<void> insertPills(String pillName, int numPills, int userId) async {
     VALUES ('$pillName', $userId, $numPills);
   """);
 }
+
 Future<void> deletePill(Pill pill) async {
   int? pillId = pill.getPillId();
+  int? userId = pill.getUserId();
   await databaseConnection.query("""
       DELETE FROM "Pills"
-    WHERE pill_id = $pillId;
+    WHERE pill_id = $pillId AND user_id = $userId;
+  """);
+
+  await databaseConnection.query("""
+      DELETE FROM "Horario"
+    WHERE pill_id = $pillId AND user_id = $userId;
   """);
 }
+
 Future<List<Pill>>? getPills(int userId) async {
   List<Map<String, dynamic>> mapPills = await databaseConnection
       .mappedResultsQuery("""
@@ -63,11 +72,39 @@ Future<bool> checkUser(String email, String pwd) async {
       SELECT * FROM "Users" WHERE user_email = '$email' and user_pwd = '$pwd'""");
   if(userList.isNotEmpty) {
     //debugPrint(userList[0]['Users']['user_role_id']);
-    setUser(userList[0]['Users']['user_id'], userList[0]['Users']['user_email'], userList[0]['Users']['user_name'], userList[0]['Users']['user_role_id'], userList[0]['Users']['user_asociado']);
+    if(userList[0]['Users']['user_role_id'] == 0 || userList[0]['Users']['user_role_id'] == 2) {
+      setUser(
+          userList[0]['Users']['user_id'],
+          userList[0]['Users']['user_email'],
+          userList[0]['Users']['user_name'],
+          userList[0]['Users']['user_role_id'],
+          userList[0]['Users']['user_id']);
+    }
+    else {
+      List<Map<String, dynamic>>? relationList = await databaseConnection
+          .mappedResultsQuery("""
+            SELECT r.paciente_id FROM "Relationships" r  WHERE r.cuidador_id = '""" + userList[0]['Users']['user_id']+ """"' 
+              """);
+      if(relationList.isNotEmpty) {
+        setUser(
+            userList[0]['Users']['user_id'],
+            userList[0]['Users']['user_email'],
+            userList[0]['Users']['user_name'],
+            userList[0]['Users']['user_role_id'],
+            relationList[0]['Relationships']['paciente_id']);
+      }
+      else{
+        setUser(
+            userList[0]['Users']['user_id'],
+            userList[0]['Users']['user_email'],
+            userList[0]['Users']['user_name'],
+            userList[0]['Users']['user_role_id'],
+            userList[0]['Users']['user_id']);
+      }
+    }
     return true;
   }
-  else
-    return false;
+  return false;
 }
 
 Future<bool> userExists(String email) async {
@@ -113,8 +150,48 @@ Future<void> deleteRelationship(int id) async {
 }
 
 Future<void> deleteUser(int id) async {
+  //borramos user de las relaciones
+  deleteRelationship(id);
+
+  //Borramos el horario de las pastillas del user
+  await databaseConnection.query("""
+      DELETE FROM "Horario"
+      WHERE user_id = $id;
+  """);
+
+  //Borramos todas las pastillas del user
+  await databaseConnection.query("""
+      DELETE FROM "Pills"
+      WHERE user_id = $id;
+  """);
+
+  //Borramos al user
   await databaseConnection.query("""
       DELETE FROM "Users"
       WHERE user_id = $id;
   """);
+
+}
+
+Future<List<Horario>>? getDayPills(String day, int userId) async {
+  List<Map<String, dynamic>> mapHorario = await databaseConnection
+      .mappedResultsQuery("""
+      SELECT p.pill_name, h."hour", h."period", h.quantity  FROM "Horario" h JOIN "Pills" p on h.pill_id = p.pill_id 
+      WHERE h.user_id = $userId AND p.user_id = $userId AND (h.date = '$day' OR h.date = NULL) ORDER BY h."hour"
+      """);
+  List<Horario>listHorario = [];
+  for(int i = 0; i < mapHorario.length; i++) {
+    listHorario.add(Horario(
+        mapHorario[i]['Horario']['hour'],
+        mapHorario[i]['Horario']['quantity'],
+        mapHorario[i]['Pills']['pill_name'],
+        mapHorario[i]['Horario']['period']
+    ));
+  }
+  debugPrint(listHorario[0].hour);
+  debugPrint(listHorario[0].period.toString());
+  debugPrint(listHorario[0].numPills.toString());
+  debugPrint(listHorario[0].pillName);
+
+  return listHorario;
 }
