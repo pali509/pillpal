@@ -176,18 +176,25 @@ Future<void> deleteUser(int id) async {
 Future<List<Horario>>? getDayPills(String day, int userId) async {
   List<Map<String, dynamic>> mapHorario = await databaseConnection
       .mappedResultsQuery("""
-      SELECT p.pill_name, h."hour", h."period", h.quantity  FROM "Horario" h JOIN "Pills" p on h.pill_id = p.pill_id 
-      WHERE h.user_id = $userId AND p.user_id = $userId AND (h.date = '$day' OR h.date = NULL) ORDER BY h."hour"
+      SELECT p.pill_name, h."period", h.quantity, 
+      EXTRACT (HOUR from h."hour") as actual_hour, 
+      EXTRACT (MINUTE FROM h."hour") as minute
+      FROM "Horario" h JOIN "Pills" p on h.pill_id = p.pill_id 
+      WHERE h.user_id = $userId AND p.user_id = $userId AND (h.date = '$day' OR h.date = NULL) 
+      ORDER BY h."hour"
       """);
   List<Horario>listHorario = [];
+  debugPrint(mapHorario[0]['actual_hour'].toString());
   for(int i = 0; i < mapHorario.length; i++) {
     listHorario.add(Horario(
-        mapHorario[i]['Horario']['hour'],
+        mapHorario[i]['Horario']['actual_hour'].toString() + ":"
+            + mapHorario[i]['Horario']['minute'].toString(),
         mapHorario[i]['Horario']['quantity'],
         mapHorario[i]['Pills']['pill_name'],
         mapHorario[i]['Horario']['period']
     ));
   }
+  debugPrint("AAAAA");
   debugPrint(listHorario[0].hour);
   debugPrint(listHorario[0].period.toString());
   debugPrint(listHorario[0].numPills.toString());
@@ -195,3 +202,4 @@ Future<List<Horario>>? getDayPills(String day, int userId) async {
 
   return listHorario;
 }
+

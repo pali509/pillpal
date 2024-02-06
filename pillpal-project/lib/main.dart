@@ -19,10 +19,9 @@ import 'package:pillpal/database/db_connections.dart';
 
 Future<void> main() async {
   initDatabaseConnection();
-  //connecting();
+  //connecting()
   runApp(MyApp());
   //var moonLanding = DateTime.parse("2020-02-10 12:00:00Z");
-  getDayPills("2023-03-03", 1);
 }
 final supabase = Supabase.instance.client;
 
