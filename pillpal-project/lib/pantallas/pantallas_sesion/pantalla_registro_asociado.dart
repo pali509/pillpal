@@ -96,16 +96,19 @@ class _RegistroAsState extends State<RegistroAs> {
                           const SnackBar(content: Text('Correo o contraseña incorrectas!')),
                         );
 
-                      } else{
-                        await insertUser(nombre!, email!, password!, 1); //1 porque es supervisor
+                      } else {
                         int rol = await getRolId(id_asociado); //Rol de el que creo la primera cuenta
-                        int id = await getUsId(email!); //id de el asociado
-                        if(rol == 2)
-                          addRelationship(id, id_asociado);
-                        else
+                        if (rol == 2) { //dependiente
+                          await insertUser(nombre!, email!, password!, 1, 2); //1 porque es supervisor
+                          addRelationship(id_asociado, id_asociado);
+                        }
+                        else {
+                          await insertUser(nombre!, email!, password!, 2, 2);
+                          int id = await getUsId(email!); //id de el asociado
                           addRelationship(id_asociado, id);
-                        // Navega a la pantalla '/home' con los datos ingresados
-                        Navigator.of(context).pushReplacementNamed('/home');
+                          // Navega a la pantalla '/home' con los datos ingresados
+                          Navigator.of(context).pushReplacementNamed('/home');
+                        }
                       }
                     },
                     style: ElevatedButton.styleFrom(

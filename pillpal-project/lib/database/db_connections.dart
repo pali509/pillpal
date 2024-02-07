@@ -118,12 +118,14 @@ Future<bool> userExists(String email) async {
     return false;
 }
 
-Future<void> insertUser(String nombre, String email, String pwd, int rol) async {
+Future<void> insertUser(String nombre, String email, String pwd, int rol, int op) async {
+  //op 2 == Registro usuario asociado y 1 == el que va a usar la app en este dispositivo
   await databaseConnection.query("""
     INSERT INTO "Users"(user_name, user_email, user_pwd, user_role_id)
     VALUES ('$nombre', '$email', '$pwd', $rol);
   """);
-  checkUser(email, pwd);
+  if(op == 1)
+    checkUser(email, pwd);
 }
 
 Future<int> getUsId(String email) async {

@@ -118,8 +118,8 @@ class PastilleroState extends State<Pastillero>{
                       const SizedBox(height: 20),
                       ElevatedButton(
                         onPressed: () async {
-                          insertPills(pillName, numberOfPills, getUserId());
-                          listaDePills = getPills(getUserId());
+                          insertPills(pillName, numberOfPills, getUserAsociadoId());
+                          listaDePills = getPills(getUserAsociadoId());
                           setState(() {});
                           Navigator.of(context).pop();
                         },
@@ -180,7 +180,7 @@ class PastilleroState extends State<Pastillero>{
             ElevatedButton(
               onPressed: () {
                 deletePill(pill);
-                listaDePills = getPills(getUserId());
+                listaDePills = getPills(getUserAsociadoId());
                 setState(() {});
                 // Cerrar el diálogo después de realizar la acción
                 Navigator.of(context).pop();

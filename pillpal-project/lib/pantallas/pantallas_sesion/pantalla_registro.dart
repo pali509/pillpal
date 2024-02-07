@@ -114,14 +114,14 @@ class _RegistroState extends State<Registro> {
                       } else {
 
                         if(rol == 'Autosuficiente') {
-                          await insertUser(nombre!, email!, password!, rolAint(rol));
+                          await insertUser(nombre!, email!, password!, rolAint(rol), 1);
                           // Navega a la pantalla '/home' con los datos ingresados
                           int id = await getUsId(email!);
                           addRelationship(id, id); //Le añade como cuidador de si mismo
                           Navigator.of(context).pushReplacementNamed('/home');
                         }
                         else if(rol == 'Dependiente'||rol == 'Supervisor') {
-                          await insertUser(nombre!, email!, password!, rolAint(rol));
+                          await insertUser(nombre!, email!, password!, rolAint(rol), 1);
                           // Navega a la pantalla con los datos ingresados
                           debugPrint("$getUserEmail()");
                           int id = await getUsId(email!);
