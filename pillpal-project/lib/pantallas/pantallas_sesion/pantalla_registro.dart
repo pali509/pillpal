@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pillpal/database/user.dart';
-import 'package:pillpal/pantallas/pantallas_sesion/pantalla_login_dependienteAsociado.dart';
-import 'package:pillpal/pantallas/pantallas_sesion/pantalla_login_supervisorAsociado.dart';
-import 'package:pillpal/pantallas/pantallas_sesion/pantalla_registro_dependienteAsociado.dart';
+import 'package:pillpal/pantallas/pantallas_sesion/pantalla_login_asociado.dart';
 
 
 import '../../constants/colors.dart';
@@ -119,27 +117,18 @@ class _RegistroState extends State<Registro> {
                           await insertUser(nombre!, email!, password!, rolAint(rol));
                           // Navega a la pantalla '/home' con los datos ingresados
                           int id = await getUsId(email!);
-                          //await changeAsId(id); No llego a tanto
+                          addRelationship(id, id); //Le añade como cuidador de si mismo
                           Navigator.of(context).pushReplacementNamed('/home');
                         }
-                        else if(rol == 'Dependiente') {
+                        else if(rol == 'Dependiente'||rol == 'Supervisor') {
                           await insertUser(nombre!, email!, password!, rolAint(rol));
                           // Navega a la pantalla con los datos ingresados
+                          debugPrint("$getUserEmail()");
                           int id = await getUsId(email!);
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => LoginSup(id_asociado: id)));
-                        }
-                        else if(rol == 'Supervisor') {
-                          await insertUser(nombre!, email!, password!, rolAint(rol));
-                          // Navega a la pantalla con los datos ingresados
-                          int id = await getUsId(email!);
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => LoginDep(id_asociado: id)));
-
+                                  builder: (context) => LoginAs(id_asociado: id)));
                         }
                       }
                     }

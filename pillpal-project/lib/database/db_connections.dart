@@ -134,6 +134,15 @@ Future<int> getUsId(String email) async {
   else
     return 0;
 }
+Future<int> getRolId(int email) async {
+  List<Map<String, dynamic>>? userList = await databaseConnection
+      .mappedResultsQuery("""
+      SELECT user_role_id FROM "Users" WHERE user_email = '$email'""");
+  if(userList.isNotEmpty)
+    return userList[0]['Users']['user_role_id'];
+  else
+    return 0;
+}
 
 Future<void> addRelationship(int idSup, int idDep) async {
   await databaseConnection.query("""
@@ -151,7 +160,7 @@ Future<void> deleteRelationship(int id) async {
 
 Future<void> deleteUser(int id) async {
   //borramos user de las relaciones
-  deleteRelationship(id);
+  await deleteRelationship(id);
 
   //Borramos el horario de las pastillas del user
   await databaseConnection.query("""

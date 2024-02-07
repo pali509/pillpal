@@ -1,8 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:pillpal/database/user.dart';
-import 'package:pillpal/pantallas/pantallas_sesion/pantalla_registro_dependienteAsociado.dart';
-import 'package:pillpal/pantallas/pantallas_sesion/pantalla_registro_supervisorAsociado.dart';
+import 'package:pillpal/pantallas/pantallas_sesion/pantalla_registro_asociado.dart';
 
 import '../../database/db_connections.dart';
 
@@ -10,22 +9,34 @@ import 'package:pillpal/constants/colors.dart';
 
 import '../../email.dart';
 
-class LoginSup extends StatefulWidget {
+class LoginAs extends StatefulWidget {
   final int id_asociado;
-  const LoginSup({Key? key, required this.id_asociado}) : super(key: key);
+  const LoginAs({Key? key, required this.id_asociado}) : super(key: key);
 
   @override
-  _LoginSupState createState() => _LoginSupState();
+  _LoginAsState createState() {
+    return _LoginAsState(this.id_asociado);
+  }
 }
 
-class _LoginSupState extends State<LoginSup> {
+class _LoginAsState extends State<LoginAs> {
+  int id_asociado;
+  _LoginAsState(this.id_asociado);
+
+  @override
   TextEditingController _emailController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
   String? email, password;
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return WillPopScope(
+        onWillPop: () async {
+          await deleteUser(id_asociado);
+          Navigator.of(context).pushReplacementNamed('/registro');
+          return true;
+        },
+    child: Scaffold(
       backgroundColor: ColorsApp.backgroundColor,
       appBar: AppBar(
         title: const Text("Vincular supervisor asociado"),
@@ -80,6 +91,13 @@ class _LoginSupState extends State<LoginSup> {
                     password = _passwordController.text;
                     if (await checkUser(email!, password!)) {
                       //Asociar en la BD a este usuario con el dependiente
+                      int rol = await getRolId(id_asociado); //Rol de el que creo la primera cuenta
+                      int id = await getUsId(email!); //id de el asociado
+                      if(rol == 2)
+                        addRelationship(id, id_asociado);
+                      else
+                        addRelationship(id_asociado, id);
+
                       Navigator.of(context).pushReplacementNamed('/home');
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -170,10 +188,11 @@ class _LoginSupState extends State<LoginSup> {
               padding: EdgeInsets.only(top: 90.0),  // Ajusta el valor top según tus necesidades
               child: GestureDetector(
                 onTap: () {
+
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => RegistroSupAsociado(id_asociado: getUserId())));
+                          builder: (context) => RegistroAs(id_asociado: id_asociado)));
                 },
                 child: const SizedBox(
                   height: 130,
@@ -183,6 +202,7 @@ class _LoginSupState extends State<LoginSup> {
             ),
           ],
         ),
+      ),
       ),
     );
   }

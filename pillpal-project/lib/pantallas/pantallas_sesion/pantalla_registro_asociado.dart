@@ -1,23 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:pillpal/database/user.dart';
-import 'package:pillpal/pantallas/pantallas_sesion/pantalla_registro_dependienteAsociado.dart';
+import 'package:pillpal/pantallas/pantallas_sesion/pantalla_login_asociado.dart';
 
 import '../../constants/colors.dart';
 import '../../database/db_connections.dart';
 
-class RegistroSupAsociado extends StatefulWidget {
+class RegistroAs extends StatefulWidget {
   final int id_asociado;
-  const RegistroSupAsociado({Key? key, required this.id_asociado}) : super(key: key);
+  const RegistroAs({Key? key, required this.id_asociado}) : super(key: key);
 
   @override
-  _SupAsociadoState createState() {
-    return _SupAsociadoState(this.id_asociado);
+  _RegistroAsState createState() {
+    return _RegistroAsState(this.id_asociado);
   }
 }
 
-class _SupAsociadoState extends State<RegistroSupAsociado> {
+class _RegistroAsState extends State<RegistroAs> {
   int id_asociado;
-  _SupAsociadoState(this.id_asociado);
+  _RegistroAsState(this.id_asociado);
 
   @override
   TextEditingController _emailController = TextEditingController();
@@ -32,7 +32,7 @@ class _SupAsociadoState extends State<RegistroSupAsociado> {
         Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => RegistroDepAsociado(id_asociado: getUserId())));
+                builder: (context) => LoginAs(id_asociado: getUserId())));
         return true;
       },
       child: Scaffold(
@@ -98,6 +98,12 @@ class _SupAsociadoState extends State<RegistroSupAsociado> {
 
                       } else{
                         await insertUser(nombre!, email!, password!, 1); //1 porque es supervisor
+                        int rol = await getRolId(id_asociado); //Rol de el que creo la primera cuenta
+                        int id = await getUsId(email!); //id de el asociado
+                        if(rol == 2)
+                          addRelationship(id, id_asociado);
+                        else
+                          addRelationship(id_asociado, id);
                         // Navega a la pantalla '/home' con los datos ingresados
                         Navigator.of(context).pushReplacementNamed('/home');
                       }

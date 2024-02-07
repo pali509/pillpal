@@ -5,12 +5,10 @@ import 'package:pillpal/pantallas/pantalla_inicial.dart';
 
 import 'package:pillpal/pantallas/pantalla_pastillero.dart';
 import 'package:pillpal/pantallas/navigation_drawer.dart';
-import 'package:pillpal/pantallas/pantallas_sesion/pantalla_login_dependienteAsociado.dart';
-import 'package:pillpal/pantallas/pantallas_sesion/pantalla_login_supervisorAsociado.dart';
+import 'package:pillpal/pantallas/pantallas_sesion/pantalla_login_asociado.dart';
 import 'package:pillpal/pantallas/pantallas_sesion/pantalla_registro.dart';
 import 'package:pillpal/pantallas/pantalla_calendario.dart';
-import 'package:pillpal/pantallas/pantallas_sesion/pantalla_registro_dependienteAsociado.dart';
-import 'package:pillpal/pantallas/pantallas_sesion/pantalla_registro_supervisorAsociado.dart';
+import 'package:pillpal/pantallas/pantallas_sesion/pantalla_registro_asociado.dart';
 
 
 import 'package:pillpal/pantallas/pantallas_sesion/pantalla_sesion.dart';
