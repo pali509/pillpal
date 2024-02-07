@@ -81,9 +81,10 @@ Future<bool> checkUser(String email, String pwd) async {
           userList[0]['Users']['user_id']);
     }
     else {
+      int id_cuidador = userList[0]['Users']['user_id'];
       List<Map<String, dynamic>>? relationList = await databaseConnection
           .mappedResultsQuery("""
-            SELECT r.paciente_id FROM "Relationships" r  WHERE r.cuidador_id = '""" + userList[0]['Users']['user_id']+ """"' 
+            SELECT r.paciente_id FROM "Relationships" r  WHERE r.cuidador_id = $id_cuidador
               """);
       if(relationList.isNotEmpty) {
         setUser(
