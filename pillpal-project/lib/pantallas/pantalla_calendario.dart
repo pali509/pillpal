@@ -1,12 +1,17 @@
+import '../utils.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:pillpal/constants/colors.dart';
+import 'package:pillpal/database/horario.dart';
+import 'package:pillpal/database/user.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 
-
+import '../database/db_connections.dart';
+import 'add_calendario.dart';
 import 'navigation_drawer.dart';
 
 
@@ -20,8 +25,23 @@ class _PantallaCalendarioState extends State<PantallaCalendario> {
   CalendarFormat _calendarFormat = CalendarFormat.month;
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
+  DateTime? _rangeStart;
+  DateTime? _rangeEnd;
+  RangeSelectionMode _rangeSelectionMode = RangeSelectionMode
+      .toggledOff;
 
+  Future<List<Horario>>? _selectedEvents;
+  List<Horario> cosas = [];
   @override
+  void initState() {
+    super.initState();
+
+    _selectedDay = _focusedDay;
+    _selectedEvents = _getEventsForDay(_selectedDay!);
+  }
+  Future<List<Horario>>? _getEventsForDay(DateTime day) {
+    return getDayPills(day, getUserId());
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,43 +53,93 @@ class _PantallaCalendarioState extends State<PantallaCalendario> {
         backgroundColor: ColorsApp.toolBarColor,
       ),
       drawer: MyDrawer(),
-      body: TableCalendar(
 
-        firstDay: DateTime.utc(2023, 10, 16),
-        lastDay: DateTime.utc(2030, 3, 14),
-        focusedDay: _focusedDay,
-        calendarFormat: _calendarFormat,
-        selectedDayPredicate: (day) {
-          // Use `selectedDayPredicate` to determine which day is currently selected.
-          // If this returns true, then `day` will be marked as selected.
+      body: Column(
+        children: [
+          TableCalendar(
+            locale: 'es_Es',
+            firstDay: DateTime.utc(2023, 10, 16),
+            lastDay: DateTime.utc(2030, 3, 14),
+            focusedDay: _focusedDay,
+            calendarFormat: _calendarFormat,
+            startingDayOfWeek: StartingDayOfWeek.monday,
 
-          // Using `isSameDay` is recommended to disregard
-          // the time-part of compared DateTime objects.
-          return isSameDay(_selectedDay, day);
-        },
-        onDaySelected: (selectedDay, focusedDay) {
-          if (!isSameDay(_selectedDay, selectedDay)) {
-            // Call `setState()` when updating the selected day
-            setState(() {
-              _selectedDay = selectedDay;
+            selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
+            onDaySelected: (selectedDay, focusedDay) {
+              if (!isSameDay(_selectedDay, selectedDay)) {
+                // Call `setState()` when updating the selected day
+                setState(() {
+                  _selectedDay = selectedDay;
+                  _focusedDay = focusedDay;
+                  _selectedEvents = _getEventsForDay(selectedDay);
+                });
+              }
+            },
+            onFormatChanged: (format) {
+              if (_calendarFormat != format) {
+                // Call `setState()` when updating calendar format
+                setState(() {
+                  _calendarFormat = format;
+                });
+              }
+            },
+            onPageChanged: (focusedDay) {
+              // No need to call `setState()` here
               _focusedDay = focusedDay;
-            });
-          }
-        },
-        onFormatChanged: (format) {
-          if (_calendarFormat != format) {
-            // Call `setState()` when updating calendar format
-            setState(() {
-              _calendarFormat = format;
-            });
-          }
-        },
-        onPageChanged: (focusedDay) {
-          // No need to call `setState()` here
-          _focusedDay = focusedDay;
-        },
+            },
+          ),
+        const SizedBox(height: 8.0),
+        Expanded(
+          child: FutureBuilder<List<Horario>>(
+            future: _selectedEvents,
+            builder: (context, snapshot) {
+              cosas = snapshot.data!;
+              return ListView.builder(
+                itemCount: cosas.length,
+                itemBuilder: (context, index) {
+                  return Container(
+                    margin: const EdgeInsets.symmetric(
+                      horizontal: 12.0,
+                      vertical: 4.0,
+                    ),
+                    decoration: BoxDecoration(
+                      border: Border.all(),
+                      borderRadius: BorderRadius.circular(12.0),
+                    ),
+                    child: ListTile(
+                      onTap: () => print('${cosas[index]}'),
+                      title: Text('${cosas[index]}'),
+                    ),
+                  );
+                },
+              );
+            },
+          ),
+        ),
+         ElevatedButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => DropdownMenuApp()),
+            );
+          },
+          child: Text("Añadir medicación"),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.purple,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+            textStyle: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+
+          ),// Cambia el icono según sea necesario
+        ),
       ),
-      );
+    ],
+    ),
+    );
   }
 }
 

@@ -185,7 +185,7 @@ Future<void> deleteUser(int id) async {
 
 }
 
-Future<List<Horario>>? getDayPills(String day, int userId) async {
+Future<List<Horario>> getDayPills(DateTime day, int userId) async {
   List<Map<String, dynamic>> mapHorario = await databaseConnection
       .mappedResultsQuery("""
       SELECT p.pill_name, h."period", h.quantity, 
