@@ -37,6 +37,7 @@ class _PantallaCalendarioState extends State<PantallaCalendario> {
     super.initState();
 
     _selectedDay = _focusedDay;
+
     _selectedEvents = _getEventsForDay(_selectedDay!);
   }
   Future<List<Horario>>? _getEventsForDay(DateTime day) {
@@ -97,6 +98,7 @@ class _PantallaCalendarioState extends State<PantallaCalendario> {
               return ListView.builder(
                 itemCount: cosas.length,
                 itemBuilder: (context, index) {
+                  Horario currentCosa = cosas[index];
                   return Container(
                     margin: const EdgeInsets.symmetric(
                       horizontal: 12.0,
@@ -108,7 +110,8 @@ class _PantallaCalendarioState extends State<PantallaCalendario> {
                     ),
                     child: ListTile(
                       onTap: () => print('${cosas[index]}'),
-                      title: Text('${cosas[index]}'),
+                      title: Text('${currentCosa.pillName}'),
+                      subtitle: Text('Cantidad: ${currentCosa.numPills} ud.'),
                     ),
                   );
                 },
