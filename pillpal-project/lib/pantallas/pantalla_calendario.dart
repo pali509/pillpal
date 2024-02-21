@@ -123,7 +123,7 @@ class _PantallaCalendarioState extends State<PantallaCalendario> {
           onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => DropdownMenuApp()),
+              MaterialPageRoute(builder: (context) => AddCalendario()),
             );
           },
           child: Text("Añadir medicación"),
