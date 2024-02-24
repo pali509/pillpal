@@ -32,6 +32,10 @@ class _PantallaCalendarioState extends State<PantallaCalendario> {
 
   Future<List<Horario>>? _selectedEvents;
   List<Horario> cosas = [];
+  DateTime horaDesayuno = DateTime(0, 1, 1, 8, 30);
+  DateTime horaComida = DateTime(0, 1, 1, 14, 30);
+  DateTime horaCena = DateTime(0, 1, 1, 21, 00);
+
   @override
   void initState() {
     super.initState();
@@ -39,10 +43,41 @@ class _PantallaCalendarioState extends State<PantallaCalendario> {
     _selectedDay = _focusedDay;
 
     _selectedEvents = _getEventsForDay(_selectedDay!);
+
   }
   Future<List<Horario>>? _getEventsForDay(DateTime day) {
-    return getDayPills(day, getUserId());
+   Future<List<Horario>>? events = getDayPills(day, getUserId());
+    return events;
   }
+
+  /*
+  void actualizarListasCosas(Future<List<Horario>> events) {
+    String dateTimeDesayuno = _focusedDay.toString() + "8:30";
+    DateTime horaDesayuno = DateTime.parse(dateTimeDesayuno);
+    String dateTimeComida = _focusedDay.toString() + "8:30";
+    DateTime horaComida = DateTime.parse(dateTimeComida);
+    String dateTimeCena = "${_focusedDay}8:30";
+    DateTime horaCena = DateTime.parse(dateTimeCena);
+
+    DateTime evento;
+    String dateTimeEvento;
+
+    desayuno.clear();
+    comida.clear();
+    cena.clear();
+    dormir.clear();
+
+    events?.then((datos) {
+      // Verificamos si los datos no son nulos
+      if (datos != null) {
+        for(int i = 0; i < datos.length; i++){
+          dateTimeEvento = _focusedDay.toString() + datos[i].hour;
+          if(datos[i].hour )
+        }
+      }
+    });
+  }
+   */
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -91,32 +126,101 @@ class _PantallaCalendarioState extends State<PantallaCalendario> {
           ),
         const SizedBox(height: 8.0),
         Expanded(
-          child: FutureBuilder<List<Horario>>(
-            future: _selectedEvents,
-            builder: (context, snapshot) {
-              cosas = snapshot.data!;
-              return ListView.builder(
-                itemCount: cosas.length,
-                itemBuilder: (context, index) {
-                  Horario currentCosa = cosas[index];
-                  return Container(
-                    margin: const EdgeInsets.symmetric(
-                      horizontal: 12.0,
-                      vertical: 4.0,
-                    ),
-                    decoration: BoxDecoration(
-                      border: Border.all(),
-                      borderRadius: BorderRadius.circular(12.0),
-                    ),
-                    child: ListTile(
-                      onTap: () => print('${cosas[index]}'),
-                      title: Text('${currentCosa.pillName}'),
-                      subtitle: Text('Cantidad: ${currentCosa.numPills} ud.'),
-                    ),
-                  );
-                },
-              );
-            },
+          child:ListView(
+            scrollDirection: Axis.vertical,
+            children: [
+              Container(
+                height: 200,
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.blue, width: 5),
+                ),
+                child: FutureBuilder<List<Horario>>(
+                  future: _selectedEvents,
+                  builder: (context, snapshot) {
+                    cosas = snapshot.data!;
+                    cosas = cogerSegunMomento(cosas, 1);
+                    return ListView.builder(
+                      itemCount: cosas.length,
+                      itemBuilder: (context, index) {
+                        Horario currentCosa = cosas[index];
+                        return Container(
+                          decoration: BoxDecoration(
+                            border: Border.all(),
+                            borderRadius: BorderRadius.circular(12.0),
+                          ),
+                          child: ListTile(
+                            onTap: () => print('${cosas[index]}'),
+                            title: Text('${currentCosa.getPillName()}'),
+                            subtitle: Text('Cantidad: ${currentCosa.getNumPills()} ud.'),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                ),
+                ),
+
+              Container(
+                height: 200,
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.green, width: 5),
+                ),
+                child: FutureBuilder<List<Horario>>(
+                  future: _selectedEvents,
+                  builder: (context, snapshot) {
+                    cosas = snapshot.data!;
+                    cosas = cogerSegunMomento(cosas, 2);
+                    return ListView.builder(
+                      itemCount: cosas.length,
+                      itemBuilder: (context, index) {
+                        Horario currentCosa = cosas[index];
+                        return Container(
+                          decoration: BoxDecoration(
+                            border: Border.all(),
+                            borderRadius: BorderRadius.circular(12.0),
+                          ),
+                          child: ListTile(
+                            onTap: () => print('${cosas[index]}'),
+                            title: Text('${currentCosa.getPillName()}'),
+                            subtitle: Text('Cantidad: ${currentCosa.getNumPills()} ud.'),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                ),
+              ),
+              Container(
+                height: 200,
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.red, width: 5),
+                ),
+                child: FutureBuilder<List<Horario>>(
+                  future: _selectedEvents,
+                  builder: (context, snapshot) {
+                    cosas = snapshot.data!;
+                    cosas = cogerSegunMomento(cosas, 3);
+                    return ListView.builder(
+                      itemCount: cosas.length,
+                      itemBuilder: (context, index) {
+                        Horario currentCosa = cosas[index];
+                        return Container(
+                          decoration: BoxDecoration(
+                            border: Border.all(),
+                            borderRadius: BorderRadius.circular(12.0),
+                          ),
+                          child: ListTile(
+                            onTap: () => print('${cosas[index]}'),
+                            title: Text('${currentCosa.getPillName()}'),
+                            subtitle: Text('Cantidad: ${currentCosa.getNumPills()} ud.'),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                ),
+              ),
+            ],
           ),
         ),
          ElevatedButton(
@@ -144,5 +248,46 @@ class _PantallaCalendarioState extends State<PantallaCalendario> {
     ),
     );
   }
+
+  List<Horario> cogerSegunMomento(List<Horario> cosas, int op) {
+    List<Horario> nuevaLista = [];
+    for(int i = 0; i < cosas.length; i++){
+      if(cosas[i].getPeriod() == op)
+        nuevaLista.add(cosas[i]);
+    }
+    return nuevaLista;
+  }
+
 }
+
+/*
+          child: FutureBuilder<List<Horario>>(
+            future: _selectedEvents,
+            builder: (context, snapshot) {
+              cosas = snapshot.data!;
+              return ListView.builder(
+                itemCount: cosas.length,
+                itemBuilder: (context, index) {
+                  Horario currentCosa = cosas[index];
+
+                  return Container(
+                    margin: const EdgeInsets.symmetric(
+                      horizontal: 12.0,
+                      vertical: 4.0,
+                    ),
+                    decoration: BoxDecoration(
+                      border: Border.all(),
+                      borderRadius: BorderRadius.circular(12.0),
+                    ),
+                    child: ListTile(
+                      onTap: () => print('${cosas[index]}'),
+                      title: Text('${currentCosa.getPillName()}'),
+                      subtitle: Text('Cantidad: ${currentCosa.getNumPills()} ud.'),
+                    ),
+                  );
+                },
+              );
+            },
+          ),
+ */
 

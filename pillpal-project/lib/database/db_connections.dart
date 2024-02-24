@@ -196,7 +196,6 @@ Future<List<Horario>> getDayPills(DateTime day, int userId) async {
       ORDER BY h."hour"
       """);
   List<Horario>listHorario = [];
-  debugPrint('${mapHorario.length}');
   for(int i = 0; i < mapHorario.length; i++) {
     String real_min = mapHorario[i]['']['minute'], real_hour = mapHorario[i]['']['actual_hour'];
     if(int.parse(mapHorario[i]['']['minute']) < 10) {
@@ -211,8 +210,6 @@ Future<List<Horario>> getDayPills(DateTime day, int userId) async {
         mapHorario[i]['Pills']['pill_name'],
         mapHorario[i]['Horario']['period']
     ));
-    debugPrint('aaaaaaaaaaaaaaaaaaaa');
-    debugPrint('$listHorario[i]');
   }
 
   return listHorario;
