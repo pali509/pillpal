@@ -215,3 +215,25 @@ Future<List<Horario>> getDayPills(DateTime day, int userId) async {
   return listHorario;
 }
 
+Future<void> insertSchedule(String pillName, int userId, String period,
+    String day, String hour, int quantity) async {
+  int num_period = 0;
+  if(period == "Desayuno") {
+    num_period = 1;
+  }
+  else if(period == "Comida") {
+    num_period = 2;
+  }
+  else if(period == "Cena") {
+    num_period = 3;
+  }
+
+  String query = """INSERT INTO "Horario"(pill_id, user_id, date, hour, period, quantity)
+    VALUES ((select p.pill_id from "Pills" p where p.user_id = $userId 
+      and p.pill_name  = '$pillName' limit 1), $userId, $day, $hour,
+      $num_period, $quantity)""";
+  await databaseConnection.query(query);
+
+}
+
+
