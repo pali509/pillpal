@@ -32,10 +32,8 @@ class _PantallaCalendarioState extends State<PantallaCalendario> {
 
   Future<List<Horario>>? _selectedEvents;
   List<Horario> cosas = [];
-  DateTime horaDesayuno = DateTime(0, 1, 1, 8, 30);
-  DateTime horaComida = DateTime(0, 1, 1, 14, 30);
-  DateTime horaCena = DateTime(0, 1, 1, 21, 00);
-
+  bool visibleDesayuno = false;
+  bool visibleComida = false;
   @override
   void initState() {
     super.initState();
@@ -50,34 +48,6 @@ class _PantallaCalendarioState extends State<PantallaCalendario> {
     return events;
   }
 
-  /*
-  void actualizarListasCosas(Future<List<Horario>> events) {
-    String dateTimeDesayuno = _focusedDay.toString() + "8:30";
-    DateTime horaDesayuno = DateTime.parse(dateTimeDesayuno);
-    String dateTimeComida = _focusedDay.toString() + "8:30";
-    DateTime horaComida = DateTime.parse(dateTimeComida);
-    String dateTimeCena = "${_focusedDay}8:30";
-    DateTime horaCena = DateTime.parse(dateTimeCena);
-
-    DateTime evento;
-    String dateTimeEvento;
-
-    desayuno.clear();
-    comida.clear();
-    cena.clear();
-    dormir.clear();
-
-    events?.then((datos) {
-      // Verificamos si los datos no son nulos
-      if (datos != null) {
-        for(int i = 0; i < datos.length; i++){
-          dateTimeEvento = _focusedDay.toString() + datos[i].hour;
-          if(datos[i].hour )
-        }
-      }
-    });
-  }
-   */
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -101,7 +71,7 @@ class _PantallaCalendarioState extends State<PantallaCalendario> {
             startingDayOfWeek: StartingDayOfWeek.monday,
 
             selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
-            onDaySelected: (selectedDay, focusedDay) {
+            onDaySelected: (selectedDay, focusedDay) { //Cambiar dia seleccionado
               if (!isSameDay(_selectedDay, selectedDay)) {
                 // Call `setState()` when updating the selected day
                 setState(() {
@@ -111,7 +81,7 @@ class _PantallaCalendarioState extends State<PantallaCalendario> {
                 });
               }
             },
-            onFormatChanged: (format) {
+            onFormatChanged: (format) { //Cambiar formato
               if (_calendarFormat != format) {
                 // Call `setState()` when updating calendar format
                 setState(() {
@@ -124,73 +94,86 @@ class _PantallaCalendarioState extends State<PantallaCalendario> {
               _focusedDay = focusedDay;
             },
           ),
-        const SizedBox(height: 8.0),
+        const SizedBox(height: 8.0),//para separar calendario y eventos
         Expanded(
           child:ListView(
             scrollDirection: Axis.vertical,
             children: [
-              Container(
-                height: 200,
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.blue, width: 5),
-                ),
-                child: FutureBuilder<List<Horario>>(
-                  future: _selectedEvents,
-                  builder: (context, snapshot) {
-                    cosas = snapshot.data!;
-                    cosas = cogerSegunMomento(cosas, 1);
-                    return ListView.builder(
-                      itemCount: cosas.length,
-                      itemBuilder: (context, index) {
-                        Horario currentCosa = cosas[index];
-                        return Container(
-                          decoration: BoxDecoration(
-                            border: Border.all(),
-                            borderRadius: BorderRadius.circular(12.0),
-                          ),
-                          child: ListTile(
-                            onTap: () => print('${cosas[index]}'),
-                            title: Text('${currentCosa.getPillName()}'),
-                            subtitle: Text('Cantidad: ${currentCosa.getNumPills()} ud.'),
-                          ),
+                FutureBuilder<List<Horario>>( //El cuadrado de desayuno
+                      future: _selectedEvents,
+                      builder: (context, snapshot) {
+                        cosas = snapshot.data!;
+                        cosas = cogerSegunMomento(cosas, 1); //Para coger solo las del desayuno
+                        if(cosas.isNotEmpty) {
+                          visibleDesayuno = true; //Si hay cosas ponerlo visible
+                        }
+                        return Visibility(
+                          visible: visibleDesayuno, //Bool que decide si aparece o no, segun si hay eventos
+                          child:Container(
+                            height: 200,
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.blue, width: 5),
+                            ),
+                        child: ListView.builder( //Esto es igual que el de pantalla pastillero
+                          itemCount: cosas.length,
+                          itemBuilder: (context, index) {
+                            Horario currentCosa = cosas[index];
+                            return Container(
+                              decoration: BoxDecoration(
+                                border: Border.all(),
+                                borderRadius: BorderRadius.circular(12.0),
+                              ),
+                              child: ListTile(
+                                onTap: () => print('${cosas[index]}'),
+                                title: Text('${currentCosa.getPillName()}'),
+                                subtitle: Text('Cantidad: ${currentCosa.getNumPills()} ud.'),
+                              ),
+                            );
+                          },
+                        ),),
                         );
                       },
-                    );
-                  },
-                ),
-                ),
+                    ),
 
-              Container(
-                height: 200,
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.green, width: 5),
-                ),
-                child: FutureBuilder<List<Horario>>(
-                  future: _selectedEvents,
-                  builder: (context, snapshot) {
-                    cosas = snapshot.data!;
-                    cosas = cogerSegunMomento(cosas, 2);
-                    return ListView.builder(
-                      itemCount: cosas.length,
-                      itemBuilder: (context, index) {
-                        Horario currentCosa = cosas[index];
-                        return Container(
-                          decoration: BoxDecoration(
-                            border: Border.all(),
-                            borderRadius: BorderRadius.circular(12.0),
-                          ),
-                          child: ListTile(
-                            onTap: () => print('${cosas[index]}'),
-                            title: Text('${currentCosa.getPillName()}'),
-                            subtitle: Text('Cantidad: ${currentCosa.getNumPills()} ud.'),
-                          ),
-                        );
-                      },
-                    );
-                  },
-                ),
+              FutureBuilder<List<Horario>>( //Misma cosa para comida
+                future: _selectedEvents,
+                builder: (context, snapshot) {
+                  cosas = snapshot.data!;
+                  cosas = cogerSegunMomento(cosas, 2);
+                  if(cosas.isNotEmpty) {
+                    visibleComida = true;
+                  }
+                  else {
+                    visibleComida = false;
+                  }
+                  return Visibility(
+                    visible: visibleComida,
+                    child:Container(
+                      height: 200,
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.green, width: 5),
+                      ),
+                      child: ListView.builder(
+                        itemCount: cosas.length,
+                        itemBuilder: (context, index) {
+                          Horario currentCosa = cosas[index];
+                          return Container(
+                            decoration: BoxDecoration(
+                              border: Border.all(),
+                              borderRadius: BorderRadius.circular(12.0),
+                            ),
+                            child: ListTile(
+                              onTap: () => print('${cosas[index]}'),
+                              title: Text('${currentCosa.getPillName()}'),
+                              subtitle: Text('Cantidad: ${currentCosa.getNumPills()} ud.'),
+                            ),
+                          );
+                        },
+                      ),),
+                  );
+                },
               ),
-              Container(
+              Container( //Para cena aun no lo he hecho porque total no va xd
                 height: 200,
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.red, width: 5),
@@ -241,7 +224,7 @@ class _PantallaCalendarioState extends State<PantallaCalendario> {
               fontSize: 16,
               fontWeight: FontWeight.bold,
 
-          ),// Cambia el icono según sea necesario
+          ),
         ),
       ),
     ],
