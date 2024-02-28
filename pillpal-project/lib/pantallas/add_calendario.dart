@@ -28,13 +28,19 @@ class _AddCalendarioState extends State<AddCalendario> {
   // Variable para el valor seleccionado del Dropdown Menu
   String? valorSeleccionadoNombre;
 
-  List<String>frecuencia = ["Diaria", "Una vez"];
+  List<String>frecuencia = ["Diaria", "Una vez", "Personalizado"];
   String? valorSeleccionadoFrec;
 
-  List<String>periodo = ["Desayuno", "Comida", "Cena", "Otros"];
+  List<String>periodo = ["Desayuno", "Comida", "Cena", "Otro"];
   String? valorSeleccionadoPeriod;
 
+  final List<String> diasSemana = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+  final List<bool> _selectedDays = List.filled(7, false);
+  DateTime? fechaSeleccionada;
+
   int? cantidadPastillas;
+
+  TextEditingController controllerFecha = TextEditingController();
 
   @override
   void initState() {
@@ -106,6 +112,59 @@ class _AddCalendarioState extends State<AddCalendario> {
                 ),
               ],
             ),
+            Visibility(
+              visible: (valorSeleccionadoFrec == "Una vez" || valorSeleccionadoFrec == "Diaria"),
+                child: SizedBox(
+                    height: 130.0,
+              child: Scaffold(
+                body: Center(
+                 // Adjust the value as needed
+                  child: TextField(
+                      controller: controllerFecha,
+                      decoration: InputDecoration(
+                        labelText: valorSeleccionadoFrec == "Una vez" ? 'Elegir fecha' : 'Elegir fecha inicio',
+                        filled: true,
+                        prefixIcon: Icon(Icons.calendar_today),
+                        enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide.none
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: ColorsApp.buttonColor)
+                        ),
+                      ),
+                      readOnly: true,
+                      onTap:(){
+                        selectFecha();
+                      },
+                    ),
+                  ),
+                  )
+                )
+
+            ),
+
+            Visibility(
+                visible: (valorSeleccionadoFrec == "Personalizado"),
+              child: Column(
+                children: [
+                  // Display each day and its checkbox
+                  for (int i = 0; i < diasSemana.length; i++)
+                    CheckboxListTile(
+                      title: Text(diasSemana[i]),
+                      value: _selectedDays[i],
+                      onChanged: (value) {
+                        setState(() {
+                          _selectedDays[i] = value!;
+                        });
+                      },
+                    ),
+                  // Display selected days (optional)
+                  if (_selectedDays.any((bool selected) => selected)) // Check if any day is selected
+                    Text('Dias seleccionados: ${_selectedDays.asMap().entries.where((entry) => entry.value).map((entry) => diasSemana[entry.key]).join(', ')}'), // Format selected days
+                ],
+              ),
+            ),
+
             Row(
               children: [
                 const Text('Periodo:', style: TextStyle(fontSize: 16)),
@@ -173,9 +232,16 @@ class _AddCalendarioState extends State<AddCalendario> {
                     ),
                   );
                 }
+                else if(fechaSeleccionada == null && valorSeleccionadoFrec != null) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Por favor, rellena el campo de la fecha'),
+                    ),
+                  );
+                }
                 else {
                   insertSchedule(valorSeleccionadoNombre!, getUserId(),
-                      valorSeleccionadoPeriod!, "null", "null", cantidadPastillas!);
+                      valorSeleccionadoPeriod!, fechaSeleccionada.toString(), "null", cantidadPastillas!);
                 }
               },
               child: const Text('Añadir'),
@@ -187,6 +253,20 @@ class _AddCalendarioState extends State<AddCalendario> {
         ),
       ),
     );
+  }
+
+  Future<void> selectFecha() async{
+    fechaSeleccionada = await showDatePicker(
+        context: context,
+        initialDate: DateTime.now(),
+        firstDate: DateTime(2024),
+        lastDate: DateTime(2030)
+    );
+    if(fechaSeleccionada != null){
+      setState(() {
+        controllerFecha.text = fechaSeleccionada.toString().split(" ")[0];
+      });
+    }
   }
 }
 
