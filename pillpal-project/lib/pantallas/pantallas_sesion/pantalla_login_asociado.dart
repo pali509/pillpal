@@ -33,7 +33,6 @@ class _LoginAsState extends State<LoginAs> {
     return WillPopScope(
         onWillPop: () async {
           await deleteUser(id_asociado);
-          Navigator.of(context).pushReplacementNamed('/registro');
           return true;
         },
     child: Scaffold(

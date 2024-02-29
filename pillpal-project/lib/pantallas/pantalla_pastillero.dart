@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pillpal/database/db_connections.dart';
 import 'package:pillpal/database/user.dart';
+import 'package:pillpal/pantallas/add_calendario_desdePastillero.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:pillpal/constants/colors.dart';
 
@@ -116,15 +117,53 @@ class PastilleroState extends State<Pastillero>{
                       ),
 
                       const SizedBox(height: 20),
-                      ElevatedButton(
-                        onPressed: () async {
-                          insertPills(pillName, numberOfPills, getUserAsociadoId());
-                          listaDePills = getPills(getUserAsociadoId());
-                          setState(() {});
-                          Navigator.of(context).pop();
-                        },
-                        child: Text('Añadir medicación'),
+                      Row(
+                        children: [
+                          ElevatedButton(
+                            onPressed: () async {
+                              insertPills(pillName, numberOfPills, getUserAsociadoId());
+                              listaDePills = getPills(getUserAsociadoId());
+                              setState(() {});
+                              Navigator.of(context).pop();
+                            },
+                            child: Text('Añadir'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.blue,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+
+                              textStyle: const TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 10.0), // Setting width to 0 effectively removes spacing
+                          // Second button
+                          ElevatedButton(
+                            onPressed: () async {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => AddCalendarioDesdePastillero(nombreMed: pillName, numPastillas: numberOfPills,))
+                              );
+                            },
+                            child: Text('Añadir y programar'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.blue,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+
+                              textStyle: const TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
+
 
                     ],
                   );

@@ -27,15 +27,8 @@ class _RegistroAsState extends State<RegistroAs> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => LoginAs(id_asociado: getUserId())));
-        return true;
-      },
-      child: Scaffold(
+
+     return Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
           title: const Text("Nueva Cuenta de Supervisor"),
@@ -127,7 +120,7 @@ class _RegistroAsState extends State<RegistroAs> {
             ],
           ),
         ),
-      ),
+
     );
   }
 }
