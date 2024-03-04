@@ -40,6 +40,8 @@ class _AddCalendarioPasState extends State<AddCalendarioDesdePastillero> {
   final List<bool> _selectedDays = List.filled(7, false);
   DateTime? fechaSeleccionada;
 
+  String hour = "09:00:00";
+
   int? cantidadPastillas;
 
   TextEditingController controllerFecha = TextEditingController();
@@ -207,9 +209,16 @@ class _AddCalendarioPasState extends State<AddCalendarioDesdePastillero> {
                   );
                 }
                 else {
+                  int frecuenciaInt = 2;
+                  String daysOfWeek = "0000000"; //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
+                  if(valorSeleccionadoFrec == "Diaria")
+                    frecuenciaInt = 0;
+                  else if(valorSeleccionadoFrec == "Personalizado")//Parsear days of week
+                    frecuenciaInt = 1;
+
                   insertPills(this.nombreMed, this.numPastillas, getUserAsociadoId());
                   insertSchedule(this.nombreMed, getUserId(),
-                      valorSeleccionadoPeriod!, fechaSeleccionada.toString(), "null", cantidadPastillas!);
+                      valorSeleccionadoPeriod!, fechaSeleccionada, hour, cantidadPastillas!, frecuenciaInt, daysOfWeek);
                   Navigator.pushReplacementNamed(context, '/pastis');
                 }
               },

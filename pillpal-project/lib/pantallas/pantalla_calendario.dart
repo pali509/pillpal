@@ -35,6 +35,8 @@ class _PantallaCalendarioState extends State<PantallaCalendario> {
   bool visibleDesayuno = false;
   bool visibleComida = false;
   bool visibleCena = false;
+
+
   @override
   void initState() {
     super.initState();
@@ -253,7 +255,7 @@ class _PantallaCalendarioState extends State<PantallaCalendario> {
   List<Horario> cogerSegunMomento(List<Horario> cosas, int op) {
     List<Horario> nuevaLista = [];
     for(int i = 0; i < cosas.length; i++){
-      if(cosas[i].getPeriod() == op)
+      if(cosas[i].getTimeOfDay() == op)
         nuevaLista.add(cosas[i]);
     }
     return nuevaLista;

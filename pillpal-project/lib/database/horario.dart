@@ -4,10 +4,10 @@ class Horario{
     String? hour;
     int ?numPills;
     String? pillName;
-    int ?period;
+    int ?timeOfDay;
 
     // Constructor
-    Horario(this.hour, this.numPills, this.pillName, this.period);
+    Horario(this.hour, this.numPills, this.pillName, this.timeOfDay);
 
     String? getHour(){
         return hour;
@@ -21,7 +21,7 @@ class Horario{
       return pillName;
     }
 
-    int? getPeriod() {
-      return period;
+    int? getTimeOfDay() {
+      return timeOfDay;
     }
 }

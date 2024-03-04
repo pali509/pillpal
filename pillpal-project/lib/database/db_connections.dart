@@ -186,16 +186,22 @@ Future<void> deleteUser(int id) async {
 }
 
 Future<List<Horario>> getDayPills(DateTime day, int userId) async {
+  int dayOfWeek = day.weekday;
+
   List<Map<String, dynamic>> mapHorario = await databaseConnection
       .mappedResultsQuery("""
-      SELECT p.pill_name, h."period", h.quantity, 
+      SELECT p.pill_name, h."time_of_day", h.quantity, 
       EXTRACT (HOUR from h."hour") as actual_hour, 
       EXTRACT (MINUTE FROM h."hour") as minute
       FROM "Horario" h JOIN "Pills" p on h.pill_id = p.pill_id 
-      WHERE h.user_id = $userId AND p.user_id = $userId AND (h.date = '$day' OR h.date is NULL) 
+      WHERE h.user_id = $userId AND p.user_id = $userId AND ((h."period" = 0 and h.date <= '$day') OR 
+      (h."period" = 2 and h.date = '$day') 
+      OR (h."period" = 1 and substring(h.days, $dayOfWeek , 1) ='1' and h.date <= '$day'))
       ORDER BY h."hour"
       """);
+
   List<Horario>listHorario = [];
+  debugPrint('longitud inicial de listHorario: ${listHorario.length}');
   for(int i = 0; i < mapHorario.length; i++) {
     String real_min = mapHorario[i]['']['minute'], real_hour = mapHorario[i]['']['actual_hour'];
     if(int.parse(mapHorario[i]['']['minute']) < 10) {
@@ -208,30 +214,33 @@ Future<List<Horario>> getDayPills(DateTime day, int userId) async {
         real_hour + ":" + real_min,
         mapHorario[i]['Horario']['quantity'],
         mapHorario[i]['Pills']['pill_name'],
-        mapHorario[i]['Horario']['period']
+        mapHorario[i]['Horario']['time_of_day']
     ));
   }
-
+  debugPrint('longitud final de listHorario: ${listHorario.length}');
   return listHorario;
 }
 
-Future<void> insertSchedule(String pillName, int userId, String period,
-    String day, String hour, int quantity) async {
-  int num_period = 0;
-  if(period == "Desayuno") {
-    num_period = 1;
+Future<void> insertSchedule(String pillName, int userId, String time_of_day,
+    DateTime? day, String hour, int quantity, int period, String daysOfWeek) async {
+  int num_time_of_day = 0;
+  if(time_of_day == "Desayuno") {
+    num_time_of_day = 1;
+    hour = "09:00:00";
   }
-  else if(period == "Comida") {
-    num_period = 2;
+  else if(time_of_day == "Comida") {
+    num_time_of_day = 2;
+    hour = "14:00:00";
   }
-  else if(period == "Cena") {
-    num_period = 3;
+  else if(time_of_day == "Cena") {
+    num_time_of_day = 3;
+    hour = "21:00:00";
   }
 
-  String query = """INSERT INTO "Horario"(pill_id, user_id, date, hour, period, quantity)
+  String query = """INSERT INTO "Horario"(pill_id, user_id, date, hour, time_of_day, quantity, period, days)
     VALUES ((select p.pill_id from "Pills" p where p.user_id = $userId 
-      and p.pill_name  = '$pillName' limit 1), $userId, $day, $hour,
-      $num_period, $quantity)""";
+      and p.pill_name  = '$pillName' limit 1), $userId, '$day', '$hour',
+      $num_time_of_day, $quantity, $period, '$daysOfWeek')""";
   await databaseConnection.query(query);
 
 }

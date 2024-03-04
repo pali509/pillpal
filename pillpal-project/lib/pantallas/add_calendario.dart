@@ -32,7 +32,7 @@ class _AddCalendarioState extends State<AddCalendario> {
   String? valorSeleccionadoFrec;
 
   List<String>periodo = ["Desayuno", "Comida", "Cena", "Otro"];
-  String? valorSeleccionadoPeriod;
+  String? valorSeleccionadoTOD;
 
   final List<String> diasSemana = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
   final List<bool> _selectedDays = List.filled(7, false);
@@ -40,6 +40,8 @@ class _AddCalendarioState extends State<AddCalendario> {
 
   int? cantidadPastillas;
 
+  String hora = "09:00:00"; //CAMBIAR CUANDO IMPLEMENTE LO DE "OTRO"
+  
   TextEditingController controllerFecha = TextEditingController();
 
   @override
@@ -147,6 +149,24 @@ class _AddCalendarioState extends State<AddCalendario> {
                 visible: (valorSeleccionadoFrec == "Personalizado"),
               child: Column(
                 children: [
+                   TextField(
+                    controller: controllerFecha,
+                    decoration: const InputDecoration(
+                      labelText: 'Elegir fecha inicio',
+                      filled: true,
+                      prefixIcon: Icon(Icons.calendar_today),
+                      enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide.none
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: ColorsApp.buttonColor)
+                      ),
+                    ),
+                    readOnly: true,
+                    onTap:(){
+                      selectFecha();
+                    },
+                  ),
                   // Display each day and its checkbox
                   for (int i = 0; i < diasSemana.length; i++)
                     CheckboxListTile(
@@ -170,14 +190,14 @@ class _AddCalendarioState extends State<AddCalendario> {
                 const Text('Periodo:', style: TextStyle(fontSize: 16)),
                 const SizedBox(width: 16),
                 DropdownButton<String>(
-                  value: valorSeleccionadoPeriod,
+                  value: valorSeleccionadoTOD,
                   items: periodo.map((opcion) => DropdownMenuItem(
                     value: opcion,
                     child: Text(opcion),
                   )).toList(),
                   onChanged: (valor) {
                     setState(() {
-                      valorSeleccionadoPeriod = valor;
+                      valorSeleccionadoTOD = valor;
                     });
                   },
                 ),
@@ -198,7 +218,7 @@ class _AddCalendarioState extends State<AddCalendario> {
               ],
             ),
             ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 // Validar el nombre y la edad
                 /*setState(() {
                   _validacionNombreEdad = valorSeleccionado != null && numeroIngresado != null;
@@ -218,7 +238,7 @@ class _AddCalendarioState extends State<AddCalendario> {
                     ),
                   );
                 }
-                else if(valorSeleccionadoPeriod == null) {
+                else if(valorSeleccionadoTOD == null) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
                       content: Text('Por favor, rellena el campo de periodo'),
@@ -240,8 +260,17 @@ class _AddCalendarioState extends State<AddCalendario> {
                   );
                 }
                 else {
-                  insertSchedule(valorSeleccionadoNombre!, getUserId(),
-                      valorSeleccionadoPeriod!, fechaSeleccionada.toString(), "null", cantidadPastillas!);
+                  int frecuenciaInt = 2;
+                  String daysOfWeek = "0000000";
+                  if(valorSeleccionadoFrec == "Diaria")
+                    frecuenciaInt = 0;
+                  else if(valorSeleccionadoFrec == "Personalizado")//Parsear days of week
+                    frecuenciaInt = 1;
+                  
+                  
+                  await insertSchedule(valorSeleccionadoNombre!, getUserId(),
+                      valorSeleccionadoTOD!, fechaSeleccionada, hora, cantidadPastillas!, frecuenciaInt, daysOfWeek); //CAMBIAR PARA QUE NO SEA SIEMPRE 9AM
+                  Navigator.of(context).pushReplacementNamed('/calendario');
                 }
               },
               child: const Text('Añadir'),
