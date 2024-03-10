@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-import '../../database/db_connections.dart';
+import '../../utils/db_connections.dart';
 
 import 'package:pillpal/constants/colors.dart';
 

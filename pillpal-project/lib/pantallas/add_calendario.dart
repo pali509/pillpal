@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 
 import '../constants/colors.dart';
-import '../database/db_connections.dart';
-import '../database/pills.dart';
-import '../database/user.dart';
+import '../utils/alarms.dart';
+import '../utils/db_connections.dart';
+import '../utils/pills.dart';
+import '../utils/user.dart';
 import 'navigation_drawer.dart';
 import 'dart:io';
 
@@ -270,6 +271,7 @@ class _AddCalendarioState extends State<AddCalendario> {
                   
                   await insertSchedule(valorSeleccionadoNombre!, getUserId(),
                       valorSeleccionadoTOD!, fechaSeleccionada, hora, cantidadPastillas!, frecuenciaInt, daysOfWeek); //CAMBIAR PARA QUE NO SEA SIEMPRE 9AM
+                  //diarias(fechaSeleccionada!, hora!, valorSeleccionadoNombre!, cantidadPastillas!);
                   Navigator.of(context).pushReplacementNamed('/calendario');
                 }
               },

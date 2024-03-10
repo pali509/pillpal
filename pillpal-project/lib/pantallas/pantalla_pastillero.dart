@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pillpal/database/db_connections.dart';
-import 'package:pillpal/database/user.dart';
+import 'package:pillpal/utils/db_connections.dart';
+import 'package:pillpal/utils/user.dart';
 import 'package:pillpal/pantallas/add_calendario_desdePastillero.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:pillpal/constants/colors.dart';
 
-import '../database/pills.dart';
+import '../utils/pills.dart';
 import 'navigation_drawer.dart';
 
 class Pastillero extends StatefulWidget {

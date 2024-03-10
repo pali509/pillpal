@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 import '../constants/colors.dart';
-import '../database/db_connections.dart';
-import '../database/pills.dart';
-import '../database/user.dart';
+import '../utils/db_connections.dart';
+import '../utils/pills.dart';
+import '../utils/user.dart';
 import 'navigation_drawer.dart';
 import 'dart:io';
 

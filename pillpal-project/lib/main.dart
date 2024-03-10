@@ -14,7 +14,7 @@ import 'package:pillpal/pantallas/pantallas_sesion/pantalla_registro_asociado.da
 
 import 'package:pillpal/pantallas/pantallas_sesion/pantalla_sesion.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:pillpal/database/db_connections.dart';
+import 'package:pillpal/utils/db_connections.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
 Future<void> main() async {

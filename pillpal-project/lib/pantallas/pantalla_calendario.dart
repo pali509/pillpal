@@ -5,12 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:pillpal/constants/colors.dart';
-import 'package:pillpal/database/horario.dart';
-import 'package:pillpal/database/user.dart';
+import 'package:pillpal/utils/horario.dart';
+import 'package:pillpal/utils/user.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 
-import '../database/db_connections.dart';
+import '../utils/db_connections.dart';
 import 'add_calendario.dart';
 import 'navigation_drawer.dart';
 

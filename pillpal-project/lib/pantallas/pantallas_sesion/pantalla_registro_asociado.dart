@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:pillpal/database/user.dart';
+import 'package:pillpal/utils/user.dart';
 import 'package:pillpal/pantallas/pantallas_sesion/pantalla_login_asociado.dart';
 
 import '../../constants/colors.dart';
-import '../../database/db_connections.dart';
+import '../../utils/db_connections.dart';
 
 class RegistroAs extends StatefulWidget {
   final int id_asociado;

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../constants/colors.dart';
-import '../database/db_connections.dart';
+import '../utils/db_connections.dart';
 import 'navigation_drawer.dart';
 
 

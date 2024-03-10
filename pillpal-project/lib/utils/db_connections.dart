@@ -1,10 +1,10 @@
-import 'package:pillpal/database/horario.dart';
-import 'package:pillpal/database/pills.dart';
+import 'package:pillpal/utils/horario.dart';
+import 'package:pillpal/utils/pills.dart';
 import 'package:supabase/src/supabase_stream_builder.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:postgres/postgres.dart';
-import 'package:pillpal/database/user.dart';
+import 'package:pillpal/utils/user.dart';
 
 var databaseConnection = PostgreSQLConnection(
     'aws-0-eu-central-1.pooler.supabase.com',

@@ -1,9 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:pillpal/database/user.dart';
+import 'package:pillpal/utils/user.dart';
 import 'package:pillpal/pantallas/pantallas_sesion/pantalla_registro_asociado.dart';
 
-import '../../database/db_connections.dart';
+import '../../utils/db_connections.dart';
 
 import 'package:pillpal/constants/colors.dart';
 
