@@ -59,7 +59,8 @@ class _AddCalendarioPasState extends State<AddCalendarioDesdePastillero> {
         title: const Text('Programar pastilla'),
         backgroundColor: ColorsApp.toolBarColor,
       ),
-      body: Padding(
+    body: SingleChildScrollView(
+      child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
@@ -160,19 +161,25 @@ class _AddCalendarioPasState extends State<AddCalendarioDesdePastillero> {
             ),
             Row(
               children: [
-                Text('Cantidad:  ', style: TextStyle(fontSize: 16)),
+                const Text('Cantidad:  ', style: TextStyle(fontSize: 16)),
                 SizedBox(
                   height: 50, // constrain height
                   width: 100,
-                  child: TextField(
-                    onChanged: (texto) {
-                      cantidadPastillas = int.tryParse(texto);
-                    },
+                 child: TextFormField(
+                   keyboardType: TextInputType.number,
+                   onChanged: (texto) {
+                     cantidadPastillas = int.tryParse(texto);
+                   },
                   ),
+
                 )
               ],
             ),
-            ElevatedButton(
+            SizedBox(height: 20.0,),
+            SizedBox(
+              width: 200.0, // Adjust width and height as needed
+              height: 50.0,
+            child: ElevatedButton(
               onPressed: () {
                 // Validar el nombre y la edad
                 /*setState(() {
@@ -213,9 +220,16 @@ class _AddCalendarioPasState extends State<AddCalendarioDesdePastillero> {
                   String daysOfWeek = "0000000"; //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
                   if(valorSeleccionadoFrec == "Diaria")
                     frecuenciaInt = 0;
-                  else if(valorSeleccionadoFrec == "Personalizado")//Parsear days of week
+                  else if(valorSeleccionadoFrec == "Personalizado") { //Parsear days of week
                     frecuenciaInt = 1;
-
+                    daysOfWeek = "";
+                    for(int i = 0; i < _selectedDays.length; i++){
+                      if(_selectedDays[i])
+                        daysOfWeek = daysOfWeek + "1";
+                      else
+                        daysOfWeek = daysOfWeek + "0";
+                    }
+                  }
                   insertPills(this.nombreMed, this.numPastillas, getUserAsociadoId());
                   insertSchedule(this.nombreMed, getUserId(),
                       valorSeleccionadoPeriod!, fechaSeleccionada, hour, cantidadPastillas!, frecuenciaInt, daysOfWeek);
@@ -227,9 +241,11 @@ class _AddCalendarioPasState extends State<AddCalendarioDesdePastillero> {
                 backgroundColor: ColorsApp.buttonColor,
               ),
             ),
+            ),
           ],
         ),
       ),
+    ),
     );
   }
 

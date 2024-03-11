@@ -74,7 +74,8 @@ class _AddCalendarioState extends State<AddCalendario> {
         title: const Text('Programar pastilla'),
         backgroundColor: ColorsApp.toolBarColor,
       ),
-      body: Padding(
+      body: SingleChildScrollView(
+      child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
@@ -128,10 +129,10 @@ class _AddCalendarioState extends State<AddCalendario> {
                         labelText: valorSeleccionadoFrec == "Una vez" ? 'Elegir fecha' : 'Elegir fecha inicio',
                         filled: true,
                         prefixIcon: Icon(Icons.calendar_today),
-                        enabledBorder: OutlineInputBorder(
+                        enabledBorder: const OutlineInputBorder(
                             borderSide: BorderSide.none
                         ),
-                        focusedBorder: OutlineInputBorder(
+                        focusedBorder: const OutlineInputBorder(
                             borderSide: BorderSide(color: ColorsApp.buttonColor)
                         ),
                       ),
@@ -206,11 +207,12 @@ class _AddCalendarioState extends State<AddCalendario> {
             ),
              Row(
               children: [
-                Text('Cantidad:  ', style: TextStyle(fontSize: 16)),
+                const Text('Cantidad:  ', style: TextStyle(fontSize: 16)),
                 SizedBox(
-                  height: 50, // constrain height
+                  height: 30, // constrain height
                   width: 100,
-                  child: TextField(
+                  child: TextFormField(
+                    keyboardType: TextInputType.number,
                     onChanged: (texto) {
                       cantidadPastillas = int.tryParse(texto);
                     },
@@ -218,7 +220,11 @@ class _AddCalendarioState extends State<AddCalendario> {
                 )
               ],
             ),
-            ElevatedButton(
+        SizedBox(height: 20.0,),
+        SizedBox(
+          width: 200.0, // Adjust width and height as needed
+          height: 50.0,
+            child: ElevatedButton(
               onPressed: () async {
                 // Validar el nombre y la edad
                 /*setState(() {
@@ -265,9 +271,16 @@ class _AddCalendarioState extends State<AddCalendario> {
                   String daysOfWeek = "0000000";
                   if(valorSeleccionadoFrec == "Diaria")
                     frecuenciaInt = 0;
-                  else if(valorSeleccionadoFrec == "Personalizado")//Parsear days of week
+                  else if(valorSeleccionadoFrec == "Personalizado") { //Parsear days of week
                     frecuenciaInt = 1;
-                  
+                    daysOfWeek = "";
+                    for(int i = 0; i < _selectedDays.length; i++){
+                      if(_selectedDays[i])
+                        daysOfWeek = daysOfWeek + "1";
+                      else
+                        daysOfWeek = daysOfWeek + "0";
+                    }
+                  }
                   
                   await insertSchedule(valorSeleccionadoNombre!, getUserId(),
                       valorSeleccionadoTOD!, fechaSeleccionada, hora, cantidadPastillas!, frecuenciaInt, daysOfWeek); //CAMBIAR PARA QUE NO SEA SIEMPRE 9AM
@@ -275,13 +288,15 @@ class _AddCalendarioState extends State<AddCalendario> {
                   Navigator.of(context).pushReplacementNamed('/calendario');
                 }
               },
-              child: const Text('Añadir'),
+              child: const Text('Añadir', style: TextStyle( fontSize: 25)),
               style: ElevatedButton.styleFrom(
                 backgroundColor: ColorsApp.buttonColor,
               ),
             ),
+            ),
           ],
         ),
+      ),
       ),
     );
   }
