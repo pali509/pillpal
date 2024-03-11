@@ -282,7 +282,7 @@ class _AddCalendarioState extends State<AddCalendario> {
                     }
                   }
                   
-                  await insertSchedule(valorSeleccionadoNombre!, getUserId(),
+                  await insertSchedule(valorSeleccionadoNombre!, getUserAsociadoId(),
                       valorSeleccionadoTOD!, fechaSeleccionada, hora, cantidadPastillas!, frecuenciaInt, daysOfWeek); //CAMBIAR PARA QUE NO SEA SIEMPRE 9AM
                   //diarias(fechaSeleccionada!, hora!, valorSeleccionadoNombre!, cantidadPastillas!);
                   Navigator.of(context).pushReplacementNamed('/calendario');

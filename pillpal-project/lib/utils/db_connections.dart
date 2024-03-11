@@ -39,15 +39,17 @@ Future<void> insertPills(String pillName, int numPills, int userId) async {
 Future<void> deletePill(Pill pill) async {
   int? pillId = pill.getPillId();
   int? userId = pill.getUserId();
-  await databaseConnection.query("""
-      DELETE FROM "Pills"
-    WHERE pill_id = $pillId AND user_id = $userId;
-  """);
 
   await databaseConnection.query("""
       DELETE FROM "Horario"
     WHERE pill_id = $pillId AND user_id = $userId;
   """);
+
+  await databaseConnection.query("""
+      DELETE FROM "Pills"
+    WHERE pill_id = $pillId AND user_id = $userId;
+  """);
+
 }
 
 Future<List<Pill>>? getPills(int userId) async {

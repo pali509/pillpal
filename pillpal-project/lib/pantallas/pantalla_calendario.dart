@@ -35,8 +35,9 @@ class _PantallaCalendarioState extends State<PantallaCalendario> {
   bool visibleDesayuno = false;
   bool visibleComida = false;
   bool visibleCena = false;
-
-
+  bool visibleBotonDesayuno = false;
+  bool visibleBotonComida = false;
+  bool visibleBotonCena = false;
   @override
   void initState() {
     super.initState();
@@ -47,7 +48,7 @@ class _PantallaCalendarioState extends State<PantallaCalendario> {
 
   }
   Future<List<Horario>> _getEventsForDay(DateTime day)  {
-   Future<List<Horario>> events =  getDayPills(day, getUserId());
+   Future<List<Horario>> events =  getDayPills(day, getUserAsociadoId());
     return events;
   }
 
@@ -109,9 +110,16 @@ class _PantallaCalendarioState extends State<PantallaCalendario> {
                           cosas = cogerSegunMomento(
                               cosas, 1); //Para coger solo las del desayuno
                           if (cosas.isNotEmpty) {
-                            visibleDesayuno =
-                            true; //Si hay cosas ponerlo visible
+                            visibleDesayuno = true; //Si hay cosas ponerlo visible
+                            if(cosas.length > 2){
+                              visibleBotonDesayuno = true;
+                            }
+                            else
+                              visibleBotonDesayuno = false;
                           }
+                          else
+                            visibleDesayuno = false;
+
                           return Visibility(
                             visible: visibleDesayuno,
                             //Bool que decide si aparece o no, segun si hay eventos
@@ -121,26 +129,29 @@ class _PantallaCalendarioState extends State<PantallaCalendario> {
                                 border: Border.all(
                                     color: Colors.blue, width: 5),
                               ),
-                              child: ListView
-                                  .builder( //Esto es igual que el de pantalla pastillero
-                                itemCount: cosas.length,
-                                itemBuilder: (context, index) {
-                                  Horario currentCosa = cosas[index];
-                                  return Container(
-                                    decoration: BoxDecoration(
-                                      border: Border.all(),
-                                      borderRadius: BorderRadius.circular(12.0),
-                                    ),
-                                    child: ListTile(
-                                      onTap: () => print('${cosas[index]}'),
-                                      title: Text(
-                                          '${currentCosa.getPillName()}'),
-                                      subtitle: Text('Cantidad: ${currentCosa
-                                          .getNumPills()} ud.'),
-                                    ),
-                                  );
-                                },
-                              ),),
+                              child:
+                                  ListView.builder( //Esto es igual que el de pantalla pastillero
+                                    itemCount: visibleBotonDesayuno ? 2 : cosas.length,
+                                    physics: const NeverScrollableScrollPhysics(),
+                                    itemBuilder: (context, index) {
+                                      Horario currentCosa = cosas[index];
+                                      return Container(
+                                        decoration: BoxDecoration(
+                                          border: Border.all(),
+                                          borderRadius: BorderRadius.circular(12.0),
+                                        ),
+                                        child: ListTile(
+                                          onTap: () => print('${cosas[index]}'),
+                                          title: Text(
+                                              '${currentCosa.getPillName()}'),
+                                          subtitle: Text('Cantidad: ${currentCosa
+                                              .getNumPills()} ud.'),
+                                        ),
+                                      );
+                                    },
+                                 
+                              ),
+                            ),
                           );
 
                       },
@@ -153,6 +164,11 @@ class _PantallaCalendarioState extends State<PantallaCalendario> {
                   cosas = cogerSegunMomento(cosas, 2);
                   if(cosas.isNotEmpty) {
                     visibleComida = true;
+                    if(cosas.length > 2){
+                      visibleBotonComida = true;
+                    }
+                    else
+                      visibleBotonComida = false;
                   }
                   else {
                     visibleComida = false;
@@ -165,7 +181,8 @@ class _PantallaCalendarioState extends State<PantallaCalendario> {
                         border: Border.all(color: Colors.green, width: 5),
                       ),
                       child: ListView.builder(
-                        itemCount: cosas.length,
+                        itemCount: visibleBotonComida ? 2 : cosas.length,
+                        physics: const NeverScrollableScrollPhysics(),
                         itemBuilder: (context, index) {
                           Horario currentCosa = cosas[index];
                           return Container(
@@ -192,6 +209,11 @@ class _PantallaCalendarioState extends State<PantallaCalendario> {
                   cosas = cogerSegunMomento(cosas, 3);
                   if(cosas.isNotEmpty) {
                     visibleCena = true;
+                    if(cosas.length > 2){
+                      visibleBotonCena = true;
+                    }
+                    else
+                      visibleBotonCena = false;
                   }
                   else {
                     visibleCena = false;
@@ -204,7 +226,8 @@ class _PantallaCalendarioState extends State<PantallaCalendario> {
                         border: Border.all(color: Colors.red, width: 5),
                       ),
                       child: ListView.builder(
-                        itemCount: cosas.length,
+                        itemCount: visibleBotonCena ? 2 : cosas.length,
+                        physics: const NeverScrollableScrollPhysics(),
                         itemBuilder: (context, index) {
                           Horario currentCosa = cosas[index];
                           return Container(
@@ -219,14 +242,17 @@ class _PantallaCalendarioState extends State<PantallaCalendario> {
                             ),
                           );
                         },
-                      ),),
+                      ),
+                    ),
                   );
                 },
               ),
             ],
           ),
         ),
-         ElevatedButton(
+       Visibility(
+        visible: (getRoleId() != 2),
+         child: ElevatedButton(
           onPressed: () {
             Navigator.push(
               context,
@@ -244,9 +270,10 @@ class _PantallaCalendarioState extends State<PantallaCalendario> {
               fontSize: 16,
               fontWeight: FontWeight.bold,
 
-          ),
-        ),
-      ),
+            ),
+           ),
+         ),
+       ),
     ],
     ),
     );
