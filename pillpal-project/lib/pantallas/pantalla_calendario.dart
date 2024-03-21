@@ -646,7 +646,7 @@ class _PantallaCalendarioState extends State<PantallaCalendario> {
           },
           child: Text("Añadir medicación"),
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.purple,
+            backgroundColor: ColorsApp.buttonColor,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20),
             ),

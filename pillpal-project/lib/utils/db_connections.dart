@@ -228,15 +228,19 @@ Future<void> insertSchedule(String pillName, int userId, String time_of_day,
   int num_time_of_day = 0;
   if(time_of_day == "Desayuno") {
     num_time_of_day = 1;
-    hour = "09:00:00";
+    hour = await getHour(num_time_of_day);
   }
   else if(time_of_day == "Comida") {
     num_time_of_day = 2;
-    hour = "14:00:00";
+    hour = await getHour(num_time_of_day);
   }
   else if(time_of_day == "Cena") {
     num_time_of_day = 3;
-    hour = "21:00:00";
+    hour = await getHour(num_time_of_day);
+  }
+  else if(time_of_day == "Dormir") {
+    num_time_of_day = 4;
+    hour = await getHour(num_time_of_day);
   }
 
   String query = """INSERT INTO "Horario"(pill_id, user_id, date, hour, time_of_day, quantity, period, days)
@@ -245,6 +249,66 @@ Future<void> insertSchedule(String pillName, int userId, String time_of_day,
       $num_time_of_day, $quantity, $period, '$daysOfWeek')""";
   await databaseConnection.query(query);
 
+}
+
+Future<String> getHour(int time_of_day) async{
+  List<Map<String, dynamic>> mapUserTime = await databaseConnection
+      .mappedResultsQuery("""
+          select EXTRACT (HOUR from u.hora_desayuno) as hora_desayuno,
+          EXTRACT (MINUTE FROM u.hora_desayuno) as minuto_desayuno,
+          EXTRACT (HOUR from u.hora_comida) as hora_comida,
+          EXTRACT (MINUTE FROM u.hora_comida) as minuto_comida,
+          EXTRACT (HOUR from u.hora_cena) as hora_cena,
+          EXTRACT (MINUTE FROM u.hora_cena) as minuto_cena,
+          EXTRACT (HOUR from u.hora_dormir) as hora_dormir,
+          EXTRACT (MINUTE FROM u.hora_dormir) as minuto_dormir
+          from "Users" u
+          where u.user_id = $user_id
+      """);
+  String real_min = "00";
+  String real_hour = "09";
+  if(time_of_day == 1) {
+    real_min = mapUserTime[0]['']['minuto_desayuno'];
+    real_hour = mapUserTime[0]['']['hora_desayuno'];
+    if (int.parse(real_min) < 10) {
+      real_min = '0' + real_min;
+    }
+    if (int.parse(real_hour) < 10) {
+      real_hour = '0' + real_hour;
+    }
+  }
+  else if(time_of_day == 2) {
+    real_min = mapUserTime[0]['']['minuto_comida'];
+    real_hour = mapUserTime[0]['']['hora_comida'];
+    if (int.parse(real_min) < 10) {
+      real_min = '0' + real_min;
+    }
+    if (int.parse(real_hour) < 10) {
+      real_hour = '0' + real_hour;
+    }
+  }
+  else if(time_of_day == 3) {
+    real_min = mapUserTime[0]['']['minuto_cena'];
+    real_hour = mapUserTime[0]['']['hora_cena'];
+    if (int.parse(real_min) < 10) {
+      real_min = '0' + real_min;
+    }
+    if (int.parse(real_hour) < 10) {
+      real_hour = '0' + real_hour;
+    }
+  }
+  else{
+    real_min = mapUserTime[0]['']['minuto_dormir'];
+    real_hour = mapUserTime[0]['']['hora_dormir'];
+    if (int.parse(real_min) < 10) {
+      real_min = '0' + real_min;
+    }
+    if (int.parse(real_hour) < 10) {
+      real_hour = '0' + real_hour;
+    }
+  }
+
+  return "$real_hour:$real_min";
 }
 
 

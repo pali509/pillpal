@@ -32,7 +32,7 @@ class _AddCalendarioState extends State<AddCalendario> {
   List<String>frecuencia = ["Diaria", "Una vez", "Personalizado"];
   String? valorSeleccionadoFrec;
 
-  List<String>periodo = ["Desayuno", "Comida", "Cena", "Otro"];
+  List<String>periodo = ["Desayuno", "Comida", "Cena", "Dormir", "Otro"];
   String? valorSeleccionadoTOD;
 
   final List<String> diasSemana = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
@@ -41,7 +41,8 @@ class _AddCalendarioState extends State<AddCalendario> {
 
   int? cantidadPastillas;
 
-  String hora = "09:00:00"; //CAMBIAR CUANDO IMPLEMENTE LO DE "OTRO"
+  String hora_String = "09:00:00"; //CAMBIAR CUANDO IMPLEMENTE LO DE "OTRO"
+  TimeOfDay _horaSeleccionada = TimeOfDay.now();
   
   TextEditingController controllerFecha = TextEditingController();
 
@@ -205,6 +206,32 @@ class _AddCalendarioState extends State<AddCalendario> {
                 ),
               ],
             ),
+            Visibility(
+              visible: (valorSeleccionadoTOD == "Otro"),
+              child: Row(
+                children: [
+                  const Text('Hora:', style: TextStyle(fontSize: 16)),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Text(_horaSeleccionada.format(context)),
+                  ),
+                  IconButton(
+                    onPressed: () async {
+                      TimeOfDay? hora = await showTimePicker(
+                        context: context,
+                        initialTime: _horaSeleccionada,
+                      );
+                      if (hora != null) {
+                        setState(() {
+                          _horaSeleccionada = hora;
+                        });
+                      }
+                    },
+                    icon: const Icon(Icons.access_time),
+                  ),
+                ],
+              ),
+            ),
              Row(
               children: [
                 const Text('Cantidad:  ', style: TextStyle(fontSize: 16)),
@@ -281,16 +308,26 @@ class _AddCalendarioState extends State<AddCalendario> {
                         daysOfWeek = daysOfWeek + "0";
                     }
                   }
-                  
+
+                  hora_String = _horaSeleccionada.format(context);
                   await insertSchedule(valorSeleccionadoNombre!, getUserAsociadoId(),
-                      valorSeleccionadoTOD!, fechaSeleccionada, hora, cantidadPastillas!, frecuenciaInt, daysOfWeek); //CAMBIAR PARA QUE NO SEA SIEMPRE 9AM
+                      valorSeleccionadoTOD!, fechaSeleccionada, hora_String, cantidadPastillas!, frecuenciaInt, daysOfWeek); //CAMBIAR PARA QUE NO SEA SIEMPRE 9AM
                   //diarias(fechaSeleccionada!, hora!, valorSeleccionadoNombre!, cantidadPastillas!);
                   Navigator.of(context).pushReplacementNamed('/calendario');
                 }
               },
-              child: const Text('Añadir', style: TextStyle( fontSize: 25)),
+              child: Text('Añadir'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: ColorsApp.buttonColor,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                textStyle: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+
+                ),
               ),
             ),
             ),
