@@ -84,7 +84,7 @@ class _AddCalendarioState extends State<AddCalendario> {
             Row(
               children: [
                 const Text('Nombre:', style: TextStyle(fontSize: 16)),
-                const SizedBox(width: 16),
+                const SizedBox(width: 16, height: 50),
                 DropdownButton<String>(
                   value: valorSeleccionadoNombre,
                   items: opciones.map((opcion) => DropdownMenuItem(
@@ -102,7 +102,7 @@ class _AddCalendarioState extends State<AddCalendario> {
             Row(
               children: [
                 const Text('Frecuencia:', style: TextStyle(fontSize: 16)),
-                const SizedBox(width: 16),
+                const SizedBox(width: 16, height: 50),
                 DropdownButton<String>(
                   value: valorSeleccionadoFrec,
                   items: frecuencia.map((opcion) => DropdownMenuItem(
@@ -191,7 +191,10 @@ class _AddCalendarioState extends State<AddCalendario> {
             Row(
               children: [
                 const Text('Periodo:', style: TextStyle(fontSize: 16)),
-                const SizedBox(width: 16),
+                const SizedBox(
+                    width: 16,
+                    height: 50,
+                ),
                 DropdownButton<String>(
                   value: valorSeleccionadoTOD,
                   items: periodo.map((opcion) => DropdownMenuItem(
@@ -220,6 +223,10 @@ class _AddCalendarioState extends State<AddCalendario> {
                       TimeOfDay? hora = await showTimePicker(
                         context: context,
                         initialTime: _horaSeleccionada,
+                        hourLabelText : "Seleccione hora",
+                        minuteLabelText: "Seleccione minuto",
+                        cancelText: "Cancelar",
+                        helpText: "Seleccionar hora",
                       );
                       if (hora != null) {
                         setState(() {
@@ -236,7 +243,7 @@ class _AddCalendarioState extends State<AddCalendario> {
               children: [
                 const Text('Cantidad:  ', style: TextStyle(fontSize: 16)),
                 SizedBox(
-                  height: 30, // constrain height
+                  height: 50, // constrain height
                   width: 100,
                   child: TextFormField(
                     keyboardType: TextInputType.number,
@@ -247,7 +254,7 @@ class _AddCalendarioState extends State<AddCalendario> {
                 )
               ],
             ),
-        SizedBox(height: 20.0,),
+        SizedBox(height: 50.0,),
         SizedBox(
           width: 200.0, // Adjust width and height as needed
           height: 50.0,
@@ -311,7 +318,7 @@ class _AddCalendarioState extends State<AddCalendario> {
 
                   hora_String = _horaSeleccionada.format(context);
                   await insertSchedule(valorSeleccionadoNombre!, getUserAsociadoId(),
-                      valorSeleccionadoTOD!, fechaSeleccionada, hora_String, cantidadPastillas!, frecuenciaInt, daysOfWeek); //CAMBIAR PARA QUE NO SEA SIEMPRE 9AM
+                      valorSeleccionadoTOD!, fechaSeleccionada, hora_String, cantidadPastillas!, frecuenciaInt, daysOfWeek);
                   //diarias(fechaSeleccionada!, hora!, valorSeleccionadoNombre!, cantidadPastillas!);
                   Navigator.of(context).pushReplacementNamed('/calendario');
                 }
@@ -322,7 +329,7 @@ class _AddCalendarioState extends State<AddCalendario> {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
                 ),
-                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                 textStyle: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
