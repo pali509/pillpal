@@ -1,3 +1,5 @@
+import 'package:pillpal/pantallas/pantalla_perfil.dart';
+
 import '../utils.dart';
 
 import 'package:flutter/cupertino.dart';
@@ -73,6 +75,17 @@ class _PantallaCalendarioState extends State<PantallaCalendario> {
           style: TextStyle(fontSize: 25.0),
         ),
         backgroundColor: ColorsApp.toolBarColor,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.person),
+            onPressed: () =>  {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => PantallaPerfil()),
+              ),
+            }, // Define button action
+          ),
+        ],
       ),
       drawer: MyDrawer(),
 
@@ -183,7 +196,7 @@ class _PantallaCalendarioState extends State<PantallaCalendario> {
                              physics: const NeverScrollableScrollPhysics(),
                            children:[
                               const Text(
-                               'Desayuno',
+                               ' Desayuno',
                                style: TextStyle(color: Colors.black, fontSize: 25),
                              ),
 
@@ -275,7 +288,7 @@ class _PantallaCalendarioState extends State<PantallaCalendario> {
                               physics: const NeverScrollableScrollPhysics(),
                               children:[
                                 const Text(
-                                  'Comida',
+                                  ' Comida',
                                   style: TextStyle(color: Colors.black, fontSize: 25),
                                 ),
 
@@ -365,7 +378,7 @@ class _PantallaCalendarioState extends State<PantallaCalendario> {
                               physics: const NeverScrollableScrollPhysics(),
                               children:[
                                 const Text(
-                                  'Cena',
+                                  ' Cena',
                                   style: TextStyle(color: Colors.black, fontSize: 25),
                                 ),
 
@@ -455,7 +468,7 @@ class _PantallaCalendarioState extends State<PantallaCalendario> {
                               physics: const NeverScrollableScrollPhysics(),
                               children:[
                                 const Text(
-                                  'Dormir',
+                                  ' Dormir',
                                   style: TextStyle(color: Colors.black, fontSize: 25),
                                 ),
 
@@ -546,7 +559,7 @@ class _PantallaCalendarioState extends State<PantallaCalendario> {
                                   physics: const NeverScrollableScrollPhysics(),
                                   children:[
                                     const Text(
-                                      'Otros',
+                                      ' Otros',
                                       style: TextStyle(color: Colors.black, fontSize: 25),
                                     ),
 
@@ -572,7 +585,7 @@ class _PantallaCalendarioState extends State<PantallaCalendario> {
                                                 title: Text(
                                                     '${currentCosa.getPillName()}'),
                                                 subtitle: Text('Cantidad: ${currentCosa
-                                                    .getNumPills()} ud.'),
+                                                    .getNumPills()} ud.        Tomar a las: ${currentCosa.getHour()}'),
                                               ),
                                             );
                                           }
@@ -596,7 +609,7 @@ class _PantallaCalendarioState extends State<PantallaCalendario> {
                                                                 final currentCosa = cosas0[index];
                                                                 return ListTile(
                                                                   title: Text('${currentCosa.getPillName()}'),
-                                                                  subtitle: Text('Cantidad: ${currentCosa.getNumPills()} ud.'),
+                                                                  subtitle: Text('Cantidad: ${currentCosa.getNumPills()} ud.    Tomar a las: ${currentCosa.getHour()}'),
                                                                 );
                                                               },
                                                             ),

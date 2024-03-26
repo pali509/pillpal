@@ -221,6 +221,7 @@ class _AddCalendarioState extends State<AddCalendario> {
                   IconButton(
                     onPressed: () async {
                       TimeOfDay? hora = await showTimePicker(
+
                         context: context,
                         initialTime: _horaSeleccionada,
                         hourLabelText : "Seleccione hora",
@@ -336,7 +337,9 @@ class _AddCalendarioState extends State<AddCalendario> {
 
                 ),
               ),
+              
             ),
+
             ),
           ],
         ),

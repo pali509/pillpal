@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pillpal/pantallas/pantalla_perfil.dart';
 import 'package:pillpal/utils/db_connections.dart';
 import 'package:pillpal/utils/user.dart';
 import 'package:pillpal/pantallas/add_calendario_desdePastillero.dart';
@@ -33,6 +34,17 @@ class PastilleroState extends State<Pastillero>{
       appBar: AppBar(
         title: Text('Pastillero', style: TextStyle(fontSize: 25.0)),
         backgroundColor: ColorsApp.toolBarColor,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.person),
+            onPressed: () =>  {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => PantallaPerfil()),
+              ),
+            }, // Define button action
+          ),
+        ],
       ),
       drawer: MyDrawer(),
         body: FutureBuilder<List<Pill>>(

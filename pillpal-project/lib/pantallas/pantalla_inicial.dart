@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pillpal/constants/colors.dart';
+import 'package:pillpal/pantallas/pantalla_perfil.dart';
 import '../utils/db_connections.dart';
 import '../utils/horario.dart';
 import '../utils/user.dart';
@@ -37,6 +38,17 @@ class PantallaInicial extends StatefulWidget {
             style: TextStyle(fontSize: 25.0),
           ),
           backgroundColor: ColorsApp.toolBarColor,
+          actions: [
+            IconButton(
+              icon: Icon(Icons.person),
+              onPressed: () =>  {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => PantallaPerfil()),
+                ),
+              }, // Define button action
+            ),
+          ],
         ),
         drawer: MyDrawer(),
         body: Column(
