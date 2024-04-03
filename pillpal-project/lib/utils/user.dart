@@ -1,35 +1,58 @@
 
 import 'package:flutter/cupertino.dart';
 
-int? user_id;
-String? user_email;
-String? user_name;
-int? role_id, user_asociado;
+    int? user_id;
+    String? user_email;
+    String? user_name;
+    int? role_id, user_asociado;
+    String? hora_desayuno, hora_comida, hora_cena, hora_dormir;
 
-void setUser(int? id, String? email, String? name, int? role, int? asociado){
-    user_id = id;
-    user_email = email;
-    user_name = name;
-    role_id = role;
-    user_asociado = asociado;
-    debugPrint("'$user_email', '$user_id', '$user_name', $role, $user_asociado");
-}
+    void setUser(int? id, String? email, String? name, int? role, int? asociado,
+        String ?desayuno, String ?comida, String ?cena, String ?dormir){
+        user_id = id;
+        user_email = email;
+        user_name = name;
+        role_id = role;
+        user_asociado = asociado;
+        hora_desayuno = desayuno;
+        hora_comida = comida;
+        hora_cena = cena;
+        hora_dormir = dormir;
+        debugPrint("'$user_email', '$user_id', '$user_name', $role, $user_asociado");
+    }
 
-int getUserId(){
-    return user_id!;
-}
-int getUserAsociadoId(){
-    return user_asociado!;
-}
+    int getUserId(){
+        return user_id!;
+    }
 
-String getUserEmail(){
-    return user_email!;
-}
+    int getUserAsociadoId(){
+        return user_asociado!;
+    }
 
-String getUserName(){
-    return user_name!;
-}
+    String getUserEmail(){
+        return user_email!;
+    }
 
-int getRoleId(){
-    return role_id!;
-}
+    String getUserName(){
+        return user_name!;
+    }
+
+    int getRoleId(){
+        return role_id!;
+    }
+
+    String getHoraDesayuno(){
+        return hora_desayuno!;
+    }
+
+    String getHoraComida(){
+        return hora_comida!;
+    }
+
+    String getHoraCena(){
+        return hora_cena!;
+    }
+
+    String getHoraDormir(){
+        return hora_dormir!;
+    }

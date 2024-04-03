@@ -301,6 +301,13 @@ class _AddCalendarioState extends State<AddCalendario> {
                     ),
                   );
                 }
+                else  if (!_selectedDays.any((bool selected) => selected) && valorSeleccionadoFrec == "Personalizado")  {// Check if any day is selected
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Por favor, seleccione algun dia'),
+                    ),
+                  );
+                }
                 else {
                   int frecuenciaInt = 2;
                   String daysOfWeek = "0000000";
