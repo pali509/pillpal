@@ -261,10 +261,6 @@ class _AddCalendarioState extends State<AddCalendario> {
           height: 50.0,
             child: ElevatedButton(
               onPressed: () async {
-                // Validar el nombre y la edad
-                /*setState(() {
-                  _validacionNombreEdad = valorSeleccionado != null && numeroIngresado != null;
-                });*/
                 if (valorSeleccionadoNombre == null) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
@@ -325,8 +321,9 @@ class _AddCalendarioState extends State<AddCalendario> {
                   }
 
                   hora_String = _horaSeleccionada.format(context);
+                  int id =  await una_vez(fechaSeleccionada!, hora_String!, valorSeleccionadoNombre!, cantidadPastillas!);
                   await insertSchedule(valorSeleccionadoNombre!, getUserAsociadoId(),
-                      valorSeleccionadoTOD!, fechaSeleccionada, hora_String, cantidadPastillas!, frecuenciaInt, daysOfWeek);
+                      valorSeleccionadoTOD!, fechaSeleccionada, hora_String, cantidadPastillas!, frecuenciaInt, daysOfWeek, id);
                   //diarias(fechaSeleccionada!, hora!, valorSeleccionadoNombre!, cantidadPastillas!);
                   Navigator.of(context).pushReplacementNamed('/calendario');
                 }

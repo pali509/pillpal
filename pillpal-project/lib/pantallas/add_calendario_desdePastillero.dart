@@ -232,7 +232,7 @@ class _AddCalendarioPasState extends State<AddCalendarioDesdePastillero> {
                   }
                   insertPills(this.nombreMed, this.numPastillas, getUserAsociadoId());
                   insertSchedule(this.nombreMed, getUserAsociadoId(),
-                      valorSeleccionadoPeriod!, fechaSeleccionada, hour, cantidadPastillas!, frecuenciaInt, daysOfWeek);
+                      valorSeleccionadoPeriod!, fechaSeleccionada, hour, cantidadPastillas!, frecuenciaInt, daysOfWeek, 0);
                   Navigator.pushReplacementNamed(context, '/pastis');
                 }
               },

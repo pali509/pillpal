@@ -238,7 +238,7 @@ Future<List<Horario>> getDayPills(DateTime day, int userId) async {
 }
 
 Future<void> insertSchedule(String pillName, int userId, String time_of_day,
-    DateTime? day, String hour, int quantity, int period, String daysOfWeek) async {
+    DateTime? day, String hour, int quantity, int period, String daysOfWeek, int id) async {
   int num_time_of_day = 0;
   if(time_of_day == "Desayuno") {
     num_time_of_day = 1;
@@ -257,10 +257,10 @@ Future<void> insertSchedule(String pillName, int userId, String time_of_day,
     hour = await getHour(num_time_of_day);
   }
 
-  String query = """INSERT INTO "Horario"(pill_id, user_id, date, hour, time_of_day, quantity, period, days)
+  String query = """INSERT INTO "Horario"(pill_id, user_id, date, hour, time_of_day, quantity, period, days, alarm_id)
     VALUES ((select p.pill_id from "Pills" p where p.user_id = $userId 
       and p.pill_name  = '$pillName' limit 1), $userId, '$day', '$hour',
-      $num_time_of_day, $quantity, $period, '$daysOfWeek')""";
+      $num_time_of_day, $quantity, $period, '$daysOfWeek', $id)""";
   await databaseConnection.query(query);
 
 }
@@ -324,5 +324,11 @@ Future<String> getHour(int time_of_day) async{
 
   return "$real_hour:$real_min";
 }
+
+void insert_statistics(DateTime date, int userId, int taken, int programmed, String summary) async{
+  await databaseConnection.query("""INSERT INTO "Statistics" (fecha, user_id, taken, programmed, summary)
+    VALUES ('$date', $userId, $taken, $programmed, '$summary')""");
+}
+
 
 
