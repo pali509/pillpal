@@ -323,7 +323,7 @@ class _AddCalendarioState extends State<AddCalendario> {
                   hora_String = _horaSeleccionada.format(context);
                   int id =  await una_vez(fechaSeleccionada!, hora_String!, valorSeleccionadoNombre!, cantidadPastillas!);
                   await insertSchedule(valorSeleccionadoNombre!, getUserAsociadoId(),
-                      valorSeleccionadoTOD!, fechaSeleccionada, hora_String, cantidadPastillas!, frecuenciaInt, daysOfWeek, id);
+                      valorSeleccionadoTOD!, fechaSeleccionada, hora_String, cantidadPastillas!, frecuenciaInt, daysOfWeek, 0);
                   //diarias(fechaSeleccionada!, hora!, valorSeleccionadoNombre!, cantidadPastillas!);
                   Navigator.of(context).pushReplacementNamed('/calendario');
                 }

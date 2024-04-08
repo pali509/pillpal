@@ -18,7 +18,7 @@ import 'package:flutter/cupertino.dart';
         hora_comida = comida;
         hora_cena = cena;
         hora_dormir = dormir;
-        debugPrint("'$user_email', '$user_id', '$user_name', $role, $user_asociado");
+        debugPrint("'$user_email', '$user_id', '$user_name', $role, $user_asociado, $hora_desayuno");
     }
 
     int getUserId(){
