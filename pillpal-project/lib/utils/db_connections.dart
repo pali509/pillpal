@@ -29,6 +29,45 @@ initDatabaseConnection() async {
   );
 }*/
 
+Future<List<List<String>> > getUser(int userId) async {
+  List<Map<String, dynamic>> mapUser = await databaseConnection.mappedResultsQuery("""
+    select u.user_id, u.user_name, u.user_email 
+    from "Users" u
+    where user_id = $userId
+  """);
+  List<List<String>> listUsers = [];
+  for(int i = 0; i < mapUser.length; i++) {
+    listUsers.add([mapUser[i]['Users']['user_id'].toString(),
+      mapUser[i]['Users']['user_name'],
+      mapUser[i]['Users']['user_email']]);
+  }
+  return listUsers;
+}
+
+Future<void> updateUser(int userId, String? email, String? name, String? pwd)async{
+    if(email != null){
+      await databaseConnection.query("""
+          UPDATE "Users"
+          SET user_email = '$email'
+          WHERE user_id = $userId;
+      """);
+    }
+    if(name != null){
+      await databaseConnection.query("""
+          UPDATE "Users"
+          SET user_name = '$name'
+          WHERE user_id = $userId;
+      """);
+    }
+    if(pwd != null){
+      await databaseConnection.query("""
+          UPDATE "Users"
+          SET user_pwd = '$pwd'
+          WHERE user_id = $userId;
+      """);
+    }
+}
+
 Future<void> insertPills(String pillName, int numPills, int userId) async {
   await databaseConnection.query("""
     INSERT INTO "Pills"(pill_name, user_id, pill_quantity)
@@ -101,10 +140,12 @@ Future<bool> checkUser(String email, String pwd) async {
             userList[0]['Users']['user_name'],
             userList[0]['Users']['user_role_id'],
             relationList[0]['Relationships']['paciente_id'],
-            relationList[0]['Relationships']['hora_desayuno'],
-            relationList[0]['Relationships']['hora_comida'],
-            relationList[0]['Relationships']['hora_cena'],
-            relationList[0]['Relationships']['hora_dormir']);
+            relationList[0]['Users']['hora_desayuno'],
+            relationList[0]['Users']['hora_comida'],
+            relationList[0]['Users']['hora_cena'],
+            relationList[0]['Users']['hora_dormir']);
+          debugPrint("MIRA:");
+          debugPrint(relationList[0]['Users']['hora_desayuno']);
       }
       else{
         setUser(
@@ -117,6 +158,9 @@ Future<bool> checkUser(String email, String pwd) async {
             userList[0]['Users']['hora_comida'],
             userList[0]['Users']['hora_cena'],
             userList[0]['Users']['hora_dormir']);
+
+          debugPrint("MIRA:");
+          debugPrint(userList[0]['Users']['hora_desayuno']);
       }
     }
     return true;
@@ -330,5 +374,19 @@ void insert_statistics(DateTime date, int userId, int taken, int programmed, Str
     VALUES ('$date', $userId, $taken, $programmed, '$summary')""");
 }
 
-
-
+//Devuelve una lista con cada usuario. Dentro de un usuario se accede asi: user[i][0] -> user_id; user[i][1] -> user_name; user[i][2] -> user_email.
+Future<List<List<String>>> getAsociados(int user_id) async{
+  List<Map<String, dynamic>> mapUser = await databaseConnection
+      .mappedResultsQuery("""
+          select u.user_id, u.user_name, u.user_email 
+          from "Relationships" r join "Users" u on u.user_id = r.paciente_id  
+          where r.cuidador_id = $user_id
+      """);
+  List<List<String>> listUsers = [];
+  for(int i = 0; i < mapUser.length; i++) {
+    listUsers.add([mapUser[i]['Users']['user_id'].toString(),
+                  mapUser[i]['Users']['user_name'],
+                  mapUser[i]['Users']['user_email']]);
+  }
+  return listUsers;
+}
