@@ -3,6 +3,7 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:pillpal/utils/db_connections.dart';
 import 'package:pillpal/utils/user.dart';
 
 import '../constants/colors.dart';
@@ -16,6 +17,7 @@ class PantallaPerfil extends StatefulWidget {
 class _PantallaPerfilState extends State<PantallaPerfil> {
   String name = getUserName();
   String correo = getUserEmail();
+  Future<List<String>> userAsociado = getUser(getUserAsociadoId());
 
 
   @override
@@ -28,7 +30,8 @@ class _PantallaPerfilState extends State<PantallaPerfil> {
             style: TextStyle(fontSize: 25.0),
           ),
         ),
-      body: Column(
+      body:SingleChildScrollView(
+        child: Column(
        crossAxisAlignment: CrossAxisAlignment.center,
 
         children: [
@@ -84,8 +87,8 @@ class _PantallaPerfilState extends State<PantallaPerfil> {
                 showDialog(
                 context: context,
                 builder: (context) {
-                  String nuevoName;
-                  String nuevoCorreo;
+                  String nuevoName = name;
+                  String nuevoCorreo = correo;
                   return SimpleDialog(
                       contentPadding: const EdgeInsets.symmetric(horizontal: 12),
                       children: [
@@ -107,25 +110,46 @@ class _PantallaPerfilState extends State<PantallaPerfil> {
                          ),
 
                          const SizedBox(height: 20),
+                        Row(
+                          children:[
+                            ElevatedButton(
+                              onPressed: () async {
+                                updateUser(getUserAsociadoId(), nuevoCorreo, nuevoName, null); //TODO LA CONTRASEÑA
+                                setState(() {}); //Alomejor hay que poner aqui name = nuevoName etc
+                                Navigator.of(context).pop();
+                              },
+                              child: Text('Guardar cambios'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.green,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                textStyle: const TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 45.0),
+                            ElevatedButton(
+                              onPressed: () async {
+                                Navigator.of(context).pop();
+                              },
+                              child: Text('Cancelar'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.red,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                textStyle: const TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
 
-                         ElevatedButton(
-                           onPressed: () async {
-                            //TODO
-                           setState(() {});
-                           Navigator.of(context).pop();
-                         },
-                         child: Text('Guardar cambios'),
-                         style: ElevatedButton.styleFrom(
-                         backgroundColor: Colors.blue,
-                         shape: RoundedRectangleBorder(
-                         borderRadius: BorderRadius.circular(20),
-                         ),
-                         textStyle: const TextStyle(
-                         fontSize: 15,
-                         fontWeight: FontWeight.bold,
-                         ),
-                         ),
-                         ),
                       ],
                     );
                   },
@@ -163,7 +187,10 @@ class _PantallaPerfilState extends State<PantallaPerfil> {
                    ),
                 const SizedBox(height: 15.0),
                 //TODO poder hacer un getUser(userSeleccionadoId) y meterlo en un Text
-
+                  Text(
+                    '${userAsociado[1]}',
+                    style: TextStyle(fontSize: 20.0),
+                  ),
                 const SizedBox(height: 15.0),
                 Text(
                   'Horario establecido:',
@@ -175,7 +202,7 @@ class _PantallaPerfilState extends State<PantallaPerfil> {
                   thickness: 1.0, // Optional: Set line thickness (defaults to 1.0)
                 ),
                 Text(
-                  'Desayuno:  ',
+                  'Desayuno: ${getHoraDesayuno()} ',
                   style: TextStyle(fontSize: 15.0),
                 ),
                 const Divider(
@@ -184,7 +211,7 @@ class _PantallaPerfilState extends State<PantallaPerfil> {
                   thickness: 1.0, // Optional: Set line thickness (defaults to 1.0)
                 ),
                 Text(
-                  'Comida: ',
+                  'Comida: ${getHoraComida()}',
                   style: TextStyle(fontSize: 15.0),
                 ),
                 const Divider(
@@ -193,7 +220,7 @@ class _PantallaPerfilState extends State<PantallaPerfil> {
                   thickness: 1.0, // Optional: Set line thickness (defaults to 1.0)
                 ),
                 Text(
-                  'Cena:  ',
+                  'Cena:   ${getHoraCena()}',
                   style: TextStyle(fontSize: 15.0),
                 ),
                 const Divider(
@@ -202,7 +229,7 @@ class _PantallaPerfilState extends State<PantallaPerfil> {
                   thickness: 1.0, // Optional: Set line thickness (defaults to 1.0)
                 ),
                 Text(
-                  'Dormir:  ',
+                  'Dormir:  ${getHoraDormir()}',
                   style: TextStyle(fontSize: 15.0),
                 ),
                 ],
@@ -282,6 +309,140 @@ class _PantallaPerfilState extends State<PantallaPerfil> {
               ],
             ),
           ),
+          const SizedBox(height: 20.0),
+          ElevatedButton(
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (context) {
+
+                  return SimpleDialog(
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+                    children: [
+                      const SizedBox(height: 20),
+                      Text('¿Estas seguro de querer cerrar sesión?'),
+                      const SizedBox(height: 20),
+                      Row(
+                        children:[
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.pushReplacementNamed(context, '/cuenta');
+                          },
+                          child: Text('Confirmar'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.green,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            textStyle: const TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                          const SizedBox(width: 45.0),
+                          ElevatedButton(
+                            onPressed: () async {
+                              Navigator.of(context).pop();
+                            },
+                            child: Text('Cancelar'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.red,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              textStyle: const TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                      ],
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+            child: Text('Cerrar sesión'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+              textStyle: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          const SizedBox(height: 20.0),
+          ElevatedButton(
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (context) {
+
+                  return SimpleDialog(
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+                    children: [
+                      const SizedBox(height: 20),
+                      Text('¿Estas seguro de querer borrar tu cuenta?'),
+
+                      const SizedBox(height: 20),
+                      Row(
+                        children:[
+                          ElevatedButton(
+                            onPressed: () async {
+                              deleteUser(getUserId());
+                              Navigator.of(context).pushReplacementNamed('/cuenta');
+                              Navigator.of(context).pop();
+                            },
+                            child: Text('Confirmar'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.green,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              textStyle: const TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 45.0),
+                          ElevatedButton(
+                            onPressed: () async {
+                              Navigator.of(context).pop();
+                            },
+                            child: Text('Cancelar'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.red,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              textStyle: const TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+            child: Text('Borrar cuenta'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+              textStyle: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          const SizedBox(height: 15.0),
           /*
           Cosas que queremos que aparezcan:
 
@@ -302,10 +463,11 @@ class _PantallaPerfilState extends State<PantallaPerfil> {
           Boton para cambiarlo -> Ver como lo pongo
           Boton cambiar dependiente -> Que haga cosas
 
-          Boton cerrar sesion
-          Boton eliminar cuenta
+          Boton cerrar sesion -> Que se vea mas bonito y no te deje ir hacia atras
+          Boton eliminar cuenta -> Que se vea mas bonito
            */
       ],
+    ),
     ),
     );
   }

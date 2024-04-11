@@ -29,19 +29,19 @@ initDatabaseConnection() async {
   );
 }*/
 
-Future<List<List<String>> > getUser(int userId) async {
+Future<List<String>> getUser(int userId) async {
   List<Map<String, dynamic>> mapUser = await databaseConnection.mappedResultsQuery("""
     select u.user_id, u.user_name, u.user_email 
     from "Users" u
     where user_id = $userId
   """);
   List<List<String>> listUsers = [];
-  for(int i = 0; i < mapUser.length; i++) {
-    listUsers.add([mapUser[i]['Users']['user_id'].toString(),
-      mapUser[i]['Users']['user_name'],
-      mapUser[i]['Users']['user_email']]);
-  }
-  return listUsers;
+
+    listUsers.add([mapUser[0]['Users']['user_id'].toString(),
+      mapUser[0]['Users']['user_name'],
+      mapUser[0]['Users']['user_email']]);
+
+  return listUsers[0];
 }
 
 Future<void> updateUser(int userId, String? email, String? name, String? pwd)async{
@@ -374,7 +374,8 @@ void insert_statistics(DateTime date, int userId, int taken, int programmed, Str
     VALUES ('$date', $userId, $taken, $programmed, '$summary')""");
 }
 
-//Devuelve una lista con cada usuario. Dentro de un usuario se accede asi: user[i][0] -> user_id; user[i][1] -> user_name; user[i][2] -> user_email.
+//Devuelve una lista con cada usuario.
+// Dentro de un usuario se accede asi: user[i][0] -> user_id; user[i][1] -> user_name; user[i][2] -> user_email.
 Future<List<List<String>>> getAsociados(int user_id) async{
   List<Map<String, dynamic>> mapUser = await databaseConnection
       .mappedResultsQuery("""
