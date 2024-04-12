@@ -175,8 +175,6 @@ class PastilleroState extends State<Pastillero>{
                           ),
                         ],
                       ),
-
-
                     ],
                   );
                 },

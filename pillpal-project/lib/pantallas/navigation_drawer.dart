@@ -66,6 +66,22 @@ class MyDrawer extends StatelessWidget {
               },
             ),
           ),
+          Container(
+            height: 100,
+            child: ListTile(
+              title: const Text(
+                'Alarmas',
+                style: TextStyle(fontSize: 30.0),
+              ),
+              contentPadding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+              onTap: () {
+                Navigator.pop(context);
+                if (ModalRoute.of(context)!.settings.name != '/alarmas') {
+                  Navigator.pushReplacementNamed(context, '/alarmas');
+                }
+              },
+            ),
+          ),
         ],
       ),
 

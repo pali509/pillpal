@@ -1,6 +1,4 @@
 
-
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pillpal/utils/db_connections.dart';
@@ -188,7 +186,8 @@ class _PantallaPerfilState extends State<PantallaPerfil> {
                 const SizedBox(height: 15.0),
                 //TODO poder hacer un getUser(userSeleccionadoId) y meterlo en un Text
                   Text(
-                    '${userAsociado[1]}',
+                    //'${userAsociado[1]}',
+                    'Help',
                     style: TextStyle(fontSize: 20.0),
                   ),
                 const SizedBox(height: 15.0),

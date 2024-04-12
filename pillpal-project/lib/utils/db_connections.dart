@@ -1,3 +1,4 @@
+import 'package:pillpal/utils/alarma_type.dart';
 import 'package:pillpal/utils/horario.dart';
 import 'package:pillpal/utils/pills.dart';
 import 'package:supabase/src/supabase_stream_builder.dart';
@@ -35,13 +36,13 @@ Future<List<String>> getUser(int userId) async {
     from "Users" u
     where user_id = $userId
   """);
-  List<List<String>> listUsers = [];
-
-    listUsers.add([mapUser[0]['Users']['user_id'].toString(),
-      mapUser[0]['Users']['user_name'],
-      mapUser[0]['Users']['user_email']]);
-
-  return listUsers[0];
+  List<String> listUsers = [];
+  if(mapUser[0].isNotEmpty) {
+    listUsers.add(mapUser[0]['Users']['user_id'].toString());
+    listUsers.add(mapUser[0]['Users']['user_name']);
+    listUsers.add(mapUser[0]['Users']['user_email']);
+  }
+  return listUsers;
 }
 
 Future<void> updateUser(int userId, String? email, String? name, String? pwd)async{
@@ -390,4 +391,34 @@ Future<List<List<String>>> getAsociados(int user_id) async{
                   mapUser[i]['Users']['user_email']]);
   }
   return listUsers;
+}
+
+Future<List<Alarma_type>>getAlarmas(int user_id) async {
+  //pill name, id, id_alarma, fecha, hora, periodo, timeofday, cantidad, dias
+  List<Map<String, dynamic>> mapAlarms = await databaseConnection
+      .mappedResultsQuery("""
+          select p.pill_name, h.id, h.alarm_id, h."date", h."period", h.time_of_day, h.quantity, h.days, 
+	        EXTRACT (HOUR from h."hour") as actual_hour, 
+          EXTRACT (MINUTE FROM h."hour") as minute
+          from "Horario" h join "Pills" p on h.pill_id = p.pill_id
+          where p.user_id = $user_id and h.user_id = $user_id and 
+          (h."period" = 0 or h."period" = 1 or 
+          (h."period" = 2 and h."date" > TIMESTAMP 'yesterday'))
+      """);
+  List<Alarma_type> listAlarms = [];
+  for(int i = 0; i < mapAlarms.length; i++) {
+    String real_min = mapAlarms[i]['']['minute'], real_hour = mapAlarms[i]['']['actual_hour'];
+    if(int.parse(mapAlarms[i]['']['minute']) < 10) {
+      real_min = '0' + real_min;
+    }
+    if(int.parse(mapAlarms[i]['']['actual_hour']) < 10) {
+      real_hour = '0' + real_hour;
+    }
+     listAlarms.add(Alarma_type(real_hour + ":" + real_min, mapAlarms[i]['Horario']['quantity'],
+         mapAlarms[i]['Pills']['pill_name'],  mapAlarms[i]['Horario']['time_of_day'],
+         mapAlarms[i]['Horario']['id'], mapAlarms[i]['Horario']['alarm_id'],
+         mapAlarms[i]['Horario']['period'], mapAlarms[i]['Horario']['date'],
+         mapAlarms[i]['Horario']['days']));
+  }
+  return listAlarms;
 }
