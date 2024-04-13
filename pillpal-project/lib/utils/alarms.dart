@@ -61,7 +61,15 @@ FlutterLocalNotificationsPlugin();
     PermissionStatus status = await Permission.notification.status;
         if (!status.isGranted) {
           debugPrint("Te jodes");
-    // The permission is not granted, request it. status = await Permission.notification.request();
+          // The permission is not granted, request it.
+          status = await Permission.notification.request();
+          if (!status.isGranted) {
+            debugPrint("Te jodes");
+            // The permission is not granted, request it.
+          }
+        }
+        else {
+          debugPrint("Vivan los chinos");
         }
     final alarmTime = TZDateTime.from(
       DateTime(
