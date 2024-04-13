@@ -3,8 +3,19 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:pillpal/utils/user.dart';
 import 'package:timezone/timezone.dart';
 import 'package:uuid/uuid.dart';
+import 'package:timezone/data/latest.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
+import 'package:permission_handler/permission_handler.dart';
+
 
 import 'db_connections.dart';
+
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+FlutterLocalNotificationsPlugin();
+
+  Future<void> initialize() async {
+    WidgetsFlutterBinding.ensureInitialized();
+  }
 
   void diarias(DateTime diaDeInicio,  String hora, String name, int num) async {
     var uuid = Uuid();
@@ -21,8 +32,6 @@ import 'db_connections.dart';
     );
 
     // Inicializar las notificaciones locales
-    final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-    FlutterLocalNotificationsPlugin();
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
     AndroidNotificationDetails('repeating_daily', 'Repertir diaria',
         importance: Importance.max,
@@ -32,19 +41,6 @@ import 'db_connections.dart';
     const NotificationDetails platformChannelSpecifics =
     NotificationDetails(android: androidPlatformChannelSpecifics);
 
-
-    // Programar la alarma
-    /*await flutterLocalNotificationsPlugin.zonedSchedule(
-        0,
-        'Alarma diaria',
-        '¡Es hora de levantarse!',
-        alarmTime,
-        platformChannelSpecifics,
-        matchDateTimeComponents: DateTimeComponents.time,
-        uiLocalNotificationDateInterpretation:
-        UILocalNotificationDateInterpretation.absoluteTime,
-        androidAllowWhileIdle: true
-    );*/
    //Falta programar dia de inicio
     flutterLocalNotificationsPlugin.periodicallyShow(
       int.parse(uuid.v4()),
@@ -52,14 +48,21 @@ import 'db_connections.dart';
       'Tome $num unidades de $name.',
       RepeatInterval.daily,
       platformChannelSpecifics,
-      androidAllowWhileIdle: true,
     );
   }
 
-  Future<int> una_vez(DateTime diaDeInicio,  String hora, String name, int num) async {
+  Future<void> una_vez(int id, DateTime diaDeInicio,  String hora, String name, int num) async {
     String title = 'Tome $num unidades de $name.';
-    var uuid = Uuid();
     // Convertir la hora a un objeto TZDateTime
+    Duration offsetTime= DateTime.now().timeZoneOffset;
+    tz.initializeTimeZones();
+    tz.TZDateTime zonedTime = tz.TZDateTime.local(DateTime.now().year,DateTime.now().month,
+        DateTime.now().day,DateTime.now().hour,DateTime.now().minute).subtract(offsetTime);
+    PermissionStatus status = await Permission.notification.status;
+        if (!status.isGranted) {
+          debugPrint("Te jodes");
+    // The permission is not granted, request it. status = await Permission.notification.request();
+        }
     final alarmTime = TZDateTime.from(
       DateTime(
           diaDeInicio.year,
@@ -68,20 +71,18 @@ import 'db_connections.dart';
         int.parse(hora.substring(0, 2)),
         int.parse(hora.substring(3, 5)),
       ),
-      local,
+      zonedTime.location,
     );
+    int h = int.parse(hora.substring(0, 2));
+    int m = int.parse(hora.substring(3, 5));
+    debugPrint(m.toString());
 
-    // Inicializar las notificaciones locales
-    final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-    FlutterLocalNotificationsPlugin();
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
     AndroidNotificationDetails('repeating_daily', 'Repertir diaria',
         importance: Importance.max,
         priority: Priority.high,
         sound: RawResourceAndroidNotificationSound('alarm')
     );
-
-    int id = int.parse(uuid.v4());
 
     // Programar la alarma
     await flutterLocalNotificationsPlugin.zonedSchedule(
@@ -91,8 +92,7 @@ import 'db_connections.dart';
         alarmTime,
         //platformChannelSpecifics,
         matchDateTimeComponents: DateTimeComponents.time,
-        uiLocalNotificationDateInterpretation:
-        UILocalNotificationDateInterpretation.absoluteTime,
+        uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
         payload: title,
         NotificationDetails(
           android: AndroidNotificationDetails(
@@ -127,7 +127,6 @@ import 'db_connections.dart';
           ),
         ),
     );
-    return id;
   }
 
   @pragma('vm:entry-point')
@@ -139,4 +138,8 @@ import 'db_connections.dart';
       else if (notificationResponse.actionId == 'Ignorar') {
         insert_statistics(DateTime.now(), user_id!, 0, 1, "summary");
       }
+  }
+
+  Future<void> deleteAlarm(int id) async {
+    await flutterLocalNotificationsPlugin.cancel(id);
   }

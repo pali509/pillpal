@@ -422,3 +422,11 @@ Future<List<Alarma_type>>getAlarmas(int user_id) async {
   }
   return listAlarms;
 }
+
+
+Future<void> deleteAlarmBd(int alarm_id) async {
+  await databaseConnection.query("""
+      DELETE FROM "Horario"
+      WHERE id = $alarm_id
+  """);
+}

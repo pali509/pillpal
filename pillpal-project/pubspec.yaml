@@ -41,6 +41,7 @@ dependencies:
   supabase_flutter: ^1.2.2
   intl: ^0.18.0
   uuid: ^3.0.4
+  permission_handler: ^10.2.0
   #Posgres Database
 
 

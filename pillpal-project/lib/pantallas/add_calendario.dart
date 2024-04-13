@@ -1,4 +1,7 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'package:uuid/uuid.dart';
 
 import '../constants/colors.dart';
 import '../utils/alarms.dart';
@@ -319,11 +322,13 @@ class _AddCalendarioState extends State<AddCalendario> {
                         daysOfWeek = daysOfWeek + "0";
                     }
                   }
-
                   hora_String = _horaSeleccionada.format(context);
-                  int id =  await una_vez(fechaSeleccionada!, hora_String!, valorSeleccionadoNombre!, cantidadPastillas!);
+                  Random random = Random();
+                  int randomNumber = random.nextInt(10000);
+                  debugPrint(randomNumber.toString());
+                  await una_vez(randomNumber, fechaSeleccionada!, hora_String!, valorSeleccionadoNombre!, cantidadPastillas!);
                   await insertSchedule(valorSeleccionadoNombre!, getUserAsociadoId(),
-                      valorSeleccionadoTOD!, fechaSeleccionada, hora_String, cantidadPastillas!, frecuenciaInt, daysOfWeek, 0);
+                      valorSeleccionadoTOD!, fechaSeleccionada, hora_String, cantidadPastillas!, frecuenciaInt, daysOfWeek, randomNumber);
                   //diarias(fechaSeleccionada!, hora!, valorSeleccionadoNombre!, cantidadPastillas!);
                   Navigator.of(context).pushReplacementNamed('/calendario');
                 }
