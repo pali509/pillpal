@@ -22,7 +22,7 @@ import 'package:intl/date_symbol_data_local.dart';
 Future<void> main() async {
   initDatabaseConnection();
   //connecting()
-  initialize();
+  await alarms_class().initialize();
   initializeDateFormatting().then((_) => runApp(MyApp()));
   //var moonLanding = DateTime.parse("2020-02-10 12:00:00Z");
 }

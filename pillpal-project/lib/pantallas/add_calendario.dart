@@ -325,8 +325,10 @@ class _AddCalendarioState extends State<AddCalendario> {
                   hora_String = _horaSeleccionada.format(context);
                   Random random = Random();
                   int randomNumber = random.nextInt(10000);
-                  debugPrint(randomNumber.toString());
-                  await una_vez(randomNumber, fechaSeleccionada!, hora_String!, valorSeleccionadoNombre!, cantidadPastillas!);
+                  debugPrint("PUTA HORA");
+                  debugPrint(hora_String);
+                  alarms_class().una_vez(randomNumber, fechaSeleccionada!, hora_String!, valorSeleccionadoNombre!, cantidadPastillas!);
+                  //alarms_class().showNotificationAndroid("AAAA","AAAx2");
                   await insertSchedule(valorSeleccionadoNombre!, getUserAsociadoId(),
                       valorSeleccionadoTOD!, fechaSeleccionada, hora_String, cantidadPastillas!, frecuenciaInt, daysOfWeek, randomNumber);
                   //diarias(fechaSeleccionada!, hora!, valorSeleccionadoNombre!, cantidadPastillas!);
