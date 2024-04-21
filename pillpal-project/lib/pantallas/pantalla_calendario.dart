@@ -201,12 +201,13 @@ class _PantallaCalendarioState extends State<PantallaCalendario> {
                              ),
 
                              Container(
-                             height: 215,
+
                              decoration: BoxDecoration(
                                border: Border.all(
                                    color: Colors.blue, width: 5),
                              ),
-                             child: ListView.builder( //Esto es igual que el de pantalla pastillero
+                             child: ListView.builder(
+                               shrinkWrap: true,//Esto es igual que el de pantalla pastillero
                                itemCount: visibleBotonDesayuno ? 3 : cosas1.length,
                                physics: const NeverScrollableScrollPhysics(),
                                itemBuilder: (context, index) {
@@ -293,12 +294,12 @@ class _PantallaCalendarioState extends State<PantallaCalendario> {
                                 ),
 
                                 Container(
-                                  height: 215,
                                   decoration: BoxDecoration(
                                     border: Border.all(
                                         color: Colors.green, width: 5),
                                   ),
                                   child: ListView.builder( //Esto es igual que el de pantalla pastillero
+                                    shrinkWrap: true,
                                     itemCount: visibleBotonComida ? 3 : cosas2.length,
                                     physics: const NeverScrollableScrollPhysics(),
                                     itemBuilder: (context, index) {
@@ -383,12 +384,13 @@ class _PantallaCalendarioState extends State<PantallaCalendario> {
                                 ),
 
                                 Container(
-                                  height: 215,
+
                                   decoration: BoxDecoration(
                                     border: Border.all(
                                         color: Colors.red, width: 5),
                                   ),
                                   child: ListView.builder( //Esto es igual que el de pantalla pastillero
+                                    shrinkWrap: true,
                                     itemCount: visibleBotonCena ? 3 : cosas3.length,
                                     physics: const NeverScrollableScrollPhysics(),
                                     itemBuilder: (context, index) {
@@ -473,12 +475,13 @@ class _PantallaCalendarioState extends State<PantallaCalendario> {
                                 ),
 
                                 Container(
-                                  height: 215,
+
                                   decoration: BoxDecoration(
                                     border: Border.all(
                                         color: Colors.cyanAccent, width: 5),
                                   ),
                                   child: ListView.builder( //Esto es igual que el de pantalla pastillero
+                                    shrinkWrap: true,
                                     itemCount: visibleBotonDormir ? 3 : cosas.length, //cambiar por cosas 4 !!!!!!!!!!!!!!!!!!
                                     physics: const NeverScrollableScrollPhysics(),
                                     itemBuilder: (context, index) {
@@ -564,12 +567,12 @@ class _PantallaCalendarioState extends State<PantallaCalendario> {
                                     ),
 
                                     Container(
-                                      height: 215,
                                       decoration: BoxDecoration(
                                         border: Border.all(
                                             color: Colors.blueGrey, width: 5),
                                       ),
                                       child: ListView.builder( //Esto es igual que el de pantalla pastillero
+                                        shrinkWrap: true,
                                         itemCount: visibleBotonOtros ? 3 : cosas0.length,
                                         physics: const NeverScrollableScrollPhysics(),
                                         itemBuilder: (context, index) {

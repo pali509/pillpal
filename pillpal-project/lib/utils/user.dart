@@ -56,3 +56,12 @@ import 'package:flutter/cupertino.dart';
     String getHoraDormir(){
         return hora_dormir!;
     }
+void setUserEmail(String nuevoC){
+    user_email = nuevoC;
+}
+
+void setUserName(String nuevoN){
+     user_name = nuevoN;
+}
+
+

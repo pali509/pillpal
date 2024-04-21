@@ -104,8 +104,9 @@ class PantallaInicial extends StatefulWidget {
 
                         children: [
                           Container(
-                              height: cosas1.length > 0? cosas1.length * 90 : 100 ,
+
                               child: ListView(
+                                shrinkWrap: true,
                                 physics: const NeverScrollableScrollPhysics(),
                                 children:[
                                   const Text(
@@ -114,12 +115,12 @@ class PantallaInicial extends StatefulWidget {
                                   ),
 
                                   Container(
-                                    height: cosas1.length > 0? cosas1.length * 78 : 70,
                                     decoration: BoxDecoration(
                                       border: Border.all(
                                           color: Colors.blue, width: 5),
                                     ),
                                     child: ListView.builder( //Esto es igual que el de pantalla pastillero
+                                      shrinkWrap: true,
                                       itemCount:cosas1.length > 0 ? cosas1.length : 1,
                                       physics: const NeverScrollableScrollPhysics(),
                                       itemBuilder: (context, index) {
@@ -159,8 +160,9 @@ class PantallaInicial extends StatefulWidget {
 
 
                           Container(
-                              height: cosas2.length > 0? cosas2.length * 90 : 100,
+
                               child: ListView(
+                                shrinkWrap: true,
                                 physics: const NeverScrollableScrollPhysics(),
                                 children:[
                                   const Text(
@@ -169,12 +171,13 @@ class PantallaInicial extends StatefulWidget {
                                   ),
 
                                   Container(
-                                    height: cosas2.length > 0? cosas2.length * 78 : 70,
+
                                     decoration: BoxDecoration(
                                       border: Border.all(
                                           color: Colors.green, width: 5),
                                     ),
                                     child: ListView.builder( //Esto es igual que el de pantalla pastillero
+                                      shrinkWrap: true,
                                       itemCount: cosas2.length > 0 ? cosas2.length : 1,
                                       physics: const NeverScrollableScrollPhysics(),
                                       itemBuilder: (context, index) {
@@ -213,8 +216,9 @@ class PantallaInicial extends StatefulWidget {
                             ),
 
                           Container(
-                              height: cosas3.length > 0? cosas3.length * 100 : 100,
+
                               child: ListView(
+                                shrinkWrap: true,
                                 physics: const NeverScrollableScrollPhysics(),
                                 children:[
                                   const Text(
@@ -223,12 +227,13 @@ class PantallaInicial extends StatefulWidget {
                                   ),
 
                                   Container(
-                                    height: cosas3.length > 0? cosas3.length * 78 : 70,
+
                                     decoration: BoxDecoration(
                                       border: Border.all(
                                           color: Colors.red, width: 5),
                                     ),
                                     child: ListView.builder( //Esto es igual que el de pantalla pastillero
+                                      shrinkWrap: true,
                                       itemCount: cosas3.length > 0 ? cosas3.length : 1,
                                       physics: const NeverScrollableScrollPhysics(),
                                       itemBuilder: (context, index) {
@@ -267,8 +272,9 @@ class PantallaInicial extends StatefulWidget {
                             ),
 
                           Container(
-                              height: cosas2.length > 0? cosas2.length * 90 : 100,
+
                               child: ListView(
+                                shrinkWrap: true,
                                 physics: const NeverScrollableScrollPhysics(),
                                 children:[
                                   const Text(
@@ -277,12 +283,13 @@ class PantallaInicial extends StatefulWidget {
                                   ),
 
                                   Container(
-                                    height: cosas2.length > 0? cosas2.length * 78 : 70,
+
                                     decoration: BoxDecoration(
                                       border: Border.all(
                                           color: Colors.cyanAccent, width: 5),
                                     ),
                                     child: ListView.builder( //Esto es igual que el de pantalla pastillero
+                                      shrinkWrap: true,
                                       itemCount: cosas2.length > 0 ? cosas2.length : 1, //cambiar por cosas 4 !!!!!!!!!!!!!!!!!!
                                       physics: const NeverScrollableScrollPhysics(),
                                       itemBuilder: (context, index) {
@@ -323,8 +330,9 @@ class PantallaInicial extends StatefulWidget {
                           Visibility(
                             visible: visibleOtros,
                             child: Container(
-                              height: cosas0.length * 90,
+
                               child: ListView(
+                                shrinkWrap: true,
                                 physics: const NeverScrollableScrollPhysics(),
                                 children:[
                                   const Text(
@@ -333,12 +341,13 @@ class PantallaInicial extends StatefulWidget {
                                   ),
 
                                   Container(
-                                    height: cosas0.length * 78,
+
                                     decoration: BoxDecoration(
                                       border: Border.all(
                                           color: Colors.blueGrey, width: 5),
                                     ),
                                     child: ListView.builder( //Esto es igual que el de pantalla pastillero
+                                      shrinkWrap: true,
                                       itemCount: cosas0.length,
                                       physics: const NeverScrollableScrollPhysics(),
                                       itemBuilder: (context, index) {
