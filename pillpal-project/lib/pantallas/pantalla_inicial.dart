@@ -53,12 +53,12 @@ class PantallaInicial extends StatefulWidget {
         drawer: MyDrawer(),
         body: Column(
             children: [
-              const SizedBox(height: 20.0),
+              const SizedBox(height: 30.0),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center, //No centra las cosas bien :/
                 children: [
                   IconButton(
-                    icon: Icon(Icons.arrow_back, size: 40.0), // Left arrow icon
+                    icon: Icon(Icons.arrow_back, size: 30.0), // Left arrow icon
                     onPressed: () {
                       setState(() {
                         if(diaSeleccionado.weekday != 0)
@@ -66,10 +66,10 @@ class PantallaInicial extends StatefulWidget {
                       });
                     },
                   ),
-                  Text("${weekdays[diaSeleccionado.weekday - 1]}, ${diaSeleccionado.day} ${months[diaSeleccionado.month]}",style: TextStyle(fontSize: 35.0)),
+                  Text("${weekdays[diaSeleccionado.weekday - 1]}, ${diaSeleccionado.day} ${months[diaSeleccionado.month]}",style: TextStyle(fontSize: 26.0)),
 
                   IconButton(
-                    icon: Icon(Icons.arrow_forward, size: 40.0), // Left arrow icon
+                    icon: Icon(Icons.arrow_forward, size: 30.0), // Left arrow icon
                     onPressed: () {
                       setState(() {
                         diaSeleccionado = diaSeleccionado.add(Duration(days: 1));
@@ -363,7 +363,8 @@ class PantallaInicial extends StatefulWidget {
                                               title: Text(
                                                   '${currentCosa.getPillName()}'),
                                               subtitle: Text('Cantidad: ${currentCosa
-                                                  .getNumPills()} ud.'),
+                                                  .getNumPills()} ud.     Tomar a las: ${currentCosa
+                                                  .getHour()}'),
                                             ),
                                           );
 

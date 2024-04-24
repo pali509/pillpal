@@ -45,7 +45,7 @@ Future<List<String>> getUser(int userId) async {
   return listUsers;
 }
 
-Future<void> updateUser(int userId, String? email, String? name, String? pwd)async{
+Future<void> updateUser(int userId, String? email, String? name, String? pwd, String? desayuno, String? comida, String? cena, String? dormir)async{
     if(email != null){
       await databaseConnection.query("""
           UPDATE "Users"
@@ -64,6 +64,34 @@ Future<void> updateUser(int userId, String? email, String? name, String? pwd)asy
       await databaseConnection.query("""
           UPDATE "Users"
           SET user_pwd = '$pwd'
+          WHERE user_id = $userId;
+      """);
+    }
+    if(desayuno != null){
+      await databaseConnection.query("""
+          UPDATE "Users"
+          SET hora_desayuno = '$desayuno'
+          WHERE user_id = $userId;
+      """);
+    }
+    if(comida != null){
+      await databaseConnection.query("""
+          UPDATE "Users"
+          SET hora_comida = '$comida'
+          WHERE user_id = $userId;
+      """);
+    }
+    if(cena != null){
+      await databaseConnection.query("""
+          UPDATE "Users"
+          SET hora_cena = '$cena'
+          WHERE user_id = $userId;
+      """);
+    }
+    if(dormir != null){
+      await databaseConnection.query("""
+          UPDATE "Users"
+          SET hora_dormir = '$dormir'
           WHERE user_id = $userId;
       """);
     }
@@ -376,11 +404,11 @@ void insert_statistics(DateTime date, int userId, int taken, int programmed, Str
 }
 
 //Devuelve una lista con cada usuario.
-// Dentro de un usuario se accede asi: user[i][0] -> user_id; user[i][1] -> user_name; user[i][2] -> user_email.
+// Dentro de un usuario se accede asi: user[i][0] -> user_id; user[i][1] -> user_name; user[i][2] -> user_email. 3 desayuno, 4 comida...
 Future<List<List<String>>> getAsociados(int user_id) async{
   List<Map<String, dynamic>> mapUser = await databaseConnection
       .mappedResultsQuery("""
-          select u.user_id, u.user_name, u.user_email 
+          select u.user_id, u.user_name, u.user_email, u.hora_desayuno, u.hora_comida, u.hora_cena, u.hora_dormir 
           from "Relationships" r join "Users" u on u.user_id = r.paciente_id  
           where r.cuidador_id = $user_id
       """);
@@ -388,7 +416,12 @@ Future<List<List<String>>> getAsociados(int user_id) async{
   for(int i = 0; i < mapUser.length; i++) {
     listUsers.add([mapUser[i]['Users']['user_id'].toString(),
                   mapUser[i]['Users']['user_name'],
-                  mapUser[i]['Users']['user_email']]);
+                  mapUser[i]['Users']['user_email'],
+                  mapUser[i]['Users']['hora_desayuno'],
+                  mapUser[i]['Users']['hora_comida'],
+                  mapUser[i]['Users']['hora_cena'],
+                  mapUser[i]['Users']['hora_dormir']
+    ]);
   }
   return listUsers;
 }
