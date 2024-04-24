@@ -80,16 +80,13 @@ class alarms_class {
         //.show(notification_id, title, value, notificationDetails, payload: 'Not present');
   }
 
-  Future<void> una_vez(int id, DateTime diaDeInicio, String hora, String name,
-      int num) async {
+  Future<void> una_vez(int id, DateTime diaDeInicio, String hora, String name, int num) async {
     int h = int.parse(hora.split(":")[0]);
     int m = int.parse(hora.split(":")[1].split(" ")[0]);
     if(hora.split(":")[1].split(" ")[1] == "PM") h = h + 12;
     String title = 'Tome $num unidades de $name.';
     // Convertir la hora a un objeto TZDateTime
-    Duration offsetTime = DateTime
-        .now()
-        .timeZoneOffset;
+    Duration offsetTime = DateTime.now().timeZoneOffset;
     tz.initializeTimeZones();
     tz.TZDateTime zonedTime = tz.TZDateTime.local(DateTime.now().year,
         DateTime.now().month,
@@ -98,53 +95,17 @@ class alarms_class {
         DateTime.now().minute).subtract(offsetTime);
     PermissionStatus status = await Permission.notification.status;
     if (!status.isGranted) {
-      debugPrint("Te jodes");
       // The permission is not granted, request it.
       status = await Permission.notification.request();
-      if (!status.isGranted) {
-        debugPrint("Te jodes");
-        // The permission is not granted, request it.
-      }
     }
-    else {
-      debugPrint("Vivan los chinos");
-    }
-    debugPrint(h.toString());
-    debugPrint(m.toString());
-    final alarmTime = TZDateTime.from(
-      DateTime(
-        diaDeInicio.year,
-        diaDeInicio.month,
-        diaDeInicio.day,
-        h,
-        m,
-      ),
-      zonedTime.location,
-    );
-    debugPrint(alarmTime.year.toString());
-    debugPrint(alarmTime.month.toString());
-    debugPrint(alarmTime.day.toString());
-    debugPrint(alarmTime.hour.toString());
-    debugPrint(alarmTime.minute.toString());
-    debugPrint(alarmTime.second.toString());
 
-    const AndroidNotificationDetails androidPlatformChannelSpecifics =
-    AndroidNotificationDetails('repeating_daily', 'Repertir diaria',
-        importance: Importance.max,
-        priority: Priority.high,
-        sound: RawResourceAndroidNotificationSound('alarm')
-    );
+    final alarmTime = TZDateTime.from(DateTime(diaDeInicio.year, diaDeInicio.month, diaDeInicio.day, h, m), zonedTime.location);
 
     // Programar la alarma
     await flutterLocalNotificationsPlugin.zonedSchedule(
-      id,
-      title,
-      title,
-      alarmTime,
-      //platformChannelSpecifics,
+      id, title, title, alarmTime,
       matchDateTimeComponents: DateTimeComponents.time,
-      uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation
-          .absoluteTime,
+      uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
       payload: title,
       NotificationDetails(
         android: AndroidNotificationDetails(
@@ -160,20 +121,8 @@ class alarms_class {
           priority: Priority.high,
           importance: Importance.high,
           actions: <AndroidNotificationAction>[
-            const AndroidNotificationAction(
-              'Tomar',
-              'Tomar',
-              titleColor: Colors.lightGreen
-            ),
-            const AndroidNotificationAction(
-              'Ignorar',
-              'Ignorar',
-              titleColor: Colors.redAccent,
-              showsUserInterface: true,
-              // By default, Android plugin will dismiss the notification when the
-              // user tapped on a action (this mimics the behavior on iOS).
-              cancelNotification: false,
-            ),
+            const AndroidNotificationAction('Tomar', 'Tomar'),
+            const AndroidNotificationAction('Ignorar', 'Ignorar', showsUserInterface: true),
           ],
         ),
       ),
@@ -196,30 +145,60 @@ class alarms_class {
    //});
   }
 
-  void onDidReceiveNotificationResponse(NotificationResponse notificationResponse) async {
-    debugPrint("hay luz");
-    final String? payload = notificationResponse.payload;
-    if (notificationResponse.payload != null) {
-      debugPrint('notification payload: $payload');
+  Future<void> diaria(DateTime diaDeInicio, String hora, String name, int num, int id) async {
+    int h = int.parse(hora.split(":")[0]);
+    int m = int.parse(hora.split(":")[1].split(" ")[0]);
+    if(hora.split(":")[1].split(" ")[1] == "PM") h = h + 12;
+    String title = 'Tome $num unidades de $name.';
+    // Convertir la hora a un objeto TZDateTime
+    Duration offsetTime = DateTime.now().timeZoneOffset;
+    tz.initializeTimeZones();
+    tz.TZDateTime zonedTime = tz.TZDateTime.local(DateTime.now().year,
+        DateTime.now().month,
+        DateTime.now().day,
+        DateTime.now().hour,
+        DateTime.now().minute).subtract(offsetTime);
+    PermissionStatus status = await Permission.notification.status;
+    if (!status.isGranted) {
+      // The permission is not granted, request it.
+      status = await Permission.notification.request();
     }
+
+    final alarmTime = TZDateTime.from(DateTime(diaDeInicio.year, diaDeInicio.month, diaDeInicio.day, h, m), zonedTime.location);
+
+    // Programar la alarma
+
+    _checkPendingNotificationRequests();
   }
 
 
-  @pragma('vm:entry-point')
-  void notificationTapBackground(NotificationResponse notificationResponse) {
-    //2 casos, si ya hay registro y si no hay registro
-    if (notificationResponse.actionId == 'Tomar') {
-      insert_statistics(DateTime.now(), user_id!, 1, 1, "summary");
-      debugPrint("Tomado");
-    }
-    else if (notificationResponse.actionId == 'Ignorar') {
-      insert_statistics(DateTime.now(), user_id!, 0, 1, "summary");
-      debugPrint("Outttt");
-    }
-  }
+ //void onDidReceiveNotificationResponse(NotificationResponse notificationResponse) async {
+ //  debugPrint("hay luz");
+ //  final String? payload = notificationResponse.payload;
+ //  if (notificationResponse.payload != null) {
+ //    debugPrint('notification payload: $payload');
+ //  }
+ //}
+
+ //@pragma('vm:entry-point')
+ //void notificationTapBackground(NotificationResponse notificationResponse) {
+ //  //2 casos, si ya hay registro y si no hay registro
+ //  if (notificationResponse.actionId == 'Tomar') {
+ //    insert_statistics(DateTime.now(), user_id!, 1, 1, "summary");
+ //    debugPrint("Tomado");
+ //  }
+ //  else if (notificationResponse.actionId == 'Ignorar') {
+ //    insert_statistics(DateTime.now(), user_id!, 0, 1, "summary");
+ //    debugPrint("Outttt");
+ //  }
+ //}
 
   Future<void> deleteAlarm(int id) async {
     await flutterLocalNotificationsPlugin.cancel(id);
+  }
+
+  Future<void> cancelAll() async {
+    await flutterLocalNotificationsPlugin.cancelAll();
   }
 
   Future<void> _checkPendingNotificationRequests() async {
@@ -272,104 +251,6 @@ class alarms_class {
     );*/
   }
 
-  Future<void> una_vez(int id, DateTime diaDeInicio, String hora, String name,
-      int num) async {
-    String title = 'Tome $num unidades de $name.';
-    // Convertir la hora a un objeto TZDateTime
-    Duration offsetTime = DateTime
-        .now()
-        .timeZoneOffset;
-    tz.initializeTimeZones();
-    tz.TZDateTime zonedTime = tz.TZDateTime.local(DateTime
-        .now()
-        .year, DateTime
-        .now()
-        .month,
-        DateTime
-            .now()
-            .day, DateTime
-            .now()
-            .hour, DateTime
-            .now()
-            .minute).subtract(offsetTime);
-    PermissionStatus status = await Permission.notification.status;
-    if (!status.isGranted) {
-      debugPrint("Te jodes");
-      // The permission is not granted, request it.
-      status = await Permission.notification.request();
-      if (!status.isGranted) {
-        debugPrint("Te jodes");
-        // The permission is not granted, request it.
-      }
-    }
-    else {
-      debugPrint("Vivan los chinos");
-    }
-    final alarmTime = TZDateTime.from(
-      DateTime(
-        diaDeInicio.year,
-        diaDeInicio.month,
-        diaDeInicio.day,
-        int.parse(hora.substring(0, 2)),
-        int.parse(hora.substring(3, 5)),
-      ),
-      zonedTime.location,
-    );
-    int h = int.parse(hora.substring(0, 2));
-    int m = int.parse(hora.substring(3, 5));
-    debugPrint(m.toString());
 
-    const AndroidNotificationDetails androidPlatformChannelSpecifics =
-    AndroidNotificationDetails('repeating_daily', 'Repertir diaria',
-        importance: Importance.max,
-        priority: Priority.high,
-        sound: RawResourceAndroidNotificationSound('alarm')
-    );
-
-    // Programar la alarma
-    /*await flutterLocalNotificationsPlugin.zonedSchedule(
-      id,
-      title,
-      title,
-      alarmTime,
-      //platformChannelSpecifics,
-      matchDateTimeComponents: DateTimeComponents.time,
-      uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation
-          .absoluteTime,
-      payload: title,
-      NotificationDetails(
-        android: AndroidNotificationDetails(
-          'alarm_clock_channel',
-          'Alarm Clock Channel',
-          channelDescription: 'Alarm Clock Notification',
-          subText: title,
-          //silent: true,
-          color: Colors.amber,
-          colorized: true,
-          ticker: title,
-          playSound: true,
-          priority: Priority.high,
-          importance: Importance.high,
-          actions: <AndroidNotificationAction>[
-            const AndroidNotificationAction(
-              'Tomar',
-              'Tomar',
-              titleColor: Colors.lightGreen,
-            ),
-            const AndroidNotificationAction(
-              'Ignorar',
-              'Ignorar',
-              titleColor: Colors.redAccent,
-              showsUserInterface: true,
-              // By default, Android plugin will dismiss the notification when the
-              // user tapped on a action (this mimics the behavior on iOS).
-              cancelNotification: false,
-            ),
-          ],
-
-        ),
-      ),
-    );*/
-  }
 
 
