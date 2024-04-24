@@ -7,7 +7,6 @@ import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 import 'package:permission_handler/permission_handler.dart';
 
-
 import 'db_connections.dart';
 
 
@@ -30,7 +29,6 @@ class alarms_class {
     await flutterLocalNotificationsPlugin.initialize(
       initializationSettings,
     );
-
     tz.initializeTimeZones();
   }
 
@@ -93,18 +91,11 @@ class alarms_class {
         .now()
         .timeZoneOffset;
     tz.initializeTimeZones();
-    tz.TZDateTime zonedTime = tz.TZDateTime.local(DateTime
-        .now()
-        .year, DateTime
-        .now()
-        .month,
-        DateTime
-            .now()
-            .day, DateTime
-            .now()
-            .hour, DateTime
-            .now()
-            .minute).subtract(offsetTime);
+    tz.TZDateTime zonedTime = tz.TZDateTime.local(DateTime.now().year,
+        DateTime.now().month,
+        DateTime.now().day,
+        DateTime.now().hour,
+        DateTime.now().minute).subtract(offsetTime);
     PermissionStatus status = await Permission.notification.status;
     if (!status.isGranted) {
       debugPrint("Te jodes");
@@ -172,7 +163,7 @@ class alarms_class {
             const AndroidNotificationAction(
               'Tomar',
               'Tomar',
-              titleColor: Colors.lightGreen,
+              titleColor: Colors.lightGreen
             ),
             const AndroidNotificationAction(
               'Ignorar',
@@ -184,21 +175,51 @@ class alarms_class {
               cancelNotification: false,
             ),
           ],
-
         ),
       ),
     );
     _checkPendingNotificationRequests();
+
+   //await flutterLocalNotificationsPlugin.onActionSelected.listen((String selectedNotificationId, String action) {
+   //  if (selectedNotificationId == 'alarm_clock_channel') {
+   //    switch (action) {
+   //      case 'Tomar':
+   //      // Realizar la acción al presionar "Tomar"
+   //        print('Botón "Tomar" presionado');
+   //        break;
+   //      case 'Ignorar':
+   //      // Realizar la acción al presionar "Ignorar"
+   //        print('Botón "Ignorar" presionado');
+   //        break;
+   //    }
+   //  }
+   //});
   }
+
+  void onDidReceiveNotificationResponse(NotificationResponse notificationResponse) async {
+    debugPrint("hay luz");
+    final String? payload = notificationResponse.payload;
+    if (notificationResponse.payload != null) {
+      debugPrint('notification payload: $payload');
+    }
+  }
+
+
   @pragma('vm:entry-point')
   void notificationTapBackground(NotificationResponse notificationResponse) {
     //2 casos, si ya hay registro y si no hay registro
     if (notificationResponse.actionId == 'Tomar') {
       insert_statistics(DateTime.now(), user_id!, 1, 1, "summary");
+      debugPrint("Tomado");
     }
     else if (notificationResponse.actionId == 'Ignorar') {
       insert_statistics(DateTime.now(), user_id!, 0, 1, "summary");
+      debugPrint("Outttt");
     }
+  }
+
+  Future<void> deleteAlarm(int id) async {
+    await flutterLocalNotificationsPlugin.cancel(id);
   }
 
   Future<void> _checkPendingNotificationRequests() async {
@@ -351,17 +372,4 @@ class alarms_class {
     );*/
   }
 
-  @pragma('vm:entry-point')
-  void notificationTapBackground(NotificationResponse notificationResponse) {
-    //2 casos, si ya hay registro y si no hay registro
-    if (notificationResponse.actionId == 'Tomar') {
-      insert_statistics(DateTime.now(), user_id!, 1, 1, "summary");
-    }
-    else if (notificationResponse.actionId == 'Ignorar') {
-      insert_statistics(DateTime.now(), user_id!, 0, 1, "summary");
-    }
-  }
 
-  Future<void> deleteAlarm(int id) async {
-    //await flutterLocalNotificationsPlugin.cancel(id);
-  }

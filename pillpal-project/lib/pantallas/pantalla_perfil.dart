@@ -530,7 +530,7 @@ class _PantallaPerfilState extends State<PantallaPerfil> {
                                                         ElevatedButton(
                                                           onPressed: () async {
                                                             updateUser(
-                                                                currentUser[0], nuevoCorreo, nuevoName, nuevaCont);
+                                                                int.parse(currentUser[0]), nuevoCorreo, nuevoName, nuevaCont);
                                                             setState(() {
                                                               listaUsers = getAsociados(getUserId());
                                                               userAsociado = getUser(getUserAsociadoId());

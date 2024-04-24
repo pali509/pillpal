@@ -55,7 +55,7 @@ class _AlarmaScreenState extends State<AlarmaScreen> {
             ),
             ElevatedButton(
               onPressed: () {
-                deleteAlarm(alarm.getAlarmId()!);
+                alarms_class().deleteAlarm(alarm.getAlarmId()!);
                 deleteAlarmBd(alarm.getId()!);
                 _alarmasFuturo = getAlarmas(getUserAsociadoId());
                 setState(() {});
