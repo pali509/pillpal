@@ -15,7 +15,7 @@ class alarms_class {
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
   FlutterLocalNotificationsPlugin();
 
-  Future<void> initialize() async {
+  Future<bool?> initialize() async {
     WidgetsFlutterBinding.ensureInitialized();
     // Initialize native android notification
     const AndroidInitializationSettings initializationSettingsAndroid =
@@ -25,59 +25,31 @@ class alarms_class {
     InitializationSettings(
         android: initializationSettingsAndroid
     );
-
-    await flutterLocalNotificationsPlugin.initialize(
+    return await flutterLocalNotificationsPlugin.initialize(
       initializationSettings,
+      onDidReceiveNotificationResponse:
+          (NotificationResponse notificationResponse) {
+            if (notificationResponse.actionId == 'Tomar') {
+              debugPrint("PRINGAITO1");
+              // do something
+            } else if (notificationResponse.actionId == 'Ignorar') {
+              debugPrint("PRINGAITO1");
+              // do something else
+            }
+      },
+      onDidReceiveBackgroundNotificationResponse: notificationTapBackground,
     );
-    tz.initializeTimeZones();
   }
+  @pragma('vm:entry-point')
+  static void notificationTapBackground(NotificationResponse notificationResponse) {
 
-  void showTimedNotification(int id, DateTime diaDeInicio, String hora, String name,
-      int num){
-    int notification_id = 1;
-
-    const AndroidNotificationDetails androidNotificationDetails =
-    AndroidNotificationDetails('repeating_daily', 'Repertir diaria',
-        channelDescription: 'ALARMA PELIGRO',
-        importance: Importance.max,
-        priority: Priority.high,
-        ticker: 'ticker');
-
-    /*flutterLocalNotificationsPlugin.zonedSchedule(
-        id,
-        "PRUEBA 1",
-        "POR FAVOR FUNCIONA",
-        tz.TZDateTime.now(tz.local).add(const Duration(days: 3)),
-        const NotificationDetails(
-            android: androidNotificationDetails,
-        uiLocalNotificationDateInterpretation:
-        UILocalNotificationDateInterpretation.absoluteTime
-    ));*/
-  }
-
-  // Future<void> zonedSchedule(int id, String? title, String? body,
-  //     TZDateTime scheduledDate, NotificationDetails notificationDetails,
-  //     {required UILocalNotificationDateInterpretation
-  //         uiLocalNotificationDateInterpretation,
-  //     required bool androidAllowWhileIdle,
-  //     String? payload,
-  //     DateTimeComponents? matchDateTimeComponents})
-
-  void showNotificationAndroid(int id, DateTime diaDeInicio, String hora, String name,
-      int num) async {
-    const AndroidNotificationDetails androidNotificationDetails =
-    AndroidNotificationDetails('channel_id', 'Channel Name',
-        channelDescription: 'Channel Description',
-        importance: Importance.max,
-        priority: Priority.high,
-        ticker: 'ticker');
-
-    int notification_id = 1;
-    const NotificationDetails notificationDetails =
-    NotificationDetails(android: androidNotificationDetails);
-
-   // await flutterLocalNotificationsPlugin
-        //.show(notification_id, title, value, notificationDetails, payload: 'Not present');
+    if (notificationResponse.actionId == 'Tomar') {
+      debugPrint("PRINGAITO2");
+      // do something
+    } else if (notificationResponse.actionId == 'Ignorar') {
+      debugPrint("PRINGAITO2");
+      // do something else
+    }
   }
 
   Future<void> una_vez(int id, DateTime diaDeInicio, String hora, String name, int num) async {
@@ -101,31 +73,31 @@ class alarms_class {
 
     final alarmTime = TZDateTime.from(DateTime(diaDeInicio.year, diaDeInicio.month, diaDeInicio.day, h, m), zonedTime.location);
 
+    AndroidNotificationDetails and = AndroidNotificationDetails(
+      'alarm_clock_channel',
+      'Alarm Clock Channel',
+      channelDescription: 'Alarm Clock Notification',
+      subText: title,
+      //silent: true,
+      color: Colors.amber,
+      colorized: true,
+      ticker: title,
+      playSound: true,
+      priority: Priority.high,
+      importance: Importance.high,
+      actions: [
+        AndroidNotificationAction('Tomar', 'Tomar', showsUserInterface: true, cancelNotification: false),
+        AndroidNotificationAction('Ignorar', 'Ignorar', showsUserInterface: true, cancelNotification: false)
+      ],
+    );
+    NotificationDetails nd = NotificationDetails(android: and);
     // Programar la alarma
     await flutterLocalNotificationsPlugin.zonedSchedule(
       id, title, title, alarmTime,
       matchDateTimeComponents: DateTimeComponents.time,
       uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
       payload: title,
-      NotificationDetails(
-        android: AndroidNotificationDetails(
-          'alarm_clock_channel',
-          'Alarm Clock Channel',
-          channelDescription: 'Alarm Clock Notification',
-          subText: title,
-          //silent: true,
-          color: Colors.amber,
-          colorized: true,
-          ticker: title,
-          playSound: true,
-          priority: Priority.high,
-          importance: Importance.high,
-          actions: <AndroidNotificationAction>[
-            const AndroidNotificationAction('Tomar', 'Tomar'),
-            const AndroidNotificationAction('Ignorar', 'Ignorar', showsUserInterface: true),
-          ],
-        ),
-      ),
+      nd,
     );
     _checkPendingNotificationRequests();
 
@@ -145,53 +117,12 @@ class alarms_class {
    //});
   }
 
-  Future<void> diaria(DateTime diaDeInicio, String hora, String name, int num, int id) async {
-    int h = int.parse(hora.split(":")[0]);
-    int m = int.parse(hora.split(":")[1].split(" ")[0]);
-    if(hora.split(":")[1].split(" ")[1] == "PM") h = h + 12;
-    String title = 'Tome $num unidades de $name.';
-    // Convertir la hora a un objeto TZDateTime
-    Duration offsetTime = DateTime.now().timeZoneOffset;
-    tz.initializeTimeZones();
-    tz.TZDateTime zonedTime = tz.TZDateTime.local(DateTime.now().year,
-        DateTime.now().month,
-        DateTime.now().day,
-        DateTime.now().hour,
-        DateTime.now().minute).subtract(offsetTime);
-    PermissionStatus status = await Permission.notification.status;
-    if (!status.isGranted) {
-      // The permission is not granted, request it.
-      status = await Permission.notification.request();
-    }
+  void onTapLocalNotification(NotificationResponse notificationResponse) async {
+    final String? payload = notificationResponse.payload;
+    debugPrint(payload);
+    // this is where my navigation happens
 
-    final alarmTime = TZDateTime.from(DateTime(diaDeInicio.year, diaDeInicio.month, diaDeInicio.day, h, m), zonedTime.location);
-
-    // Programar la alarma
-
-    _checkPendingNotificationRequests();
   }
-
-
- //void onDidReceiveNotificationResponse(NotificationResponse notificationResponse) async {
- //  debugPrint("hay luz");
- //  final String? payload = notificationResponse.payload;
- //  if (notificationResponse.payload != null) {
- //    debugPrint('notification payload: $payload');
- //  }
- //}
-
- //@pragma('vm:entry-point')
- //void notificationTapBackground(NotificationResponse notificationResponse) {
- //  //2 casos, si ya hay registro y si no hay registro
- //  if (notificationResponse.actionId == 'Tomar') {
- //    insert_statistics(DateTime.now(), user_id!, 1, 1, "summary");
- //    debugPrint("Tomado");
- //  }
- //  else if (notificationResponse.actionId == 'Ignorar') {
- //    insert_statistics(DateTime.now(), user_id!, 0, 1, "summary");
- //    debugPrint("Outttt");
- //  }
- //}
 
   Future<void> deleteAlarm(int id) async {
     await flutterLocalNotificationsPlugin.cancel(id);
@@ -215,41 +146,6 @@ class alarms_class {
     print('NOW ' + tz.TZDateTime.now(tz.local).toString());
   }
 }
-
-
-  void diarias(DateTime diaDeInicio, String hora, String name, int num) async {
-    var uuid = Uuid();
-    // Convertir la hora a un objeto TZDateTime
-    final alarmTime = TZDateTime.from(
-      DateTime(
-          diaDeInicio.year,
-          diaDeInicio.month,
-          diaDeInicio.day /*,
-        hora.hour,
-        hora.minute,*/
-      ),
-      local,
-    );
-
-    // Inicializar las notificaciones locales
-    const AndroidNotificationDetails androidPlatformChannelSpecifics =
-    AndroidNotificationDetails('repeating_daily', 'Repertir diaria',
-        importance: Importance.max,
-        priority: Priority.high,
-        sound: RawResourceAndroidNotificationSound('alarm')
-    );
-    const NotificationDetails platformChannelSpecifics =
-    NotificationDetails(android: androidPlatformChannelSpecifics);
-
-    //Falta programar dia de inicio
-    /*flutterLocalNotificationsPlugin.periodicallyShow(
-      int.parse(uuid.v4()),
-      name.toUpperCase(),
-      'Tome $num unidades de $name.',
-      RepeatInterval.daily,
-      platformChannelSpecifics,
-    );*/
-  }
 
 
 

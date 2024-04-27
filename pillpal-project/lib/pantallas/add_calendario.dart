@@ -326,17 +326,13 @@ class _AddCalendarioState extends State<AddCalendario> {
                   Random random = Random();
                   int randomNumber = random.nextInt(10000);
                   if(frecuenciaInt == 0){
-                    alarms_class().diaria(fechaSeleccionada!, hora_String!, valorSeleccionadoNombre!, cantidadPastillas!, randomNumber);
+                    //alarms_class().diaria(fechaSeleccionada!, hora_String!, valorSeleccionadoNombre!, cantidadPastillas!, randomNumber);
                   }
                   else if(frecuenciaInt == 1){
 
                   }
                   else{
-                    debugPrint("ALLA VAMOS");
-                    for(int i = 0; i < 1000; i++){
-                      alarms_class().una_vez(randomNumber, fechaSeleccionada!, hora_String!, valorSeleccionadoNombre!, cantidadPastillas!);
-                    }
-                    debugPrint("SE ACABO");
+                    alarms_class().una_vez(randomNumber, fechaSeleccionada!, hora_String!, valorSeleccionadoNombre!, cantidadPastillas!);
                    }
 
                   await insertSchedule(valorSeleccionadoNombre!, getUserAsociadoId(),
