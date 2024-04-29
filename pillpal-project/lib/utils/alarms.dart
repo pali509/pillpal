@@ -12,7 +12,7 @@ import 'db_connections.dart';
 
 class alarms_class {
 
-  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+  static final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
   FlutterLocalNotificationsPlugin();
 
   Future<bool?> initialize() async {
@@ -27,36 +27,38 @@ class alarms_class {
     );
     return await flutterLocalNotificationsPlugin.initialize(
       initializationSettings,
-      onDidReceiveNotificationResponse:
-          (NotificationResponse notificationResponse) {
-            if (notificationResponse.actionId == 'Tomar') {
-              debugPrint("PRINGAITO1");
-              // do something
-            } else if (notificationResponse.actionId == 'Ignorar') {
-              debugPrint("PRINGAITO1");
-              // do something else
-            }
-      },
+      onDidReceiveNotificationResponse: notificationTapBackground,
       onDidReceiveBackgroundNotificationResponse: notificationTapBackground,
     );
   }
+
   @pragma('vm:entry-point')
   static void notificationTapBackground(NotificationResponse notificationResponse) {
-
+    List<String> payload = notificationResponse.payload!.split(';');
+    DateTime today = DateTime.now();
     if (notificationResponse.actionId == 'Tomar') {
-      debugPrint("PRINGAITO2");
+      debugPrint("PRINGAITO1");
       // do something
-    } else if (notificationResponse.actionId == 'Ignorar') {
+    }
+    else {//Si se ignora o si se pulsa la noti
       debugPrint("PRINGAITO2");
       // do something else
     }
+    if(payload[2] != '0000000') {
+      DateTime nextDay = calcularDiaSiguiente(today, payload[2]);
+      debugPrint('HORA FINAL: ${nextDay.day}/${nextDay.month}/${nextDay.year}');
+      //una_vez(int.parse(payload[4]), nextDay, payload[3], payload[1], int.parse(payload[0]), payload[2]);
+    }
+    //1;Algo Delulu;0000000;8:01 PM;3
+    //1;Paracetamol;Si;3;Ibuprofeno;No
   }
 
-  Future<void> una_vez(int id, DateTime diaDeInicio, String hora, String name, int num) async {
+  static Future<void> una_vez(int id, DateTime diaDeInicio, String hora, String name, int num, String days) async {
     int h = int.parse(hora.split(":")[0]);
     int m = int.parse(hora.split(":")[1].split(" ")[0]);
     if(hora.split(":")[1].split(" ")[1] == "PM") h = h + 12;
     String title = 'Tome $num unidades de $name.';
+    String payload = '$num;$name;$days;$hora;$id';
     // Convertir la hora a un objeto TZDateTime
     Duration offsetTime = DateTime.now().timeZoneOffset;
     tz.initializeTimeZones();
@@ -79,7 +81,6 @@ class alarms_class {
       channelDescription: 'Alarm Clock Notification',
       subText: title,
       //silent: true,
-      color: Colors.amber,
       colorized: true,
       ticker: title,
       playSound: true,
@@ -96,32 +97,10 @@ class alarms_class {
       id, title, title, alarmTime,
       matchDateTimeComponents: DateTimeComponents.time,
       uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
-      payload: title,
+      payload: payload,
       nd,
     );
     _checkPendingNotificationRequests();
-
-   //await flutterLocalNotificationsPlugin.onActionSelected.listen((String selectedNotificationId, String action) {
-   //  if (selectedNotificationId == 'alarm_clock_channel') {
-   //    switch (action) {
-   //      case 'Tomar':
-   //      // Realizar la acción al presionar "Tomar"
-   //        print('Botón "Tomar" presionado');
-   //        break;
-   //      case 'Ignorar':
-   //      // Realizar la acción al presionar "Ignorar"
-   //        print('Botón "Ignorar" presionado');
-   //        break;
-   //    }
-   //  }
-   //});
-  }
-
-  void onTapLocalNotification(NotificationResponse notificationResponse) async {
-    final String? payload = notificationResponse.payload;
-    debugPrint(payload);
-    // this is where my navigation happens
-
   }
 
   Future<void> deleteAlarm(int id) async {
@@ -132,7 +111,7 @@ class alarms_class {
     await flutterLocalNotificationsPlugin.cancelAll();
   }
 
-  Future<void> _checkPendingNotificationRequests() async {
+  static Future<void> _checkPendingNotificationRequests() async {
     final List<PendingNotificationRequest> pendingNotificationRequests =
     await flutterLocalNotificationsPlugin.pendingNotificationRequests();
     print('${pendingNotificationRequests.length} pending notification ');
@@ -144,6 +123,35 @@ class alarms_class {
           (pendingNotificationRequest.payload ?? ""));
     }
     print('NOW ' + tz.TZDateTime.now(tz.local).toString());
+  }
+
+  static DateTime calcularDiaSiguiente(DateTime today, String days) {
+    int day = today.weekday - 1 + 1;
+    int cont = 1;
+    for(int i = 0; i < 7; i++){
+      if(day > 6) day = 0;
+      if(days[day] == '1') break;
+      cont++;
+      day++;
+    }
+    int dia = today.day, mes = today.month, anio = today.year;
+    dia += cont;
+    if(dia > daysInMonth(mes, anio)){
+      dia -= daysInMonth(mes, anio);
+      mes++;
+      if(mes > 12){
+        mes = 1;
+        anio++;
+      }
+    }
+    DateTime newdt = DateTime.utc(anio, mes, dia);
+    return newdt;
+  }
+
+  static int daysInMonth(int mes, int anio){
+    List<int> days = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+    if ((anio % 4 == 0 && anio % 100 != 0) || (anio % 100 == 0 && anio % 400 == 0)) days[1] = 29;
+    return days[mes - 1];
   }
 }
 

@@ -310,8 +310,10 @@ class _AddCalendarioState extends State<AddCalendario> {
                 else {
                   int frecuenciaInt = 2;
                   String daysOfWeek = "0000000";
-                  if(valorSeleccionadoFrec == "Diaria")
+                  if(valorSeleccionadoFrec == "Diaria") {
                     frecuenciaInt = 0;
+                    daysOfWeek = "1111111";
+                  }
                   else if(valorSeleccionadoFrec == "Personalizado") { //Parsear days of week
                     frecuenciaInt = 1;
                     daysOfWeek = "";
@@ -325,16 +327,7 @@ class _AddCalendarioState extends State<AddCalendario> {
                   hora_String = _horaSeleccionada.format(context);
                   Random random = Random();
                   int randomNumber = random.nextInt(10000);
-                  if(frecuenciaInt == 0){
-                    //alarms_class().diaria(fechaSeleccionada!, hora_String!, valorSeleccionadoNombre!, cantidadPastillas!, randomNumber);
-                  }
-                  else if(frecuenciaInt == 1){
-
-                  }
-                  else{
-                    alarms_class().una_vez(randomNumber, fechaSeleccionada!, hora_String!, valorSeleccionadoNombre!, cantidadPastillas!);
-                   }
-
+                  alarms_class.una_vez(randomNumber, fechaSeleccionada!, hora_String!, valorSeleccionadoNombre!, cantidadPastillas!, daysOfWeek);
                   await insertSchedule(valorSeleccionadoNombre!, getUserAsociadoId(),
                       valorSeleccionadoTOD!, fechaSeleccionada, hora_String, cantidadPastillas!, frecuenciaInt, daysOfWeek, randomNumber);
                   Navigator.of(context).pushReplacementNamed('/calendario');

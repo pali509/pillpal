@@ -22,14 +22,6 @@ initDatabaseConnection() async {
   });
 }
 
-/*Future<void> connecting() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Supabase.initialize(
-    url: 'https://amwzytiutgstvnrpaiju.supabase.co',
-    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFtd3p5dGl1dGdzdHZucnBhaWp1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTgzNDA3MzQsImV4cCI6MjAxMzkxNjczNH0.-15tfv5ltd59NnnC00FKUL-IsCmWvrpk1y4ktfHA2Y4',
-  );
-}*/
-
 Future<List<String>> getUser(int userId) async {
   List<Map<String, dynamic>> mapUser = await databaseConnection.mappedResultsQuery("""
     select u.user_id, u.user_name, u.user_email 
