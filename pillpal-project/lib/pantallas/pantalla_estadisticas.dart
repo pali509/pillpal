@@ -16,6 +16,10 @@ import 'add_calendario.dart';
 import 'navigation_drawer.dart';
 
 enum Selection { Semana, Mes }
+List<String> months= ["enero", "febrero", "marzo", "abril", "mayo", "junio",
+  "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
+List<String> weekdays = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
+
 class PantallaEstadisticas extends StatefulWidget {
   const PantallaEstadisticas({super.key});
 
@@ -24,11 +28,16 @@ class PantallaEstadisticas extends StatefulWidget {
 }
 class _PantallaEstadisticasState extends State<PantallaEstadisticas> {
   CalendarFormat _calendarFormat = CalendarFormat.week;
-  List<String> months= ["enero", "febrero", "marzo", "abril", "mayo", "junio",
-    "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre",];
+
+
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
   Selection selected = Selection.Semana;
+  String diaSeleccionado = weekdays[DateTime.now().weekday - 1];
+  DateTime dia = DateTime.now();
+  //DateTime diaFinal = DateTime.now();
+
+
   void _handleButtonPress(Selection selection) {
     setState(() {
     selected = selection;
@@ -142,8 +151,8 @@ class _PantallaEstadisticasState extends State<PantallaEstadisticas> {
   ],
   ),
   const SizedBox(height: 30.0),
-  Text('${primerDiaSemana(DateTime.now()).day} ${months[primerDiaSemana(DateTime.now()).month - 1]} '
-      '- ${UltimoDiaSemana(DateTime.now()).day} ${months[UltimoDiaSemana(DateTime.now()).month - 1]}'
+  Text('${primerDiaSemana(dia).day} ${months[primerDiaSemana(dia).month - 1]} '
+      '- ${UltimoDiaSemana(dia).day} ${months[UltimoDiaSemana(dia).month - 1]}'
       , style: TextStyle(fontSize: 20)),
   /*
       Row(
@@ -214,7 +223,7 @@ class _PantallaEstadisticasState extends State<PantallaEstadisticas> {
   },
   ),
   const SizedBox(height: 20.0),
-  Text('Estadística diaria: ', style: TextStyle(fontSize: 20)),
+  Text('Estadística diaria: $diaSeleccionado', style: TextStyle(fontSize: 20)),
   Column(
   crossAxisAlignment: CrossAxisAlignment.start,
   children: [
@@ -470,8 +479,9 @@ Falta:
   SEMANAL:
   -Poner la pantalla en un scroll y configurar los contenedores pa que salga como en calendario
   -Poner las flechas para cambiar de semana como en inicial
-  -Ver si las flechas arriba son posibles o tengo que poner el header de tableCalendar
-  -Poner "Estadistica diaria: Dia de la semana
+    -Ver si las flechas arriba son posibles o tengo que poner el header de tableCalendar
+    -Con las flechas que sea hacer dia -= 7 dias para que cambie el texto de arriba
+  -Poner "Estadistica diaria: Dia de la semana -> Al cambiar de dia seleccionado cambiar esto tmb
   -Meterlo en un Visible
   -El contenido de los containers ( de momento no se puede )
   MENSUAL:
