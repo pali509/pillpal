@@ -37,26 +37,20 @@ class alarms_class {
     List<String> payload = notificationResponse.payload!.split(';');
     DateTime today = DateTime.now();
     if (notificationResponse.actionId == 'Tomar') {
-      debugPrint("PRINGAITO1");
       String s = payload[0] + ";" + payload[1] + ";Si";
-      insert_statistics(today, getUserAsociadoId(), int.parse(payload[0]),
+      insert_statistics(today, getUserId(), int.parse(payload[0]),
           int.parse(payload[0]), s);
-      // do something
     }
     else {//Si se ignora o si se pulsa la noti
-      debugPrint("PRINGAITO2");
       String s = payload[0] + ";" + payload[1] + ";No";
-      insert_statistics(today, getUserAsociadoId(), 0,
+      insert_statistics(today, getUserId(), 0,
           int.parse(payload[0]), s);
-      // do something else
     }
     if(payload[2] != '0000000') {
       DateTime nextDay = calcularDiaSiguiente(today, payload[2]);
       debugPrint('HORA FINAL: ${nextDay.day}/${nextDay.month}/${nextDay.year}');
       //una_vez(int.parse(payload[4]), nextDay, payload[3], payload[1], int.parse(payload[0]), payload[2]);
     }
-    //1;Algo Delulu;0000000;8:01 PM;3
-    //1;Paracetamol;Si;3;Ibuprofeno;No
   }
 
   static Future<void> una_vez(int id, DateTime diaDeInicio, String hora, String name, int num, String days) async {
