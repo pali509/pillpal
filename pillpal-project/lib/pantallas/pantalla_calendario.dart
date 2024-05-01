@@ -105,12 +105,28 @@ class _PantallaCalendarioState extends State<PantallaCalendario> {
                 setState(() {
                   _selectedDay = selectedDay;
                   _focusedDay = focusedDay;
-
                 });
               }
-
             },
-
+          calendarStyle: const CalendarStyle(
+            markersAlignment: Alignment.bottomRight,
+          ),
+          calendarBuilders: CalendarBuilders(
+            markerBuilder: (context, day, events) => events.isNotEmpty
+                ? Container(
+              width: 24,
+              height: 24,
+              alignment: Alignment.center,
+              decoration: const BoxDecoration(
+                color: Colors.lightBlue,
+              ),
+              child: Text(
+                '${events.length}',
+                style: const TextStyle(color: Colors.white),
+              ),
+            )
+                : null,
+          ),
             onFormatChanged: (format) { //Cambiar formato
               if (_calendarFormat != format) {
                 // Call `setState()` when updating calendar format
