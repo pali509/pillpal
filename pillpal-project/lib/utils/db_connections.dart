@@ -391,8 +391,24 @@ Future<String> getHour(int time_of_day) async{
 }
 
 void insert_statistics(DateTime date, int userId, int taken, int programmed, String summary) async{
-  await databaseConnection.query("""INSERT INTO "Statistics" (fecha, user_id, taken, programmed, summary)
+  List<Map<String, dynamic>>? estadisticas = await databaseConnection
+      .mappedResultsQuery("""
+      select * from "Statistics" s where user_id = $userId and fecha = '$date'""");
+  if(estadisticas.isNotEmpty) {
+    //debugPrint(userList[0]['Users']['user_role_id'];
+    int take = estadisticas[0]['Statistics']['taken'] + taken;
+    int progs = estadisticas[0]['Statistics']['programmed'] + programmed;
+    String suma = estadisticas[0]['Statistics']['summary'] + ';' + summary;
+    await databaseConnection.query("""
+          UPDATE "Statistics"
+          SET taken = $take, programmed = $progs, summary = '$suma'
+          WHERE user_id = $userId and fecha = '$date'
+      """);
+  }
+  else {
+    await databaseConnection.query("""INSERT INTO "Statistics" (fecha, user_id, taken, programmed, summary)
     VALUES ('$date', $userId, $taken, $programmed, '$summary')""");
+  }
 }
 
 //Devuelve una lista con cada usuario.
