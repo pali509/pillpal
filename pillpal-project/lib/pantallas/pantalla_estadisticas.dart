@@ -162,34 +162,7 @@ class _PantallaEstadisticasState extends State<PantallaEstadisticas> {
                         Text('${primerDiaSemana(dia).day} ${months[primerDiaSemana(dia).month - 1]} '
                             '- ${UltimoDiaSemana(dia).day} ${months[UltimoDiaSemana(dia).month - 1]}'
                             , style: TextStyle(fontSize: 20)),
-                        /*
-      Row(
 
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          IconButton(
-            icon: Icon(Icons.arrow_back, size: 30.0),
-            onPressed: () {
-              setState(() {
-                if(diaSeleccionado.weekday != 0)
-                  diaSeleccionado = diaSeleccionado.subtract(Duration(days: 1));
-              });
-            },
-          ),
-          Text("${weekdays[diaSeleccionado.weekday - 1]}, ${diaSeleccionado.day} ${months[diaSeleccionado.month]}",style: TextStyle(fontSize: 26.0)),
-
-          IconButton(
-            icon: Icon(Icons.arrow_forward, size: 30.0),
-            onPressed: () {
-              setState(() {
-                diaSeleccionado = diaSeleccionado.add(Duration(days: 1));
-              });
-            },
-          ),
-        ],
-      ),
-
-       */
                         const SizedBox(height: 20.0),
                         Text('Estadística semanal: ', style: TextStyle(fontSize: 20)),
                         Column(
@@ -199,7 +172,7 @@ class _PantallaEstadisticasState extends State<PantallaEstadisticas> {
                             Text('Medicación tomada:         10 (50%)', style: TextStyle(fontSize: 20)),
                             const SizedBox(height: 20.0),
                             Text('Total medicación a tomar:    20', style: TextStyle(fontSize: 20)),
-                            const SizedBox(height: 40.0),
+                            const SizedBox(height: 10.0),
                           ],
                         ),
 
@@ -253,24 +226,23 @@ class _PantallaEstadisticasState extends State<PantallaEstadisticas> {
                             });
                           },
                         ),
-                        const SizedBox(height: 20.0),
-                        Text('Estadística diaria: $diaSeleccionado', style: TextStyle(fontSize: 20)),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const SizedBox(height: 20.0),
-                            Text('Medicación tomada:         5 (50%)', style: TextStyle(fontSize: 20)),
-                            const SizedBox(height: 20.0),
-                            Text('Total medicación a tomar:    10', style: TextStyle(fontSize: 20)),
-
-                            const SizedBox(height: 20.0),
+                        Expanded(
+                          child: ListView(
+                            children: [
+                              Column(
+                                //crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                const SizedBox(height: 20.0),
+                                Text('Estadística diaria: $diaSeleccionado', style: TextStyle(fontSize: 20)),
+                                const SizedBox(height: 20.0),
+                                Text('Medicación tomada:         5 (50%)', style: TextStyle(fontSize: 20)),
+                                const SizedBox(height: 20.0),
+                                Text('Total medicación a tomar:    10', style: TextStyle(fontSize: 20)),
+                                const SizedBox(height: 20.0),
                           ],
                         ),
 
-                        Expanded(
-                          child: ListView(
-                            physics: const NeverScrollableScrollPhysics(),
-                            children: [
+
                               Container(
                                 child: ListView(
                                   shrinkWrap: true,
@@ -307,7 +279,6 @@ class _PantallaEstadisticasState extends State<PantallaEstadisticas> {
 
                               const SizedBox(height: 30.0),
                               Container(
-
                                 child: ListView(
                                   shrinkWrap: true,
                                   physics: const NeverScrollableScrollPhysics(),
@@ -494,7 +465,295 @@ class _PantallaEstadisticasState extends State<PantallaEstadisticas> {
                   )
               ),
             ),
+            Visibility(
+              visible: selected == Selection.Mes,
+              child: Expanded(
+                  child: Column(
+                      children:[
+                  Expanded(
+                  child: ListView(
+                  children: [
+                    Column(
+                      children:[
+                        const SizedBox(height: 20.0),
+                        Text('Estadística mensual: ', style: TextStyle(fontSize: 20)),
+
+                            const SizedBox(height: 20.0),
+                            Text('Medicación tomada:         10 (50%)', style: TextStyle(fontSize: 20)),
+                            const SizedBox(height: 20.0),
+                            Text('Total medicación a tomar:    20', style: TextStyle(fontSize: 20)),
+                            const SizedBox(height: 10.0),
+                          ],
+                        ),
+
+                        TableCalendar(
+                          locale: 'es_Es',
+                          //headerVisible : false,
+                          headerStyle: const HeaderStyle(
+                            titleCentered: true,
+                            formatButtonVisible : false,
+
+                          ),
+                          firstDay: DateTime.utc(2023, 10, 16),
+                          lastDay: DateTime.utc(2030, 3, 14),
+                          focusedDay: _focusedDay,
+                          calendarFormat: CalendarFormat.month,
+                          startingDayOfWeek: StartingDayOfWeek.monday,
+                          selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
+                          onDaySelected: (selectedDay, focusedDay) { //Cambiar dia seleccionado
+                            if (!isSameDay(_selectedDay, selectedDay)) {
+                              setState(() {
+                                _selectedDay = selectedDay;
+                                _focusedDay = focusedDay;
+                                diaSeleccionado = weekdays[selectedDay.weekday-1];
+                              });
+                            }
+                          },
+                          onPageChanged: (focusedDay) {
+                            setState(() {
+                              _focusedDay = focusedDay;
+                            });
+                          },
+                        ),
+                        Expanded(
+                          child:
+                              Column(
+                                //crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const SizedBox(height: 20.0),
+                                  Text('Estadística diaria: $diaSeleccionado', style: TextStyle(fontSize: 20)),
+                                  const SizedBox(height: 20.0),
+                                  Text('Medicación tomada:         5 (50%)', style: TextStyle(fontSize: 20)),
+                                  const SizedBox(height: 20.0),
+                                  Text('Total medicación a tomar:    10', style: TextStyle(fontSize: 20)),
+                                  const SizedBox(height: 20.0),
+
+                              Container(
+                                child: ListView(
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  children:[
+                                    const Text(
+                                      ' Medicación tomada',
+                                      style: TextStyle(color: Colors.black, fontSize: 25),
+                                    ),
+
+                                    Container(
+                                      decoration: BoxDecoration(
+                                        border: Border.all(
+                                            color: Colors.green, width: 5),
+                                      ),
+                                      child: ListView.builder( //Esto es igual que el de pantalla pastillero
+                                        shrinkWrap: true,
+                                        itemCount: 1,
+                                        physics: const NeverScrollableScrollPhysics(),
+                                        itemBuilder: (context, index) {
+                                          return const Padding(
+                                            padding:  EdgeInsets.only(top: 25.0, bottom: 15.0),
+                                            child: Center(
+                                              child: Text("No hay medicación tomada ese día"),
+                                            ),
+                                          );
+
+                                        },
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+
+                              const SizedBox(height: 30.0),
+                              Container(
+                                child: ListView(
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  children:[
+                                    const Text(
+                                      ' Medicación no tomada:',
+                                      style: TextStyle(color: Colors.black, fontSize: 25),
+                                    ),
+
+                                    Container(
+                                      decoration: BoxDecoration(
+                                        border: Border.all(
+                                            color: Colors.red, width: 5),
+                                      ),
+                                      child: ListView.builder( //Esto es igual que el de pantalla pastillero
+                                          shrinkWrap: true,
+                                          itemCount: 1,
+                                          physics: const NeverScrollableScrollPhysics(),
+                                          itemBuilder: (context, index) {
+
+                                            return const Padding(
+                                              padding:  EdgeInsets.only(top: 25.0, bottom: 15.0),
+                                              child: Center(
+                                                child: Text("No hay medicación programada para este dia"),
+                                              ),
+                                            );
+                                          }
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                                ],
+                              ),
+                        ),
+                        /*
+      Expanded(
+        child: FutureBuilder<List<Horario>>(
+          future: getDayPills(diaSeleccionado, getUserAsociadoId()),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            } else {
+              cosas = snapshot.data!;
+              cosas1 = cogerSegunMomento(cosas, 1); //Para coger solo las del desayuno
+              cosas2 = cogerSegunMomento(cosas, 2); //Solo comida
+              cosas3 = cogerSegunMomento(cosas, 3); //Solo cena
+              cosas0 = cogerSegunMomento(cosas, 0);
+              //FALTA DORMIR!
+
+              if (cosas0.isNotEmpty)
+                visibleOtros = true; //Si hay cosas ponerlo visible
+              else
+                visibleOtros = false;
+
+
+              return ListView(
+                scrollDirection: Axis.vertical,
+
+                children: [
+                  Container(
+
+                    child: ListView(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      children:[
+                        const Text(
+                          ' Desayuno',
+                          style: TextStyle(color: Colors.black, fontSize: 25),
+                        ),
+
+                        Container(
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                                color: Colors.blue, width: 5),
+                          ),
+                          child: ListView.builder( //Esto es igual que el de pantalla pastillero
+                            shrinkWrap: true,
+                            itemCount:cosas1.length > 0 ? cosas1.length : 1,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemBuilder: (context, index) {
+                              if(cosas1.isNotEmpty) {
+                                Horario currentCosa = cosas1[index];
+                                return Container(
+                                  decoration: BoxDecoration(
+                                    border: Border.all(),
+                                    borderRadius: BorderRadius
+                                        .circular(12.0),
+                                  ),
+                                  child: ListTile(
+                                    onTap: () =>
+                                        print('${cosas1[index]}'),
+                                    title: Text('${currentCosa
+                                        .getPillName()}'),
+                                    subtitle: Text(
+                                        'Cantidad: ${currentCosa
+                                            .getNumPills()} ud.'),
+                                  ),
+                                );
+                              }
+                              else {
+                                return const Padding(
+                                  padding:  EdgeInsets.only(top: 25.0, bottom: 15.0),
+                                  child: Center(
+                                    child: Text("No hay medicación programada para el desayuno este dia"),
+                                  ),
+                                );
+                              }
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+
+                  Container(
+
+                    child: ListView(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      children:[
+                        const Text(
+                          ' Comida',
+                          style: TextStyle(color: Colors.black, fontSize: 25),
+                        ),
+
+                        Container(
+
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                                color: Colors.green, width: 5),
+                          ),
+                          child: ListView.builder( //Esto es igual que el de pantalla pastillero
+                            shrinkWrap: true,
+                            itemCount: cosas2.length > 0 ? cosas2.length : 1,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemBuilder: (context, index) {
+                              if(cosas2.isNotEmpty) {
+                                Horario currentCosa = cosas2[index];
+                                return Container(
+                                  decoration: BoxDecoration(
+                                    border: Border.all(),
+                                    borderRadius: BorderRadius
+                                        .circular(12.0),
+                                  ),
+                                  child: ListTile(
+                                    onTap: () =>
+                                        print('${cosas2[index]}'),
+                                    title: Text('${currentCosa
+                                        .getPillName()}'),
+                                    subtitle: Text(
+                                        'Cantidad: ${currentCosa
+                                            .getNumPills()} ud.'),
+                                  ),
+                                );
+                              }
+                              else {
+                                return const Padding(
+                                  padding:  EdgeInsets.only(top: 25.0, bottom: 15.0),
+                                  child: Center(
+                                    child: Text("No hay medicación programada para la comida este dia"),
+                                  ),
+                                );
+                              }
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              );
+            }
+          },
+
+
+        ),
+      ),
+
+       */
+              ]
+              )
+                  )
+                      ]
+                  )
+              ),
+            ),
           ],
+
         ),
       );
 
@@ -505,9 +764,16 @@ class _PantallaEstadisticasState extends State<PantallaEstadisticas> {
 
 /*
 Falta:
-  SEMANAL:
-  -Que tenga scroll
   -El contenido de los containers ( de momento no se puede )
+  -El mes podria ser mas grande en el header?
   MENSUAL:
-  -Todo todito
+  ======== Exception caught by widgets library =======================================================
+The following assertion was thrown while applying parent data.:
+Incorrect use of ParentDataWidget.
+
+The ParentDataWidget Expanded(flex: 1) wants to apply ParentData of type FlexParentData to a RenderObject, which has been set up to accept ParentData of incompatible type ParentData.
+
+Usually, this means that the Expanded widget has the wrong ancestor RenderObjectWidget. Typically, Expanded widgets are placed directly inside Flex widgets.
+The offending Expanded is currently placed inside a RepaintBoundary widget.
+
  */
