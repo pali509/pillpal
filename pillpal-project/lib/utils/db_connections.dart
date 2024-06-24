@@ -1,6 +1,7 @@
 import 'package:pillpal/utils/alarma_type.dart';
 import 'package:pillpal/utils/horario.dart';
 import 'package:pillpal/utils/pills.dart';
+import 'package:pillpal/utils/statistic_type.dart';
 import 'package:supabase/src/supabase_stream_builder.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +10,7 @@ import 'package:pillpal/utils/user.dart';
 
 var databaseConnection = PostgreSQLConnection(
     'aws-0-eu-central-1.pooler.supabase.com',
-    5432,
+    6543,
     'postgres',
     queryTimeoutInSeconds: 3600,
     timeoutInSeconds: 3600,
@@ -470,4 +471,17 @@ Future<void> deleteAlarmBd(int alarm_id) async {
       DELETE FROM "Horario"
       WHERE id = $alarm_id
   """);
+}
+
+Future<Statistic_type?> getSta(DateTime d, int user_id) async {
+  List<Map<String, dynamic>> map = await databaseConnection.mappedResultsQuery("""
+    select * from "Statistics" s where user_id  = $user_id and fecha = $d
+  """);
+  Statistic_type? sta = null;
+  if(map[0].isNotEmpty) {
+    sta = new Statistic_type(int.parse(map[0]['Statistics']['taken']),
+        int.parse(map[0]['Statistics']['programmed']),
+        map[0]['Statistics']['summary']);
+  }
+  return sta;
 }

@@ -56,6 +56,7 @@ class alarms_class {
   static Future<void> una_vez(int id, DateTime diaDeInicio, String hora, String name, int num, String days) async {
     int h = int.parse(hora.split(":")[0]);
     int m = int.parse(hora.split(":")[1].split(" ")[0]);
+    
     if(hora.split(":")[1].split(" ")[1] == "PM") h = h + 12;
     String title = 'Tome $num unidades de $name.';
     String payload = '$num;$name;$days;$hora;$id';
