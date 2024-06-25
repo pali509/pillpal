@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:pillpal/utils/user.dart';
@@ -33,13 +35,21 @@ class alarms_class {
   }
 
   @pragma('vm:entry-point')
-  static void notificationTapBackground(NotificationResponse notificationResponse) {
+  static Future<void> notificationTapBackground(NotificationResponse notificationResponse) async {
     List<String> payload = notificationResponse.payload!.split(';');
     DateTime today = DateTime.now();
     if (notificationResponse.actionId == 'Tomar') {
-      String s = payload[0] + ";" + payload[1] + ";Si";
+      String s = payload[0] + ";" + payload[1] + ";" + payload[5] + ";Si";
       insert_statistics(today, getUserId(), int.parse(payload[0]),
           int.parse(payload[0]), s);
+      //Restar cantidad
+      int final_pills = await subPills(
+          getUserId(), int.parse(payload[5]), int.parse(payload[0]));
+
+      // Comprobar si quedan pocas y mandar notificacion
+      //Será -1 si hay error o si no se desean notificaciones
+      if (final_pills <= 5 && final_pills >= 0)
+        showNotificationNoPills(payload[1], final_pills);
     }
     else {//Si se ignora o si se pulsa la noti
       String s = payload[0] + ";" + payload[1] + ";No";
@@ -53,13 +63,13 @@ class alarms_class {
     }
   }
 
-  static Future<void> una_vez(int id, DateTime diaDeInicio, String hora, String name, int num, String days) async {
+  static Future<void> una_vez(int id, DateTime diaDeInicio, String hora, String name, int num, String days, int pill_id) async {
     int h = int.parse(hora.split(":")[0]);
     int m = int.parse(hora.split(":")[1].split(" ")[0]);
     
     if(hora.split(":")[1].split(" ")[1] == "PM") h = h + 12;
     String title = 'Tome $num unidades de $name.';
-    String payload = '$num;$name;$days;$hora;$id';
+    String payload = '$num;$name;$days;$hora;$id;$pill_id';
     // Convertir la hora a un objeto TZDateTime
     Duration offsetTime = DateTime.now().timeZoneOffset;
     tz.initializeTimeZones();
@@ -153,6 +163,29 @@ class alarms_class {
     List<int> days = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
     if ((anio % 4 == 0 && anio % 100 != 0) || (anio % 100 == 0 && anio % 400 == 0)) days[1] = 29;
     return days[mes - 1];
+  }
+
+  static void showNotificationNoPills(String name, int num) async {
+    const AndroidNotificationDetails androidNotificationDetails =
+    AndroidNotificationDetails('channel_id', 'Channel Name',
+        channelDescription: 'Channel Description',
+        importance: Importance.max,
+        priority: Priority.high,
+        ticker: 'ticker');
+
+    Random random = Random();
+    int notification_id = random.nextInt(10000);
+    const NotificationDetails notificationDetails =
+    NotificationDetails(android: androidNotificationDetails);
+
+    String title = name;
+    String value = "";
+    if (num == 1)
+      value = "Queda una unidad de la medicación \"$name\"";
+    else
+      value = "Quedan $num unidades de la medicación \"$name\"";
+    await flutterLocalNotificationsPlugin.show(
+        notification_id, title, value, notificationDetails, payload: '');
   }
 }
 

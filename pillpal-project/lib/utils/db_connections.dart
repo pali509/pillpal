@@ -485,3 +485,21 @@ Future<Statistic_type?> getSta(DateTime d, int user_id) async {
   }
   return sta;
 }
+
+Future<int> subPills(int user_id, int pill_id, int q) async {
+  List<Map<String, dynamic>> map = await databaseConnection.mappedResultsQuery(
+      """
+    select * from "Pills" p  where user_id = $user_id and pill_id = $pill_id
+  """);
+  int final_q = -1;
+  if (map[0].isNotEmpty) {
+    final_q = int.parse(map[0]['Pills']['pill_quantity']) - q;
+    if (final_q < 0) final_q = 0;
+    await databaseConnection.query("""
+          UPDATE "Pills" 
+          SET pill_quantity  = $final_q
+          WHERE user_id = $user_id and pill_id = $pill_id;
+      """);
+  }
+  return final_q;
+}

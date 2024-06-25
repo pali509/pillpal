@@ -62,11 +62,8 @@ class _AddCalendarioState extends State<AddCalendario> {
     List<Pill> pills = await lista!; // Espera a que se complete la llamada a getPills
 
     for (var item in pills) {
-      debugPrint(item.pillName!);
       _listProducts.add(item.pillName!);
     }
-
-    debugPrint(_listProducts.toString());
     return _listProducts;
   }
 
@@ -327,9 +324,11 @@ class _AddCalendarioState extends State<AddCalendario> {
                   hora_String = _horaSeleccionada.format(context);
                   Random random = Random();
                   int randomNumber = random.nextInt(10000);
-                  alarms_class.una_vez(randomNumber, fechaSeleccionada!, hora_String!, valorSeleccionadoNombre!, cantidadPastillas!, daysOfWeek);
+                  alarms_class.una_vez(randomNumber, fechaSeleccionada!, hora_String!,
+                      valorSeleccionadoNombre!, cantidadPastillas!, daysOfWeek, 4);
                   await insertSchedule(valorSeleccionadoNombre!, getUserAsociadoId(),
-                      valorSeleccionadoTOD!, fechaSeleccionada, hora_String, cantidadPastillas!, frecuenciaInt, daysOfWeek, randomNumber);
+                      valorSeleccionadoTOD!, fechaSeleccionada, hora_String, cantidadPastillas!,
+                      frecuenciaInt, daysOfWeek, randomNumber);
                   Navigator.of(context).pushReplacementNamed('/calendario');
                 }
               },
