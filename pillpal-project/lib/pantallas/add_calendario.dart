@@ -22,6 +22,7 @@ class AddCalendario extends StatefulWidget {
 class _AddCalendarioState extends State<AddCalendario> {
   // Lista de opciones para el Dropdown Menu
   List<String> opciones = [];
+  List<Pill> pills = [];
 
   // Función para obtener las opciones del Dropdown Menu
   Future<void> obtenerOpciones() async {
@@ -59,7 +60,7 @@ class _AddCalendarioState extends State<AddCalendario> {
   Future<List<String>> getAll() async {
     List<String> _listProducts = [];
     Future<List<Pill>>? lista = getPills(getUserAsociadoId());
-    List<Pill> pills = await lista!; // Espera a que se complete la llamada a getPills
+    pills = await lista!; // Espera a que se complete la llamada a getPills
 
     for (var item in pills) {
       _listProducts.add(item.pillName!);
@@ -325,7 +326,8 @@ class _AddCalendarioState extends State<AddCalendario> {
                   Random random = Random();
                   int randomNumber = random.nextInt(10000);
                   alarms_class.una_vez(randomNumber, fechaSeleccionada!, hora_String!,
-                      valorSeleccionadoNombre!, cantidadPastillas!, daysOfWeek, 4);
+                      valorSeleccionadoNombre!, cantidadPastillas!, daysOfWeek,
+                      pills[opciones.indexOf(valorSeleccionadoNombre!)].pillId!);
                   await insertSchedule(valorSeleccionadoNombre!, getUserAsociadoId(),
                       valorSeleccionadoTOD!, fechaSeleccionada, hora_String, cantidadPastillas!,
                       frecuenciaInt, daysOfWeek, randomNumber);
