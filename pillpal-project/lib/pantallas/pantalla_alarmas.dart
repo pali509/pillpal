@@ -78,6 +78,204 @@ class _AlarmaScreenState extends State<AlarmaScreen> {
     );
   }
 
+  String timeOfDayInfo(int time_of_day) {
+    if(time_of_day == 0) {
+      return "No pertenece a ninguna franja horaria";
+    }
+    else if(time_of_day == 1) {
+     return "Franja de: Desayuno";
+    }
+    else if(time_of_day == 2) {
+      return "Franja de: Comida";
+    }
+    else if(time_of_day == 3) {
+      return "Franja de: Cena";
+    }
+    else{
+      return "Franja de: Dormir";
+    }
+  }
+
+  String getPeriodoInfo(int period) {
+      if(period == 0) {
+        return "diaria";
+      }
+      else if(period == 1) {
+        return "personalizada";
+      }
+      else {
+        return "una vez";
+      }
+  }
+
+  void _mostrarPopEdicionAlarma(BuildContext context, Alarma_type alarma) {
+    List<String>? alarm = alarma.getDay()?.split(" ");
+    int? _opcionSeleccionada = alarma.timeOfDay;
+    int? _periodo = alarma.period;
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          // Utilizar StatefulBuilder para gestionar el estado
+          builder: (context, setState) {
+            final _NumPillController = TextEditingController(text: alarma.numPills.toString());
+            final _DayController = TextEditingController(text: alarm?[0]);
+            final _hourController = TextEditingController(text: alarma.getHour());
+
+            return AlertDialog(
+              title: const Text('Editar Alarma'),
+              content: SingleChildScrollView(
+                child: Column(
+                  children: <Widget>[
+                    TextField(
+                      controller: _NumPillController,
+                      decoration: const InputDecoration(
+                          labelText: 'Cantidad pastillas'),
+                    ),
+                    TextField(
+                      controller: _DayController,
+                      decoration: const InputDecoration(
+                          labelText: 'Fecha (año-mes-dia'),
+                          keyboardType: TextInputType.datetime,
+                    ),
+                    TextField(
+                      controller: _hourController,
+                      decoration: const InputDecoration(labelText: 'Hora'),
+                    ),
+                    ListTile(
+                      title: const Text("Franja horaria"),
+                      trailing: DropdownButton<int>(
+                        value: _opcionSeleccionada,
+                        items: const [
+                          DropdownMenuItem<int>(
+                            value: 1,
+                            child: Text('Desayuno'),
+                          ),
+                          DropdownMenuItem<int>(
+                            value: 2,
+                            child: Text('Comida'),
+                          ),
+                          DropdownMenuItem<int>(
+                            value: 3,
+                            child: Text('Cena'),
+                          ),
+                          DropdownMenuItem<int>(
+                            value: 4,
+                            child: Text('Dormir'),
+                          ),
+                          DropdownMenuItem<int>(
+                            value: 0,
+                            child: Text('Ninguno'),
+                          ),
+                        ],
+                        onChanged: (int? nuevoValor) {
+                          setState(() {
+                            _opcionSeleccionada = nuevoValor!;
+                          });
+                        },
+                      ),
+                    ),
+                    ListTile(
+                      title: const Text("Periodo"),
+                      trailing: DropdownButton<int>(
+                        value: _periodo,
+                        items: const [
+                          DropdownMenuItem<int>(
+                            value: 0,
+                            child: Text('Diaria'),
+                          ),
+                          DropdownMenuItem<int>(
+                            value: 1,
+                            child: Text('Personalizada'),
+                          ),
+                          DropdownMenuItem<int>(
+                            value: 3,
+                            child: Text('Una vez'),
+                          ),
+                        ],
+                        onChanged: (int? nuevoValor) {
+                          setState(() {
+                            _periodo = nuevoValor!;
+                          });
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              actions: <Widget>[
+                TextButton(
+                  child: const Text('Guardar'),
+                  onPressed: () {
+                    // Guardar los cambios en la alarma
+                    //TODO: comprobar si va ok y subirlo a la BD
+                    setState(() {
+                      alarma.numPills = _NumPillController.text as int?;
+                      String newDay = "${_DayController.text} ${alarm![1]}";
+                      alarma.day = newDay as DateTime?;
+                      alarma.hour = _hourController.text;
+                      alarma.timeOfDay = _opcionSeleccionada;
+                      alarma.period = _periodo;
+                    });
+                    Navigator.of(context).pop(); // Cerrar el pop-up de edición
+                  },
+                ),
+                TextButton(
+                  child: const Text('Cancelar'),
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Cerrar el pop-up de edición
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void _mostrarInformacionAlarma(BuildContext context, Alarma_type alarma) {
+    List<String>? alarm = alarma.getDay()?.split(" ");
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(alarma.pillName!),
+          content: Wrap( // Envuelve el contenido en una columna
+            direction: Axis.horizontal, // Limita el tamaño de la columna
+            children: <Widget>[
+              Text("Dosis a tomar: ${alarma.numPills}", style: TextStyle(fontSize: 16.0)),
+              // Muestra la descripción
+              Text('Se toma el ${alarm?[0]} a las ${alarma.getHour()}', style: TextStyle(fontSize: 16.0)),
+              Text(timeOfDayInfo(alarma.timeOfDay!), style: TextStyle(fontSize: 16.0)),
+              Text("Esta alarma suena ${getPeriodoInfo(alarma.period!)}", style: TextStyle(fontSize: 16.0)),
+            ],
+          ),
+          actions: <Widget>[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                TextButton(
+                  child: Text('Editar'),
+                  onPressed: () {
+                    _mostrarPopEdicionAlarma(context, alarma);
+                  },
+                ),
+                Spacer(), // Añadir Spacer para distribuir el espacio
+                TextButton(
+                  child: Text('Aceptar'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            )
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -107,6 +305,10 @@ class _AlarmaScreenState extends State<AlarmaScreen> {
                             _showDeleteConfirmationDialog(context, alarma);
                           },
                         ),
+                        onTap: () {
+                          debugPrint('tapped.');
+                          _mostrarInformacionAlarma(context, alarma);
+                        },
                       );
                     },
                   );
