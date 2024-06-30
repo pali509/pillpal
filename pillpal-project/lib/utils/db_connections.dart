@@ -503,3 +503,13 @@ Future<int> subPills(int user_id, int pill_id, int q) async {
   }
   return final_q;
 }
+
+Future<void>actualizar_alarmas(int user_id, int alarm_id,
+    int numPills, DateTime day, String hour, int timeOfDay, int period) async {
+  await databaseConnection.query("""
+          UPDATE "Horario" 
+          SET quantity  = $numPills, date = $day, hour = '$hour', time_of_day = $timeOfDay, period = $period
+          WHERE user_id = $user_id and alarm_id = $alarm_id;
+      """);
+
+}

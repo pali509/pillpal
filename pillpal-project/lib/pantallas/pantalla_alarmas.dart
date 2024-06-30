@@ -216,6 +216,9 @@ class _AlarmaScreenState extends State<AlarmaScreen> {
                       alarma.hour = _hourController.text;
                       alarma.timeOfDay = _opcionSeleccionada;
                       alarma.period = _periodo;
+                      actualizar_alarmas(getUserAsociadoId(), alarma.getAlarmId()!,  alarma.getNumPills()!,
+                      alarma.getDay() as DateTime, alarma.getHour()!,alarma.getTimeOfDay()!,
+                          alarma.getPeriod()!);
                     });
                     Navigator.of(context).pop(); // Cerrar el pop-up de edición
                   },
