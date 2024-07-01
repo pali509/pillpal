@@ -493,7 +493,7 @@ Future<int> subPills(int user_id, int pill_id, int q) async {
   """);
   int final_q = -1;
   if (map[0].isNotEmpty) {
-    final_q = int.parse(map[0]['Pills']['pill_quantity']) - q;
+    final_q = map[0]['Pills']['pill_quantity'] - q;
     if (final_q < 0) final_q = 0;
     await databaseConnection.query("""
           UPDATE "Pills" 
@@ -508,7 +508,7 @@ Future<void>actualizar_alarmas(int user_id, int alarm_id,
     int numPills, DateTime day, String hour, int timeOfDay, int period) async {
   await databaseConnection.query("""
           UPDATE "Horario" 
-          SET quantity  = $numPills, date = $day, hour = '$hour', time_of_day = $timeOfDay, period = $period
+          SET quantity  = $numPills, date = '$day', hour = '$hour', time_of_day = $timeOfDay, period = $period
           WHERE user_id = $user_id and alarm_id = $alarm_id;
       """);
 

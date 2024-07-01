@@ -136,7 +136,7 @@ class _AlarmaScreenState extends State<AlarmaScreen> {
                       controller: _DayController,
                       decoration: const InputDecoration(
                           labelText: 'Fecha (año-mes-dia'),
-                          keyboardType: TextInputType.datetime,
+                          //keyboardType: TextInputType.datetime,
                     ),
                     TextField(
                       controller: _hourController,
@@ -210,16 +210,17 @@ class _AlarmaScreenState extends State<AlarmaScreen> {
                     // Guardar los cambios en la alarma
                     //TODO: comprobar si va ok y subirlo a la BD
                     setState(() {
-                      alarma.numPills = _NumPillController.text as int?;
-                      String newDay = "${_DayController.text} ${alarm![1]}";
-                      alarma.day = newDay as DateTime?;
+                      alarma.numPills = int.parse(_NumPillController.text);
+                      String newDay = _DayController.text;
+                      List<String> newDaySplit = newDay.split('-');
+                      alarma.day = DateTime(int.parse(newDaySplit[0]), int.parse(newDaySplit[1]), int.parse(newDaySplit[2]));
                       alarma.hour = _hourController.text;
                       alarma.timeOfDay = _opcionSeleccionada;
                       alarma.period = _periodo;
-                      actualizar_alarmas(getUserAsociadoId(), alarma.getAlarmId()!,  alarma.getNumPills()!,
-                      alarma.getDay() as DateTime, alarma.getHour()!,alarma.getTimeOfDay()!,
-                          alarma.getPeriod()!);
                     });
+                    actualizar_alarmas(getUserAsociadoId(), alarma.getAlarmId()!,  alarma.getNumPills()!,
+                        alarma.day!, alarma.getHour()!,alarma.getTimeOfDay()!,
+                        alarma.getPeriod()!);
                     Navigator.of(context).pop(); // Cerrar el pop-up de edición
                   },
                 ),
@@ -261,6 +262,7 @@ class _AlarmaScreenState extends State<AlarmaScreen> {
                 TextButton(
                   child: Text('Editar'),
                   onPressed: () {
+                    Navigator.of(context).pop();
                     _mostrarPopEdicionAlarma(context, alarma);
                   },
                 ),
