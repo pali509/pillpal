@@ -184,9 +184,9 @@ class alarms_class {
     String title = name;
     String value = "";
     if (num == 1)
-      value = "Queda una unidad de la medicación \"$name\"";
+      value = "Queda una dosis de la medicación \"$name\"";
     else
-      value = "Quedan $num unidades de la medicación \"$name\"";
+      value = "Quedan $num dosis de la medicación \"$name\"";
     await flutterLocalNotificationsPlugin.show(
         notification_id, title, value, notificationDetails, payload: '');
   }

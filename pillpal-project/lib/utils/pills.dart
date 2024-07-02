@@ -5,9 +5,10 @@ class Pill{
     int ?numPills;
     String? pillName;
     int ?userId;
+    String? type;
 
     // Constructor
-    Pill(this.pillId, this.numPills, this.pillName, this.userId);
+    Pill(this.pillId, this.numPills, this.pillName, this.userId, this.type);
     
     int? getPillId(){
         return pillId;
@@ -15,5 +16,9 @@ class Pill{
 
     int? getUserId() {
         return userId;
+    }
+
+    String? getType(){
+        return type;
     }
 }

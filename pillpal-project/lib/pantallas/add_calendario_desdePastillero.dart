@@ -11,11 +11,12 @@ import 'dart:io';
 class AddCalendarioDesdePastillero extends StatefulWidget {
   final String nombreMed;
   final int numPastillas;
-  const AddCalendarioDesdePastillero({Key? key, required this.nombreMed, required this.numPastillas}) : super(key: key);
+  final String type;
+  const AddCalendarioDesdePastillero({Key? key, required this.nombreMed, required this.numPastillas, required this.type}) : super(key: key);
 
   @override
   _AddCalendarioPasState createState() {
-    return _AddCalendarioPasState(this.nombreMed, this.numPastillas);
+    return _AddCalendarioPasState(this.nombreMed, this.numPastillas, this.type);
   }
 }
 
@@ -24,10 +25,10 @@ class _AddCalendarioPasState extends State<AddCalendarioDesdePastillero> {
   List<String> opciones = [];
 
   String nombreMed;
-
+  String type;
   int numPastillas;
 
-  _AddCalendarioPasState(this.nombreMed, this.numPastillas);
+  _AddCalendarioPasState(this.nombreMed, this.numPastillas, this.type);
 
 
   List<String>frecuencia = ["Diaria", "Una vez", "Personalizado"];
@@ -230,9 +231,11 @@ class _AddCalendarioPasState extends State<AddCalendarioDesdePastillero> {
                         daysOfWeek = daysOfWeek + "0";
                     }
                   }
-                  insertPills(this.nombreMed, this.numPastillas, getUserAsociadoId());
+                  insertPills(this.nombreMed, this.numPastillas,
+                      getUserAsociadoId(), this.type);
                   insertSchedule(this.nombreMed, getUserAsociadoId(),
-                      valorSeleccionadoPeriod!, fechaSeleccionada, hour, cantidadPastillas!, frecuenciaInt, daysOfWeek, 0);
+                      valorSeleccionadoPeriod!, fechaSeleccionada, hour,
+                      cantidadPastillas!, frecuenciaInt, daysOfWeek, 0);
                   Navigator.pushReplacementNamed(context, '/pastis');
                 }
               },

@@ -9,11 +9,16 @@ class Statistic_type{
   List<String> notTakenName = [];
   List<int> notTakenQ = [];
   List<int> notTakenId = [];
+  int weekTaken = 0;
+  int weekProg = 0;
+  int monthTaken = 0;
+  int monthProg = 0;
 
   // Constructor
-  Statistic_type(int taken, int notTaken, String pills){
-    this.taken = taken;
-    this.programmed = notTaken;
+  Statistic_type(int t, int p, String pills,
+      int wt, int wp, int mt, int mp){
+    this.taken = t;
+    this.programmed = p;
     List<String> splitPills = pills.split(";");
     for(int i = 0; i < splitPills.length; i = i+4){
       if(splitPills[i+3] == "Si"){
@@ -27,6 +32,10 @@ class Statistic_type{
         notTakenId.add(int.parse(splitPills[i+2]));
       }
     }
+    this.weekProg = wp;
+    this.weekTaken = wt;
+    this.monthProg = mp;
+    this.monthProg = mt;
   }
 
   int getTaken(){

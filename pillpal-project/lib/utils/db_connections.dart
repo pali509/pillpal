@@ -90,10 +90,10 @@ Future<void> updateUser(int userId, String? email, String? name, String? pwd, St
     }
 }
 
-Future<void> insertPills(String pillName, int numPills, int userId) async {
+Future<void> insertPills(String pillName, int numPills, int userId, String pill_type) async {
   await databaseConnection.query("""
-    INSERT INTO "Pills"(pill_name, user_id, pill_quantity)
-    VALUES ('$pillName', $userId, $numPills);
+    INSERT INTO "Pills"(pill_name, user_id, pill_quantity, pill_type)
+    VALUES ('$pillName', $userId, $numPills, '$pill_type');
   """);
 }
 
@@ -123,7 +123,8 @@ Future<List<Pill>>? getPills(int userId) async {
         mapPills[i]['Pills']['pill_id'],
         mapPills[i]['Pills']['pill_quantity'],
         mapPills[i]['Pills']['pill_name'],
-        mapPills[i]['Pills']['user_id']
+        mapPills[i]['Pills']['user_id'],
+        mapPills[i]['Pills']['pill_type']
     ));
   }
   return listPills;
@@ -474,15 +475,48 @@ Future<void> deleteAlarmBd(int alarm_id) async {
 }
 
 Future<Statistic_type?> getSta(DateTime d, int user_id) async {
+  int taken = 0;
+  int nt = 0;
+  String pills = "";
+  int wt = 0;
+  int wp = 0;
+  int mt = 0;
+  int mp = 0;
+  Statistic_type? sta = null;
+
   List<Map<String, dynamic>> map = await databaseConnection.mappedResultsQuery("""
     select * from "Statistics" s where user_id  = $user_id and fecha = $d
   """);
-  Statistic_type? sta = null;
   if(map[0].isNotEmpty) {
-    sta = new Statistic_type(int.parse(map[0]['Statistics']['taken']),
-        int.parse(map[0]['Statistics']['programmed']),
-        map[0]['Statistics']['summary']);
+    taken = map[0]['Statistics']['taken'];
+    nt = map[0]['Statistics']['programmed'];
+    pills = map[0]['Statistics']['summary'];
   }
+
+  List<Map<String, dynamic>> map2 = await databaseConnection.mappedResultsQuery("""
+     select sum(programmed) as prog, sum(taken) as take 
+     from "Statistics" s 
+     where user_id = $user_id and 
+     DATE_PART('week', fecha) = DATE_PART('week', $d) 
+     and EXTRACT(YEAR FROM fecha) = ${d.year} 
+  """);
+  if(map2[0].isNotEmpty) {
+    wt = map2[0]['']['take'];
+    wp = map2[0]['']['prog'];
+  }
+
+  List<Map<String, dynamic>> map3 = await databaseConnection.mappedResultsQuery("""
+     select sum(programmed) as prog, sum(taken) as take 
+     from "Statistics" s 
+     where user_id = $user_id and EXTRACT(MONTH FROM fecha) = ${d.month}
+     and EXTRACT(YEAR FROM fecha) = ${d.year}
+  """);
+  if(map3[0].isNotEmpty) {
+    mt = map3[0]['']['take'];
+    mp = map3[0]['']['prog'];
+  }
+
+  sta = Statistic_type(taken, nt, pills, wt, wp, mt, mp);
   return sta;
 }
 
