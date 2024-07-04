@@ -27,11 +27,15 @@ class _RegistroAsState extends State<RegistroAs> {
 
   @override
   Widget build(BuildContext context) {
-
-     return Scaffold(
+    return WillPopScope(
+        onWillPop: () async {
+      await deleteUser(id_asociado);
+      return true;
+    },
+    child: Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
-          title: const Text("Nueva Cuenta de Supervisor"),
+          title: const Text("Nueva cuenta de asociado"),
           backgroundColor: ColorsApp.toolBarColor,
         ),
         body: SingleChildScrollView(
@@ -100,7 +104,7 @@ class _RegistroAsState extends State<RegistroAs> {
                           int id = await getUsId(email!); //id de el asociado
                           addRelationship(id_asociado, id);
                           // Navega a la pantalla '/home' con los datos ingresados
-                          Navigator.of(context).pushReplacementNamed('/home');
+                          Navigator.of(context).pushReplacementNamed('/horario');
                         }
                       }
                     },
@@ -120,7 +124,7 @@ class _RegistroAsState extends State<RegistroAs> {
             ],
           ),
         ),
-
+    ),
     );
   }
 }

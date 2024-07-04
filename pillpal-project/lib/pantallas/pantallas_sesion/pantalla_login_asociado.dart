@@ -38,7 +38,7 @@ class _LoginAsState extends State<LoginAs> {
     child: Scaffold(
       backgroundColor: ColorsApp.backgroundColor,
       appBar: AppBar(
-        title: const Text("Vincular supervisor asociado"),
+        title: const Text("Vincular usuario asociado"),
         backgroundColor: ColorsApp.toolBarColor,
       ),
       body: SingleChildScrollView(
@@ -97,7 +97,7 @@ class _LoginAsState extends State<LoginAs> {
                       else
                         addRelationship(id_asociado, id);
 
-                      Navigator.of(context).pushReplacementNamed('/home');
+                      Navigator.of(context).pushReplacementNamed('/horario');
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(content: Text('Correo o contraseña incorrectas!')),
@@ -119,69 +119,7 @@ class _LoginAsState extends State<LoginAs> {
               ),
             ),
 
-            Padding(
-              padding: EdgeInsets.only(top: 20.0),
-              child: GestureDetector(
-                onTap: () {
-                  showDialog(
-                    context: context,
-                    builder: (context) {
-                      String correo = '';
-                      return SimpleDialog(
-                        contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 12),
-                        children: [
-                          const SizedBox(height: 30),
-                          const Text('Correo registrado:', style: TextStyle(fontSize: 20)),
-                          TextFormField(
-                            onChanged: (value) {
-                              correo = value;
-                            },
-                          ),
 
-                          ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              //alignment: Alignment.center, ???
-                              backgroundColor: Colors.purple, // Ajusta el color del fondo aquí
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                            ),
-                            onPressed: () async {
-                              email = _emailController.text;
-                              //String? pwd = await getPassword(email) as String?;
-                              String? pwd = "d";
-                              if(pwd == null){
-                                //Enseñar mensaje: Su usuario no está registrado.
-                              }
-                              else{
-                                sendPassword(email, pwd);
-                              }
-                              /*await supabase.auth.signInWithOtp( //tiene que ser otra cosa, esto es para enviar link
-                              email: correo,
-
-                            );
-                            if (mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Contraseña enviada por correo')),
-                              );*/
-                              _emailController.clear();
-                              //}
-                              Navigator.of(context).pop();
-                            },
-                            child: Text('Recuperar contraseña'),
-                          ),
-                        ],
-                      );
-                    },
-                  );
-                },
-                child: const SizedBox(
-                  height: 30,
-                  child: Text('He olvidado mi contraseña'),
-                ),
-              ),
-            ),
 
             Padding(
               padding: EdgeInsets.only(top: 90.0),  // Ajusta el valor top según tus necesidades

@@ -8,6 +8,7 @@ import 'package:pillpal/pantallas/pantalla_inicial.dart';
 
 import 'package:pillpal/pantallas/pantalla_pastillero.dart';
 import 'package:pillpal/pantallas/navigation_drawer.dart';
+import 'package:pillpal/pantallas/pantallas_sesion/pantalla_configurarHorario.dart';
 import 'package:pillpal/pantallas/pantallas_sesion/pantalla_login_asociado.dart';
 import 'package:pillpal/pantallas/pantallas_sesion/pantalla_registro.dart';
 import 'package:pillpal/pantallas/pantalla_calendario.dart';
@@ -43,7 +44,7 @@ class MyApp extends StatelessWidget {
         '/calendario': (context) => PantallaCalendario(),
         '/alarmas' : (context) => AlarmaScreen(),
         '/estadisticas' : (context) => PantallaEstadisticas(),
-
+        '/horario': (context) => ConfigurarHorario(),
 
         /*
         '/loginDep': (context) => LoginDep(),
