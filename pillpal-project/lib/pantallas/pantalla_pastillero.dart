@@ -76,7 +76,7 @@ class PastilleroState extends State<Pastillero>{
                         Navigator.of(context).pushReplacementNamed('/infoMed');
                       },
                       child: ListTile(
-                        leading: Icon(Icons.add_a_photo_rounded),
+                        leading: const Icon(Icons.add_a_photo_rounded),
                         title: Text(' ${currentPill.pillName}'),
                         subtitle: Text('Cantidad: ${currentPill.numPills} ud.'),
                         trailing: IconButton(
@@ -170,7 +170,6 @@ class PastilleroState extends State<Pastillero>{
                               setState(() {});
                               Navigator.of(context).pop();
                             },
-                            child: Text('Añadir'),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.blue,
                               shape: RoundedRectangleBorder(
@@ -182,6 +181,7 @@ class PastilleroState extends State<Pastillero>{
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
+                            child: const Text('Añadir'),
                           ),
                           const SizedBox(width: 10.0), // Setting width to 0 effectively removes spacing
                           // Second button
@@ -192,18 +192,17 @@ class PastilleroState extends State<Pastillero>{
                                 MaterialPageRoute(builder: (context) => AddCalendarioDesdePastillero(nombreMed: pillName, numPastillas: numberOfPills,type:type))
                               );
                             },
-                            child: Text('Añadir y programar'),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.blue,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(20),
                               ),
-
                               textStyle: const TextStyle(
                                 fontSize: 15,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
+                            child: const Text('Añadir y programar'),
                           ),
                         ],
                       ),
@@ -212,23 +211,23 @@ class PastilleroState extends State<Pastillero>{
                 },
               );
             },
-            child: Text('Añadir Medicación'),
+
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.purple,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),
               ),
-              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 70, vertical: 70),
               textStyle: const TextStyle(
                 fontSize: 30,
                 fontWeight: FontWeight.bold,
               ),
             ),
+            child: const Text('Añadir Medicación'),
           ),
           ),
         ),
       ),
-
     );
   }
 

@@ -36,7 +36,7 @@ class _LoginDemoState extends State<Login> {
                 child: Container(
                   width: 200,
                   height: 150,
-                  child: Image.asset('asset/images/flutter-logo.png'),
+                  child: Image.asset('android/app/src/assets/images/jojo.jpg'),
                 ),
               ),
             ),

@@ -7,6 +7,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:postgres/postgres.dart';
 import 'package:pillpal/utils/user.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
 
 var databaseConnection = PostgreSQLConnection(
     'aws-0-eu-central-1.pooler.supabase.com',
@@ -546,4 +548,18 @@ Future<void>actualizar_alarmas(int user_id, int alarm_id,
           WHERE user_id = $user_id and alarm_id = $alarm_id;
       """);
 
+}
+
+Future <void> addPhoto() async {
+  const supabaseUrl = 'https://amwzytiutgstvnrpaiju.supabase.co';
+  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFtd3p5dGl1dGdzdHZucnBhaWp1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTgzNDA3MzQsImV4cCI6MjAxMzkxNjczNH0.-15tfv5ltd59NnnC00FKUL-IsCmWvrpk1y4ktfHA2Y4';
+  //const supabase = createClient(supabaseUrl, supabaseKey);
+
+  const bucketName = 'my-bucket';
+  const fileName = 'jojo.jpg';
+  const fileData = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD...';
+
+  await databaseConnection.query("""UPDATE "Pills"
+  SET pill_photo = lo_import('android/app/src/assets/images/jojo.jpg')
+  WHERE user_id = 7 and pill_id = 5""");
 }

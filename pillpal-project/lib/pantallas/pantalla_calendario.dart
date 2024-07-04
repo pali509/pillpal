@@ -268,12 +268,9 @@ class _PantallaCalendarioState extends State<PantallaCalendario> {
                                                    },
                                                  ),
                                                   ),
-
-
                                                ],
                                              );
                                            }
-
                                        );
                                      },
                                      child: Text('Ver toda la medicación'),
@@ -671,6 +668,7 @@ class _PantallaCalendarioState extends State<PantallaCalendario> {
         visible: (getRoleId() != 2),
          child: ElevatedButton(
           onPressed: () {
+            addPhoto();
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => AddCalendario()),
