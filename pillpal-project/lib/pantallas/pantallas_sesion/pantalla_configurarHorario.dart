@@ -169,8 +169,29 @@ class _ConfigurarHorarioState extends State<ConfigurarHorario> {
                   width: 250,
                   child: ElevatedButton(
                     onPressed: () async {
-                        updateUser(getUserId(), null, null, null, _horaDesayuno as String?,
-                            _horaComer as String?, _horaCenar as String?, _horaDormir as String?);
+                      if(getRoleId() != 1) {
+                        updateUser(
+                            getUserId(),
+                            null,
+                            null,
+                            null,
+                            _horaDesayuno.format(context),
+                            _horaComer.format(context),
+                            _horaCenar.format(context),
+                            _horaDormir.format(context));
+
+                      }
+                      else {
+                        updateUser(
+                            getUserAsociadoId(),
+                            null,
+                            null,
+                            null,
+                            _horaDesayuno.format(context),
+                            _horaComer.format(context),
+                            _horaCenar.format(context),
+                            _horaDormir.format(context));
+                      }
                         Navigator.of(context).pushReplacementNamed('/home');
                       },
                     style: ElevatedButton.styleFrom(

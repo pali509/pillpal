@@ -118,7 +118,7 @@ class _RegistroState extends State<Registro> {
                           // Navega a la pantalla '/home' con los datos ingresados
                           int id = await getUsId(email!);
                           addRelationship(id, id); //Le añade como cuidador de si mismo
-                          Navigator.of(context).pushReplacementNamed('/home');
+                          Navigator.of(context).pushReplacementNamed('/horario');
                         }
                         else if(rol == 'Dependiente'||rol == 'Supervisor') {
                           await insertUser(nombre!, email!, password!, rolAint(rol), 1);
