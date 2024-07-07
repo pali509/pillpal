@@ -92,6 +92,8 @@ class _LoginAsState extends State<LoginAs> {
                       //Asociar en la BD a este usuario con el dependiente
                       int rol = await getRolId(id_asociado); //Rol de el que creo la primera cuenta
                       int id = await getUsId(email!); //id de el asociado
+                      debugPrint('ID: ${getUserId()}');
+                      debugPrint('ID asociado: ${id}');
                       if(rol == 2) {
                         await addRelationship(id, id_asociado);
                         Navigator.of(context).pushReplacementNamed('/horario');

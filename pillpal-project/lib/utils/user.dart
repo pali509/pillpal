@@ -63,6 +63,12 @@ void setUserEmail(String nuevoC){
 void setUserName(String nuevoN){
      user_name = nuevoN;
 }
+void setHorarioAutosuficiente(String desayuno, String comida, String cena, String dormir){
+    hora_desayuno = desayuno;
+    hora_comida = comida;
+    hora_cena = cena;
+    hora_dormir = dormir;
+}
 void setUserAsociado(int userAs, String desayuno, String comida, String cena, String dormir){
     user_asociado = userAs;
     hora_desayuno = desayuno;
