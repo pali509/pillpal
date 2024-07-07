@@ -208,7 +208,8 @@ class _ConfigurarHorarioState extends State<ConfigurarHorario> {
                 ),
               ),
               const SizedBox(height: 40),
-              const Text('Estos datos y más se podrán modificar pulsando el icono del perfil una vez dentro de la aplicación.'
+              const Text('Estos datos y más se podrán modificar pulsando el icono del perfil una vez dentro de'
+                  ' la aplicación excepto para los usuarios dependientes.'
                   ,textAlign: TextAlign.center,style: TextStyle(fontSize: 16)),
             ],
           ),

@@ -1,6 +1,7 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:pillpal/pantallas/pantallas_sesion/pantalla_login_asociado.dart';
 import 'package:pillpal/utils/db_connections.dart';
 import 'package:pillpal/utils/user.dart';
 
@@ -249,20 +250,16 @@ class _PantallaPerfilState extends State<PantallaPerfil> {
                           'Horario establecido:',
                           style: TextStyle(fontSize: 18.0),
                         ),
-                        Divider(
+
+
+                        const Divider(
                           height: 10.0, // Set a small height for the line
                           color: Colors.black, // Set the line color
                           thickness: 1.0, // Optional: Set line thickness (defaults to 1.0)
                         ),
-                        Row(
-                          children:[
-                            Text(
-                              'Desayuno: ${getHoraDesayuno()} ',
-                              style: TextStyle(fontSize: 15.0),
-                            ),
-                            const SizedBox(width: 20.0),
-
-                          ]
+                        Text(
+                          'Desayuno: ${getHoraDesayuno()} ',
+                          style: TextStyle(fontSize: 15.0),
                         ),
                         const Divider(
                           height: 10.0, // Set a small height for the line
@@ -848,7 +845,10 @@ class _PantallaPerfilState extends State<PantallaPerfil> {
                         const SizedBox(height: 20.0),
                         ElevatedButton(
                           onPressed: () {
-                         
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => LoginAs(id_asociado: getUserId())));
                           },
                           child: Text('Añadir usuario dependiente'),
                           style: ElevatedButton.styleFrom(
@@ -863,6 +863,7 @@ class _PantallaPerfilState extends State<PantallaPerfil> {
                             ),
                           ),
                         ),
+                        const SizedBox(height: 20.0),
                       ],
                     ),
                   ),

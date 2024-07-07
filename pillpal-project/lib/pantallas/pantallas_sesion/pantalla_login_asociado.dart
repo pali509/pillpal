@@ -88,16 +88,19 @@ class _LoginAsState extends State<LoginAs> {
                   onPressed: () async {
                     email = _emailController.text;
                     password = _passwordController.text;
-                    if (await checkUser(email!, password!)) {
+                    if (await userExists(email!) && (await correctPwd(email!, password!))) {
                       //Asociar en la BD a este usuario con el dependiente
                       int rol = await getRolId(id_asociado); //Rol de el que creo la primera cuenta
                       int id = await getUsId(email!); //id de el asociado
-                      if(rol == 2)
-                        addRelationship(id, id_asociado);
-                      else
-                        addRelationship(id_asociado, id);
+                      if(rol == 2) {
+                        await addRelationship(id, id_asociado);
+                        Navigator.of(context).pushReplacementNamed('/horario');
+                      }
+                      else {
+                        await addRelationship(id_asociado, id);
+                        Navigator.of(context).pushReplacementNamed('/home');
+                      }
 
-                      Navigator.of(context).pushReplacementNamed('/horario');
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(content: Text('Correo o contraseña incorrectas!')),

@@ -192,7 +192,16 @@ Future<bool> checkUser(String email, String pwd) async {
   }
   return false;
 }
-
+Future<bool> correctPwd(String email, String pwd) async {
+  List<Map<String, dynamic>>? userList = await databaseConnection
+      .mappedResultsQuery("""
+      SELECT * FROM "Users" WHERE user_email = '$email' and user_pwd = '$pwd'""");
+  if (userList.isNotEmpty) {
+    return true;
+  }
+  else
+    return false;
+}
 Future<bool> userExists(String email) async {
   List<Map<String, dynamic>>? userList = await databaseConnection
       .mappedResultsQuery("""

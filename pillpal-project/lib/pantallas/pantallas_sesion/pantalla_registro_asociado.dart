@@ -97,14 +97,16 @@ class _RegistroAsState extends State<RegistroAs> {
                         int rol = await getRolId(id_asociado); //Rol de el que creo la primera cuenta
                         if (rol == 2) { //dependiente
                           await insertUser(nombre!, email!, password!, 1, 2); //1 porque es supervisor
-                          addRelationship(id_asociado, id_asociado);
+                          int id = await getUsId(email!); //id de el asociado
+                          addRelationship(id, id_asociado);
+                          Navigator.of(context).pushReplacementNamed('/horario');
                         }
                         else {
                           await insertUser(nombre!, email!, password!, 2, 2);
                           int id = await getUsId(email!); //id de el asociado
                           addRelationship(id_asociado, id);
                           // Navega a la pantalla '/home' con los datos ingresados
-                          Navigator.of(context).pushReplacementNamed('/horario');
+                          Navigator.of(context).pushReplacementNamed('/home');
                         }
                       }
                     },
