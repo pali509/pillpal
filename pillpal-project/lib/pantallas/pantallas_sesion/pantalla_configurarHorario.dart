@@ -192,7 +192,7 @@ class _ConfigurarHorarioState extends State<ConfigurarHorario> {
                             _horaCenar.format(context),
                             _horaDormir.format(context));
                       }
-                        Navigator.of(context).pushReplacementNamed('/home');
+                        Navigator.of(context).pushReplacementNamed('/pastis');
                       },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.purple, // Ajusta el color del fondo aquí

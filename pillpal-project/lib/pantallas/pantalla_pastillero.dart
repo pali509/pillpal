@@ -58,7 +58,8 @@ class PastilleroState extends State<Pastillero>{
             } else if (snapshot.hasError) {
               return Center(child: Text('Error: ${snapshot.error}'));
             } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-              return const Center(child: Text('No hay ningún medicamento registrado.'));
+              return const Center(child: Text('Añade un medicamento para comenzar a usar la aplicación.'
+              ,textAlign: TextAlign.center,style: TextStyle(fontSize: 16)));
             } else {
               pills = snapshot.data!;
 

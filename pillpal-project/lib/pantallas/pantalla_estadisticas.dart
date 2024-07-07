@@ -12,6 +12,7 @@ import 'package:table_calendar/table_calendar.dart';
 
 
 import '../utils/db_connections.dart';
+import '../utils/statistic_type.dart';
 import 'add_calendario.dart';
 import 'navigation_drawer.dart';
 
@@ -29,7 +30,6 @@ class PantallaEstadisticas extends StatefulWidget {
 class _PantallaEstadisticasState extends State<PantallaEstadisticas> {
   CalendarFormat _calendarFormat = CalendarFormat.week;
 
-
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay = DateTime.now();
   Selection selected = Selection.Semana;
@@ -37,6 +37,8 @@ class _PantallaEstadisticasState extends State<PantallaEstadisticas> {
   DateTime dia = DateTime.now();
   int semanaprevia = 0;
   //DateTime diaFinal = DateTime.now();
+
+  Future<Statistic_type?>? estadisticas = getSta(DateTime.now(), getUserAsociadoId());
 
   int previous = -1;
 
@@ -71,6 +73,8 @@ class _PantallaEstadisticasState extends State<PantallaEstadisticas> {
         primerDia = hoy.subtract(Duration(days: 6));
         break;
     }
+    estadisticas = getSta(primerDia, getUserAsociadoId());
+
     return primerDia;
   }
   DateTime UltimoDiaSemana(DateTime hoy){
@@ -126,480 +130,208 @@ class _PantallaEstadisticasState extends State<PantallaEstadisticas> {
           ],
         ),
         drawer: MyDrawer(),
-        body: Column(
-          children: [
-            const SizedBox(height: 20.0),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ElevatedButton(
-                  onPressed: () => _handleButtonPress(Selection.Semana),
-                  child: Text('Semana'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: selected == Selection.Semana ? Colors.purple : Colors.grey,
-                    minimumSize: Size(150, 50),
-                    textStyle: TextStyle(fontSize: 20),
-                  ),
-                ),
-                const SizedBox(width: 40.0),
-                ElevatedButton(
-                  onPressed: () => _handleButtonPress(Selection.Mes),
-                  child: Text('Mes'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: selected == Selection.Mes ? Colors.purple : Colors.grey,
-                    minimumSize: Size(150, 50),
-                    textStyle: TextStyle(fontSize: 20),
-                  ),
-                ),
-              ],
-            ),
-            Visibility(
-              visible: selected == Selection.Semana,
-              child: Expanded(
-                  child: Column(
-                      children:[
-                        const SizedBox(height: 30.0),
-                        Text('${primerDiaSemana(dia).day} ${months[primerDiaSemana(dia).month - 1]} '
-                            '- ${UltimoDiaSemana(dia).day} ${months[UltimoDiaSemana(dia).month - 1]}'
-                            , style: TextStyle(fontSize: 20)),
+        body: FutureBuilder<Statistic_type?>(
+            future: estadisticas,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              } else if (snapshot.hasError) {
+                return Center(child: Text('Error: ${snapshot.error}'));
+              } else if (!snapshot.hasData ) {
+                return const Center(child: Text('Añade un medicamento para comenzar a usar la aplicación.'
+                    ,textAlign: TextAlign.center,style: TextStyle(fontSize: 16)));
+              } else {
+                Statistic_type? data = snapshot.data!;
 
-                        const SizedBox(height: 20.0),
-                        Text('Estadística semanal: ', style: TextStyle(fontSize: 20)),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const SizedBox(height: 20.0),
-                            Text('Medicación tomada:         10 (50%)', style: TextStyle(fontSize: 20)),
-                            const SizedBox(height: 20.0),
-                            Text('Total medicación a tomar:    20', style: TextStyle(fontSize: 20)),
-                            const SizedBox(height: 10.0),
-                          ],
-                        ),
-
-                        TableCalendar(
-                          locale: 'es_Es',
-                          //headerVisible : false,
-                          headerStyle: const HeaderStyle(
-                            titleCentered: true,
-                            formatButtonVisible : false,
-
-                          ),
-                          firstDay: DateTime.utc(2023, 10, 16),
-                          lastDay: DateTime.utc(2030, 3, 14),
-                          focusedDay: _focusedDay,
-                          calendarFormat: _calendarFormat,
-                          startingDayOfWeek: StartingDayOfWeek.monday,
-                          selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
-                          onDaySelected: (selectedDay, focusedDay) { //Cambiar dia seleccionado
-                            if (!isSameDay(_selectedDay, selectedDay)) {
-                              setState(() {
-                                _selectedDay = selectedDay;
-                                _focusedDay = focusedDay;
-                                diaSeleccionado = weekdays[selectedDay.weekday-1];
-                              });
-                            }
-                          },
-                          onPageChanged: (focusedDay) {
-
-                            setState(() {
-                              _focusedDay = focusedDay;
-
-                              final difference = focusedDay.difference(_selectedDay!).inDays;
-                              if (semanaprevia < difference ) {
-                                dia = dia.add(const Duration(days: 7));
-                                previous = 1;
-                                semanaprevia = difference;
-
-                              } else if ( semanaprevia > difference) {
-                                dia = dia.subtract(const Duration(days: 7));
-                                previous = 0;
-                                semanaprevia = difference;
-                              }
-                              else{
-                                if(previous == 0){
-                                  dia = dia.add(const Duration(days: 7));
-                                }
-                                else if(previous == 1){
-                                  dia = dia.subtract(const Duration(days: 7));
-                                }
-                              }
-                            });
-                          },
-                        ),
-                        Expanded(
-                          child: ListView(
-                            children: [
-                              Column(
-                                //crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                const SizedBox(height: 20.0),
-                                Text('Estadística diaria: $diaSeleccionado', style: TextStyle(fontSize: 20)),
-                                const SizedBox(height: 20.0),
-                                Text('Medicación tomada:         5 (50%)', style: TextStyle(fontSize: 20)),
-                                const SizedBox(height: 20.0),
-                                Text('Total medicación a tomar:    10', style: TextStyle(fontSize: 20)),
-                                const SizedBox(height: 20.0),
-                          ],
-                        ),
-
-
-                              Container(
-                                child: ListView(
-                                  shrinkWrap: true,
-                                  physics: const NeverScrollableScrollPhysics(),
-                                  children:[
-                                    const Text(
-                                      ' Medicación tomada',
-                                      style: TextStyle(color: Colors.black, fontSize: 25),
-                                    ),
-
-                                    Container(
-                                      decoration: BoxDecoration(
-                                        border: Border.all(
-                                            color: Colors.green, width: 5),
-                                      ),
-                                      child: ListView.builder( //Esto es igual que el de pantalla pastillero
-                                        shrinkWrap: true,
-                                        itemCount: 1,
-                                        physics: const NeverScrollableScrollPhysics(),
-                                        itemBuilder: (context, index) {
-                                          return const Padding(
-                                            padding:  EdgeInsets.only(top: 25.0, bottom: 15.0),
-                                            child: Center(
-                                              child: Text("No hay medicación tomada ese día"),
-                                            ),
-                                          );
-
-                                        },
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-
-                              const SizedBox(height: 30.0),
-                              Container(
-                                child: ListView(
-                                  shrinkWrap: true,
-                                  physics: const NeverScrollableScrollPhysics(),
-                                  children:[
-                                    const Text(
-                                      ' Medicación no tomada:',
-                                      style: TextStyle(color: Colors.black, fontSize: 25),
-                                    ),
-
-                                    Container(
-                                      decoration: BoxDecoration(
-                                        border: Border.all(
-                                            color: Colors.red, width: 5),
-                                      ),
-                                      child: ListView.builder( //Esto es igual que el de pantalla pastillero
-                                          shrinkWrap: true,
-                                          itemCount: 1,
-                                          physics: const NeverScrollableScrollPhysics(),
-                                          itemBuilder: (context, index) {
-
-                                            return const Padding(
-                                              padding:  EdgeInsets.only(top: 25.0, bottom: 15.0),
-                                              child: Center(
-                                                child: Text("No hay medicación programada para este dia"),
-                                              ),
-                                            );
-                                          }
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        /*
-      Expanded(
-        child: FutureBuilder<List<Horario>>(
-          future: getDayPills(diaSeleccionado, getUserAsociadoId()),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            } else {
-              cosas = snapshot.data!;
-              cosas1 = cogerSegunMomento(cosas, 1); //Para coger solo las del desayuno
-              cosas2 = cogerSegunMomento(cosas, 2); //Solo comida
-              cosas3 = cogerSegunMomento(cosas, 3); //Solo cena
-              cosas0 = cogerSegunMomento(cosas, 0);
-              //FALTA DORMIR!
-
-              if (cosas0.isNotEmpty)
-                visibleOtros = true; //Si hay cosas ponerlo visible
-              else
-                visibleOtros = false;
-
-
-              return ListView(
-                scrollDirection: Axis.vertical,
-
-                children: [
-                  Container(
-
-                    child: ListView(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      children:[
-                        const Text(
-                          ' Desayuno',
-                          style: TextStyle(color: Colors.black, fontSize: 25),
-                        ),
-
-                        Container(
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                                color: Colors.blue, width: 5),
-                          ),
-                          child: ListView.builder( //Esto es igual que el de pantalla pastillero
-                            shrinkWrap: true,
-                            itemCount:cosas1.length > 0 ? cosas1.length : 1,
-                            physics: const NeverScrollableScrollPhysics(),
-                            itemBuilder: (context, index) {
-                              if(cosas1.isNotEmpty) {
-                                Horario currentCosa = cosas1[index];
-                                return Container(
-                                  decoration: BoxDecoration(
-                                    border: Border.all(),
-                                    borderRadius: BorderRadius
-                                        .circular(12.0),
-                                  ),
-                                  child: ListTile(
-                                    onTap: () =>
-                                        print('${cosas1[index]}'),
-                                    title: Text('${currentCosa
-                                        .getPillName()}'),
-                                    subtitle: Text(
-                                        'Cantidad: ${currentCosa
-                                            .getNumPills()} ud.'),
-                                  ),
-                                );
-                              }
-                              else {
-                                return const Padding(
-                                  padding:  EdgeInsets.only(top: 25.0, bottom: 15.0),
-                                  child: Center(
-                                    child: Text("No hay medicación programada para el desayuno este dia"),
-                                  ),
-                                );
-                              }
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-
-                  Container(
-
-                    child: ListView(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      children:[
-                        const Text(
-                          ' Comida',
-                          style: TextStyle(color: Colors.black, fontSize: 25),
-                        ),
-
-                        Container(
-
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                                color: Colors.green, width: 5),
-                          ),
-                          child: ListView.builder( //Esto es igual que el de pantalla pastillero
-                            shrinkWrap: true,
-                            itemCount: cosas2.length > 0 ? cosas2.length : 1,
-                            physics: const NeverScrollableScrollPhysics(),
-                            itemBuilder: (context, index) {
-                              if(cosas2.isNotEmpty) {
-                                Horario currentCosa = cosas2[index];
-                                return Container(
-                                  decoration: BoxDecoration(
-                                    border: Border.all(),
-                                    borderRadius: BorderRadius
-                                        .circular(12.0),
-                                  ),
-                                  child: ListTile(
-                                    onTap: () =>
-                                        print('${cosas2[index]}'),
-                                    title: Text('${currentCosa
-                                        .getPillName()}'),
-                                    subtitle: Text(
-                                        'Cantidad: ${currentCosa
-                                            .getNumPills()} ud.'),
-                                  ),
-                                );
-                              }
-                              else {
-                                return const Padding(
-                                  padding:  EdgeInsets.only(top: 25.0, bottom: 15.0),
-                                  child: Center(
-                                    child: Text("No hay medicación programada para la comida este dia"),
-                                  ),
-                                );
-                              }
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              );
-            }
-          },
-
-
-        ),
-      ),
-
-       */
-
-                      ]
-                  )
-              ),
-            ),
-            Visibility(
-              visible: selected == Selection.Mes,
-              child: Expanded(
-                  child: Column(
-                      children:[
-                  Expanded(
-                  child: ListView(
+                return Column(
                   children: [
-                    Column(
-                      children:[
-                        const SizedBox(height: 20.0),
-                        Text('Estadística mensual: ', style: TextStyle(fontSize: 20)),
-
-                            const SizedBox(height: 20.0),
-                            Text('Medicación tomada:         10 (50%)', style: TextStyle(fontSize: 20)),
-                            const SizedBox(height: 20.0),
-                            Text('Total medicación a tomar:    20', style: TextStyle(fontSize: 20)),
-                            const SizedBox(height: 10.0),
-                          ],
-                        ),
-
-                        TableCalendar(
-                          locale: 'es_Es',
-                          //headerVisible : false,
-                          headerStyle: const HeaderStyle(
-                            titleCentered: true,
-                            formatButtonVisible : false,
-
+                    const SizedBox(height: 20.0),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ElevatedButton(
+                          onPressed: () => _handleButtonPress(Selection.Semana),
+                          child: Text('Semana'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: selected == Selection.Semana ? Colors.purple : Colors.grey,
+                            minimumSize: Size(150, 50),
+                            textStyle: TextStyle(fontSize: 20),
                           ),
-                          firstDay: DateTime.utc(2023, 10, 16),
-                          lastDay: DateTime.utc(2030, 3, 14),
-                          focusedDay: _focusedDay,
-                          calendarFormat: CalendarFormat.month,
-                          startingDayOfWeek: StartingDayOfWeek.monday,
-                          selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
-                          onDaySelected: (selectedDay, focusedDay) { //Cambiar dia seleccionado
-                            if (!isSameDay(_selectedDay, selectedDay)) {
-                              setState(() {
-                                _selectedDay = selectedDay;
-                                _focusedDay = focusedDay;
-                                diaSeleccionado = weekdays[selectedDay.weekday-1];
-                              });
-                            }
-                          },
-                          onPageChanged: (focusedDay) {
-                            setState(() {
-                              _focusedDay = focusedDay;
-                            });
-                          },
                         ),
-                        Expanded(
-                          child:
-                              Column(
-                                //crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const SizedBox(height: 20.0),
-                                  Text('Estadística diaria: $diaSeleccionado', style: TextStyle(fontSize: 20)),
-                                  const SizedBox(height: 20.0),
-                                  Text('Medicación tomada:         5 (50%)', style: TextStyle(fontSize: 20)),
-                                  const SizedBox(height: 20.0),
-                                  Text('Total medicación a tomar:    10', style: TextStyle(fontSize: 20)),
-                                  const SizedBox(height: 20.0),
+                        const SizedBox(width: 40.0),
+                        ElevatedButton(
+                          onPressed: () => _handleButtonPress(Selection.Mes),
+                          child: Text('Mes'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: selected == Selection.Mes ? Colors.purple : Colors.grey,
+                            minimumSize: Size(150, 50),
+                            textStyle: TextStyle(fontSize: 20),
+                          ),
+                        ),
+                      ],
+                    ),
+                    Visibility(
+                      visible: selected == Selection.Semana,
+                      child: Expanded(
+                          child: Column(
+                              children:[
+                                const SizedBox(height: 30.0),
+                                Text('${primerDiaSemana(dia).day} ${months[primerDiaSemana(dia).month - 1]} '
+                                    '- ${UltimoDiaSemana(dia).day} ${months[UltimoDiaSemana(dia).month - 1]}'
+                                    , style: TextStyle(fontSize: 20)),
 
-                              Container(
-                                child: ListView(
-                                  shrinkWrap: true,
-                                  physics: const NeverScrollableScrollPhysics(),
-                                  children:[
-                                    const Text(
-                                      ' Medicación tomada',
-                                      style: TextStyle(color: Colors.black, fontSize: 25),
-                                    ),
-
-                                    Container(
-                                      decoration: BoxDecoration(
-                                        border: Border.all(
-                                            color: Colors.green, width: 5),
-                                      ),
-                                      child: ListView.builder( //Esto es igual que el de pantalla pastillero
-                                        shrinkWrap: true,
-                                        itemCount: 1,
-                                        physics: const NeverScrollableScrollPhysics(),
-                                        itemBuilder: (context, index) {
-                                          return const Padding(
-                                            padding:  EdgeInsets.only(top: 25.0, bottom: 15.0),
-                                            child: Center(
-                                              child: Text("No hay medicación tomada ese día"),
-                                            ),
-                                          );
-
-                                        },
-                                      ),
-                                    ),
+                                const SizedBox(height: 20.0),
+                                Text('Estadística semanal: ', style: TextStyle(fontSize: 20)),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const SizedBox(height: 20.0),
+                                    Text('Medicación tomada:         ', style: TextStyle(fontSize: 20)),
+                                    const SizedBox(height: 20.0),
+                                    Text('Total medicación a tomar:    20', style: TextStyle(fontSize: 20)),
+                                    const SizedBox(height: 10.0),
                                   ],
                                 ),
-                              ),
 
-                              const SizedBox(height: 30.0),
-                              Container(
-                                child: ListView(
-                                  shrinkWrap: true,
-                                  physics: const NeverScrollableScrollPhysics(),
-                                  children:[
-                                    const Text(
-                                      ' Medicación no tomada:',
-                                      style: TextStyle(color: Colors.black, fontSize: 25),
-                                    ),
+                                TableCalendar(
+                                  locale: 'es_Es',
+                                  //headerVisible : false,
+                                  headerStyle: const HeaderStyle(
+                                    titleCentered: true,
+                                    formatButtonVisible : false,
 
-                                    Container(
-                                      decoration: BoxDecoration(
-                                        border: Border.all(
-                                            color: Colors.red, width: 5),
+                                  ),
+                                  firstDay: DateTime.utc(2023, 10, 16),
+                                  lastDay: DateTime.utc(2030, 3, 14),
+                                  focusedDay: _focusedDay,
+                                  calendarFormat: _calendarFormat,
+                                  startingDayOfWeek: StartingDayOfWeek.monday,
+                                  selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
+                                  onDaySelected: (selectedDay, focusedDay) { //Cambiar dia seleccionado
+                                    if (!isSameDay(_selectedDay, selectedDay)) {
+                                      setState(() {
+                                        _selectedDay = selectedDay;
+                                        _focusedDay = focusedDay;
+                                        diaSeleccionado = weekdays[selectedDay.weekday-1];
+                                      });
+                                    }
+                                  },
+                                  onPageChanged: (focusedDay) {
+
+                                    setState(() {
+                                      _focusedDay = focusedDay;
+
+                                      final difference = focusedDay.difference(_selectedDay!).inDays;
+                                      if (semanaprevia < difference ) {
+                                        dia = dia.add(const Duration(days: 7));
+                                        previous = 1;
+                                        semanaprevia = difference;
+
+                                      } else if ( semanaprevia > difference) {
+                                        dia = dia.subtract(const Duration(days: 7));
+                                        previous = 0;
+                                        semanaprevia = difference;
+                                      }
+                                      else{
+                                        if(previous == 0){
+                                          dia = dia.add(const Duration(days: 7));
+                                        }
+                                        else if(previous == 1){
+                                          dia = dia.subtract(const Duration(days: 7));
+                                        }
+                                      }
+                                    });
+                                  },
+                                ),
+                                Expanded(
+                                  child: ListView(
+                                    children: [
+                                      Column(
+                                        //crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          const SizedBox(height: 20.0),
+                                          Text('Estadística diaria: $diaSeleccionado', style: TextStyle(fontSize: 20)),
+                                          const SizedBox(height: 20.0),
+                                          Text('Medicación tomada:         5 (50%)', style: TextStyle(fontSize: 20)),
+                                          const SizedBox(height: 20.0),
+                                          Text('Total medicación a tomar:    10', style: TextStyle(fontSize: 20)),
+                                          const SizedBox(height: 20.0),
+                                        ],
                                       ),
-                                      child: ListView.builder( //Esto es igual que el de pantalla pastillero
+
+
+                                      Container(
+                                        child: ListView(
                                           shrinkWrap: true,
-                                          itemCount: 1,
                                           physics: const NeverScrollableScrollPhysics(),
-                                          itemBuilder: (context, index) {
+                                          children:[
+                                            const Text(
+                                              ' Medicación tomada',
+                                              style: TextStyle(color: Colors.black, fontSize: 25),
+                                            ),
 
-                                            return const Padding(
-                                              padding:  EdgeInsets.only(top: 25.0, bottom: 15.0),
-                                              child: Center(
-                                                child: Text("No hay medicación programada para este dia"),
+                                            Container(
+                                              decoration: BoxDecoration(
+                                                border: Border.all(
+                                                    color: Colors.green, width: 5),
                                               ),
-                                            );
-                                          }
+                                              child: ListView.builder( //Esto es igual que el de pantalla pastillero
+                                                shrinkWrap: true,
+                                                itemCount: 1,
+                                                physics: const NeverScrollableScrollPhysics(),
+                                                itemBuilder: (context, index) {
+                                                  return const Padding(
+                                                    padding: EdgeInsets.only(top: 25.0, bottom: 15.0),
+                                                    child: Center(
+                                                      child: Text("No hay medicación tomada ese día"),
+                                                    ),
+                                                  );
+
+                                                },
+                                              ),
+                                            ),
+                                          ],
+                                        ),
                                       ),
-                                    ),
-                                  ],
+
+                                      const SizedBox(height: 30.0),
+                                      Container(
+                                        child: ListView(
+                                          shrinkWrap: true,
+                                          physics: const NeverScrollableScrollPhysics(),
+                                          children:[
+                                            const Text(
+                                              ' Medicación no tomada:',
+                                              style: TextStyle(color: Colors.black, fontSize: 25),
+                                            ),
+
+                                            Container(
+                                              decoration: BoxDecoration(
+                                                border: Border.all(
+                                                    color: Colors.red, width: 5),
+                                              ),
+                                              child: ListView.builder( //Esto es igual que el de pantalla pastillero
+                                                  shrinkWrap: true,
+                                                  itemCount: 1,
+                                                  physics: const NeverScrollableScrollPhysics(),
+                                                  itemBuilder: (context, index) {
+
+                                                    return const Padding(
+                                                      padding: EdgeInsets.only(top: 25.0, bottom: 15.0),
+                                                      child: Center(
+                                                        child: Text("No hay medicación programada para este dia"),
+                                                      ),
+                                                    );
+                                                  }
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                                ],
-                              ),
-                        ),
-                        /*
+                                /*
       Expanded(
         child: FutureBuilder<List<Horario>>(
           future: getDayPills(diaSeleccionado, getUserAsociadoId()),
@@ -745,15 +477,303 @@ class _PantallaEstadisticasState extends State<PantallaEstadisticas> {
       ),
 
        */
-              ]
-              )
-                  )
-                      ]
-                  )
-              ),
-            ),
-          ],
 
+                              ]
+                          )
+                      ),
+                    ),
+                    Visibility(
+                      visible: selected == Selection.Mes,
+                      child: Expanded(
+                          child: Column(
+                              children:[
+                                Expanded(
+                                    child: ListView(
+                                        children: [
+                                          Column(
+                                            children:[
+                                              const SizedBox(height: 20.0),
+                                              Text('Estadística mensual: ', style: TextStyle(fontSize: 20)),
+
+                                              const SizedBox(height: 20.0),
+                                              Text('Medicación tomada:         10 (50%)', style: TextStyle(fontSize: 20)),
+                                              const SizedBox(height: 20.0),
+                                              Text('Total medicación a tomar:    20', style: TextStyle(fontSize: 20)),
+                                              const SizedBox(height: 10.0),
+                                            ],
+                                          ),
+
+                                          TableCalendar(
+                                            locale: 'es_Es',
+                                            //headerVisible : false,
+                                            headerStyle: const HeaderStyle(
+                                              titleCentered: true,
+                                              formatButtonVisible : false,
+
+                                            ),
+                                            firstDay: DateTime.utc(2023, 10, 16),
+                                            lastDay: DateTime.utc(2030, 3, 14),
+                                            focusedDay: _focusedDay,
+                                            calendarFormat: CalendarFormat.month,
+                                            startingDayOfWeek: StartingDayOfWeek.monday,
+                                            selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
+                                            onDaySelected: (selectedDay, focusedDay) { //Cambiar dia seleccionado
+                                              if (!isSameDay(_selectedDay, selectedDay)) {
+                                                setState(() {
+                                                  _selectedDay = selectedDay;
+                                                  _focusedDay = focusedDay;
+                                                  diaSeleccionado = weekdays[selectedDay.weekday-1];
+                                                });
+                                              }
+                                            },
+                                            onPageChanged: (focusedDay) {
+                                              setState(() {
+                                                _focusedDay = focusedDay;
+                                              });
+                                            },
+                                          ),
+                                          Expanded(
+                                            child:
+                                            Column(
+                                              //crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                const SizedBox(height: 20.0),
+                                                Text('Estadística diaria: $diaSeleccionado', style: TextStyle(fontSize: 20)),
+                                                const SizedBox(height: 20.0),
+                                                Text('Medicación tomada:         5 (50%)', style: TextStyle(fontSize: 20)),
+                                                const SizedBox(height: 20.0),
+                                                Text('Total medicación a tomar:    10', style: TextStyle(fontSize: 20)),
+                                                const SizedBox(height: 20.0),
+
+                                                Container(
+                                                  child: ListView(
+                                                    shrinkWrap: true,
+                                                    physics: const NeverScrollableScrollPhysics(),
+                                                    children:[
+                                                      const Text(
+                                                        ' Medicación tomada',
+                                                        style: TextStyle(color: Colors.black, fontSize: 25),
+                                                      ),
+
+                                                      Container(
+                                                        decoration: BoxDecoration(
+                                                          border: Border.all(
+                                                              color: Colors.green, width: 5),
+                                                        ),
+                                                        child: ListView.builder( //Esto es igual que el de pantalla pastillero
+                                                          shrinkWrap: true,
+                                                          itemCount: 1,
+                                                          physics: const NeverScrollableScrollPhysics(),
+                                                          itemBuilder: (context, index) {
+                                                            return const Padding(
+                                                              padding: EdgeInsets.only(top: 25.0, bottom: 15.0),
+                                                              child: Center(
+                                                                child: Text("No hay medicación tomada ese día"),
+                                                              ),
+                                                            );
+
+                                                          },
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+
+                                                const SizedBox(height: 30.0),
+                                                Container(
+                                                  child: ListView(
+                                                    shrinkWrap: true,
+                                                    physics: const NeverScrollableScrollPhysics(),
+                                                    children:[
+                                                      const Text(
+                                                        ' Medicación no tomada:',
+                                                        style: TextStyle(color: Colors.black, fontSize: 25),
+                                                      ),
+
+                                                      Container(
+                                                        decoration: BoxDecoration(
+                                                          border: Border.all(
+                                                              color: Colors.red, width: 5),
+                                                        ),
+                                                        child: ListView.builder( //Esto es igual que el de pantalla pastillero
+                                                            shrinkWrap: true,
+                                                            itemCount: 1,
+                                                            physics: const NeverScrollableScrollPhysics(),
+                                                            itemBuilder: (context, index) {
+
+                                                              return const Padding(
+                                                                padding: EdgeInsets.only(top: 25.0, bottom: 15.0),
+                                                                child: Center(
+                                                                  child: Text("No hay medicación programada para este dia"),
+                                                                ),
+                                                              );
+                                                            }
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          /*
+      Expanded(
+        child: FutureBuilder<List<Horario>>(
+          future: getDayPills(diaSeleccionado, getUserAsociadoId()),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            } else {
+              cosas = snapshot.data!;
+              cosas1 = cogerSegunMomento(cosas, 1); //Para coger solo las del desayuno
+              cosas2 = cogerSegunMomento(cosas, 2); //Solo comida
+              cosas3 = cogerSegunMomento(cosas, 3); //Solo cena
+              cosas0 = cogerSegunMomento(cosas, 0);
+              //FALTA DORMIR!
+
+              if (cosas0.isNotEmpty)
+                visibleOtros = true; //Si hay cosas ponerlo visible
+              else
+                visibleOtros = false;
+
+
+              return ListView(
+                scrollDirection: Axis.vertical,
+
+                children: [
+                  Container(
+
+                    child: ListView(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      children:[
+                        const Text(
+                          ' Desayuno',
+                          style: TextStyle(color: Colors.black, fontSize: 25),
+                        ),
+
+                        Container(
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                                color: Colors.blue, width: 5),
+                          ),
+                          child: ListView.builder( //Esto es igual que el de pantalla pastillero
+                            shrinkWrap: true,
+                            itemCount:cosas1.length > 0 ? cosas1.length : 1,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemBuilder: (context, index) {
+                              if(cosas1.isNotEmpty) {
+                                Horario currentCosa = cosas1[index];
+                                return Container(
+                                  decoration: BoxDecoration(
+                                    border: Border.all(),
+                                    borderRadius: BorderRadius
+                                        .circular(12.0),
+                                  ),
+                                  child: ListTile(
+                                    onTap: () =>
+                                        print('${cosas1[index]}'),
+                                    title: Text('${currentCosa
+                                        .getPillName()}'),
+                                    subtitle: Text(
+                                        'Cantidad: ${currentCosa
+                                            .getNumPills()} ud.'),
+                                  ),
+                                );
+                              }
+                              else {
+                                return const Padding(
+                                  padding:  EdgeInsets.only(top: 25.0, bottom: 15.0),
+                                  child: Center(
+                                    child: Text("No hay medicación programada para el desayuno este dia"),
+                                  ),
+                                );
+                              }
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+
+                  Container(
+
+                    child: ListView(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      children:[
+                        const Text(
+                          ' Comida',
+                          style: TextStyle(color: Colors.black, fontSize: 25),
+                        ),
+
+                        Container(
+
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                                color: Colors.green, width: 5),
+                          ),
+                          child: ListView.builder( //Esto es igual que el de pantalla pastillero
+                            shrinkWrap: true,
+                            itemCount: cosas2.length > 0 ? cosas2.length : 1,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemBuilder: (context, index) {
+                              if(cosas2.isNotEmpty) {
+                                Horario currentCosa = cosas2[index];
+                                return Container(
+                                  decoration: BoxDecoration(
+                                    border: Border.all(),
+                                    borderRadius: BorderRadius
+                                        .circular(12.0),
+                                  ),
+                                  child: ListTile(
+                                    onTap: () =>
+                                        print('${cosas2[index]}'),
+                                    title: Text('${currentCosa
+                                        .getPillName()}'),
+                                    subtitle: Text(
+                                        'Cantidad: ${currentCosa
+                                            .getNumPills()} ud.'),
+                                  ),
+                                );
+                              }
+                              else {
+                                return const Padding(
+                                  padding:  EdgeInsets.only(top: 25.0, bottom: 15.0),
+                                  child: Center(
+                                    child: Text("No hay medicación programada para la comida este dia"),
+                                  ),
+                                );
+                              }
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              );
+            }
+          },
+
+
+        ),
+      ),
+
+       */
+                                        ]
+                                    )
+                                )
+                              ]
+                          )
+                      ),
+                    ),
+                  ],
+
+                );
+              }
+            }
         ),
       );
 

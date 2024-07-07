@@ -328,7 +328,7 @@ class _PantallaPerfilState extends State<PantallaPerfil> {
                                 return Center(child: Text('Error: ${snapshot.error}'));
                               } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
                                 return const Center(child: Text(
-                                    'No hay usuario asociado.'));
+                                    'No hay usuarios asociados.'));
                               } else {
                                 datosAsociado = snapshot.data!;
                                 return ListView.builder(
@@ -845,7 +845,24 @@ class _PantallaPerfilState extends State<PantallaPerfil> {
                             ),
                           ),
                         ),
-                        const SizedBox(height: 15.0),
+                        const SizedBox(height: 20.0),
+                        ElevatedButton(
+                          onPressed: () {
+                         
+                          },
+                          child: Text('Añadir usuario dependiente'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.purple,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                            textStyle: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                   ),

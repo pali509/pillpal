@@ -484,7 +484,7 @@ Future<Statistic_type?> getSta(DateTime d, int user_id) async {
   int wp = 0;
   int mt = 0;
   int mp = 0;
-  Statistic_type? sta = null;
+  Statistic_type sta;
 
   List<Map<String, dynamic>> map = await databaseConnection.mappedResultsQuery("""
     select * from "Statistics" s where user_id  = $user_id and fecha = $d
