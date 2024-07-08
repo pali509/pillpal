@@ -38,7 +38,7 @@ class _PantallaEstadisticasState extends State<PantallaEstadisticas> {
   int semanaprevia = 0;
   //DateTime diaFinal = DateTime.now();
 
-  Future<Statistic_type?>? estadisticas = getSta(DateTime.now(), getUserAsociadoId());
+  Future<Statistic_type> estadisticas = getSta(DateTime.now(), getUserAsociadoId());
 
   int previous = -1;
 
@@ -73,7 +73,7 @@ class _PantallaEstadisticasState extends State<PantallaEstadisticas> {
         primerDia = hoy.subtract(Duration(days: 6));
         break;
     }
-    estadisticas = getSta(primerDia, getUserAsociadoId());
+    //estadisticas = getSta(primerDia, getUserAsociadoId());
 
     return primerDia;
   }
@@ -130,7 +130,7 @@ class _PantallaEstadisticasState extends State<PantallaEstadisticas> {
           ],
         ),
         drawer: MyDrawer(),
-        body: FutureBuilder<Statistic_type?>(
+        body: FutureBuilder<Statistic_type>(
             future: estadisticas,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
@@ -141,7 +141,7 @@ class _PantallaEstadisticasState extends State<PantallaEstadisticas> {
                 return const Center(child: Text('Añade un medicamento para comenzar a usar la aplicación.'
                     ,textAlign: TextAlign.center,style: TextStyle(fontSize: 16)));
               } else {
-                Statistic_type? data = snapshot.data!;
+                Statistic_type data = snapshot.data!;
 
                 return Column(
                   children: [

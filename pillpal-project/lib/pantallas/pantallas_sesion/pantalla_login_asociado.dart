@@ -90,16 +90,20 @@ class _LoginAsState extends State<LoginAs> {
                     password = _passwordController.text;
                     if (await userExists(email!) && (await correctPwd(email!, password!))) {
                       //Asociar en la BD a este usuario con el dependiente
-                      int rol = await getRolId(id_asociado); //Rol de el que creo la primera cuenta
+                      //ESTO NO LO ENTENDEMOS
+                      //int rol = await getRolId(id_asociado); //Rol de el que creo la primera cuenta
                       int id = await getUsId(email!); //id de el asociado
+                      int rol = await getRolId(id);
                       debugPrint('ID: ${getUserId()}');
                       debugPrint('ID asociado: ${id}');
+                      debugPrint('ROL:$rol');
                       if(rol == 2) {
-                        await addRelationship(id, id_asociado);
+                        await addRelationship(getUserId(), id);
                         Navigator.of(context).pushReplacementNamed('/horario');
                       }
+                      //ESTO NO LO ENTENDEMOS
                       else {
-                        await addRelationship(id_asociado, id);
+                        await addRelationship(id, getUserId());
                         Navigator.of(context).pushReplacementNamed('/home');
                       }
 

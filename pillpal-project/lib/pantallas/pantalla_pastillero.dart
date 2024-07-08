@@ -131,20 +131,23 @@ class PastilleroState extends State<Pastillero>{
                           numberOfPills = int.tryParse(value) ?? 0;
                         },
                       ),
-                      const Text('Tipo de medicación:'),
+                      const Text('Tipo de medicación:', style: TextStyle(fontSize: 16)),
                       const SizedBox(width: 16, height: 50),
-                      DropdownButton<String>(
-                        value: valorSeleccionadoTipo,
-                        items: tipo.map((opcion) => DropdownMenuItem(
-                          value: opcion,
-                          child: Text(opcion),
-                        )).toList(),
-                        onChanged: (valor) {
-                          setState(() {
-                            valorSeleccionadoTipo = valor;
-                            type = valorSeleccionadoTipo!;
-                          });
-                        },
+                      Row(
+                        children: [
+                          DropdownButton<String>(
+                            value: valorSeleccionadoTipo,
+                            items: tipo.map((opcion) => DropdownMenuItem(
+                              value: opcion,
+                              child: Text(opcion),
+                            )).toList(),
+                            onChanged: (valor) {
+                              setState((){
+                                valorSeleccionadoTipo = valor;
+                              });
+                            },
+                          ),
+                        ],
                       ),
                       Visibility(
                         visible: (valorSeleccionadoTipo == "Otro:"),
@@ -165,8 +168,11 @@ class PastilleroState extends State<Pastillero>{
                         children: [
                           ElevatedButton(
                             onPressed: () async {
+                              if(valorSeleccionadoTipo != "Otro:") type = valorSeleccionadoTipo!;
                               insertPills(pillName, numberOfPills,
-                                  getUserAsociadoId(), type);
+                                  getUserAsociadoId(), "A");
+                              //insertPills(pillName, numberOfPills,
+                                //  getUserAsociadoId(), type);
                               listaDePills = getPills(getUserAsociadoId());
                               setState(() {});
                               Navigator.of(context).pop();

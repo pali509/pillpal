@@ -231,10 +231,10 @@ Future<int> getUsId(String email) async {
   else
     return 0;
 }
-Future<int> getRolId(int email) async {
+Future<int> getRolId(int id) async {
   List<Map<String, dynamic>>? userList = await databaseConnection
       .mappedResultsQuery("""
-      SELECT user_role_id FROM "Users" WHERE user_email = '$email'""");
+      SELECT user_role_id FROM "Users" WHERE user_id = $id""");
   if(userList.isNotEmpty)
     return userList[0]['Users']['user_role_id'];
   else
@@ -485,7 +485,7 @@ Future<void> deleteAlarmBd(int alarm_id) async {
   """);
 }
 
-Future<Statistic_type?> getSta(DateTime d, int user_id) async {
+Future<Statistic_type> getSta(DateTime d, int user_id) async {
   int taken = 0;
   int nt = 0;
   String pills = "";
@@ -493,10 +493,9 @@ Future<Statistic_type?> getSta(DateTime d, int user_id) async {
   int wp = 0;
   int mt = 0;
   int mp = 0;
-  Statistic_type sta;
 
   List<Map<String, dynamic>> map = await databaseConnection.mappedResultsQuery("""
-    select * from "Statistics" s where user_id  = $user_id and fecha = $d
+    select * from "Statistics" s where user_id  = $user_id and fecha = '$d'
   """);
   if(map[0].isNotEmpty) {
     taken = map[0]['Statistics']['taken'];
@@ -508,7 +507,7 @@ Future<Statistic_type?> getSta(DateTime d, int user_id) async {
      select sum(programmed) as prog, sum(taken) as take 
      from "Statistics" s 
      where user_id = $user_id and 
-     DATE_PART('week', fecha) = DATE_PART('week', $d) 
+     DATE_PART('week', fecha) = DATE_PART('week', '$d') 
      and EXTRACT(YEAR FROM fecha) = ${d.year} 
   """);
   if(map2[0].isNotEmpty) {
@@ -527,8 +526,7 @@ Future<Statistic_type?> getSta(DateTime d, int user_id) async {
     mp = map3[0]['']['prog'];
   }
 
-  sta = Statistic_type(taken, nt, pills, wt, wp, mt, mp);
-  return sta;
+  return Statistic_type(taken, nt, pills, wt, wp, mt, mp);
 }
 
 Future<int> subPills(int user_id, int pill_id, int q) async {
