@@ -24,10 +24,159 @@ class PastilleroState extends State<Pastillero>{
   List<String>tipo = ["Pastillas", "Sobres", "Gotas", "Jarabe", "Otro:"];
   String? valorSeleccionadoTipo;
   String type = "";
+  String? _opcionSeleccionada;
 
   Future<List<Pill>>? listaDePills = getPills(getUserAsociadoId());
 
   List<Pill> pills = [];
+
+  void _mostrarPopEdicionPastilla(BuildContext context, Pill pasti) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          // Utilizar StatefulBuilder para gestionar el estado
+          builder: (context, setState) {
+            final _NameController = TextEditingController(text: pasti.pillName);
+            final _NumPillController = TextEditingController(text: pasti.numPills.toString());
+            final _TypeController = TextEditingController(text: pasti.type);
+
+            return AlertDialog(
+              title: const Text('Editar Medicamento'),
+              content: SingleChildScrollView(
+                child: Column(
+                  children: <Widget>[
+                    TextField(
+                      controller: _NameController,
+                      decoration: const InputDecoration(
+                          labelText: 'Nombre'),
+                    ),
+                    TextField(
+                      controller: _NumPillController,
+                      decoration: const InputDecoration(
+                          labelText: 'Cantidad disponible'),
+                    ),
+                    ListTile(
+                      title: const Text("Tipo"),
+                      trailing: DropdownButton<String>(
+                        value: _opcionSeleccionada,
+                        items: const [
+                          DropdownMenuItem<String>(
+                            value: "Pastillas",
+                            child: Text('Pastillas'),
+                          ),
+                          DropdownMenuItem<String>(
+                            value: "Sobres",
+                            child: Text('Sobres'),
+                          ),
+                          DropdownMenuItem<String>(
+                            value: "Gotas",
+                            child: Text("Gotas"),
+                          ),
+                          DropdownMenuItem<String>(
+                            value: "Jarabe",
+                            child: Text('Jarabe'),
+                          ),
+                          DropdownMenuItem<String>(
+                            value: "Otro:",
+                            child: Text('Otro:'),
+                          ),
+                        ],
+                        onChanged: (String? nuevoValor) {
+                          setState(() {
+                            _opcionSeleccionada = nuevoValor!;
+                          });
+                        },
+                      ),
+                    ),
+                    Visibility(
+                        visible: (_opcionSeleccionada == "Otro:"),
+                        child: SizedBox(
+                            height: 130.0,
+                            child: Scaffold(
+                              body: Center(
+                                // Adjust the value as needed
+                                child: TextField(
+                                  controller: _TypeController,
+                                  decoration: const InputDecoration(),
+                                ),
+                              ),
+                            )
+                        )
+
+                    ),
+
+                  ],
+                ),
+              ),
+              actions: <Widget>[
+                TextButton(
+                  child: const Text('Guardar'),
+                  onPressed: () {
+                    // Guardar los cambios en la alarma
+                    setState(() {
+                      pasti.pillName = _NameController.text;
+                      pasti.numPills = int.parse(_NumPillController.text);
+                      if(_opcionSeleccionada == "Otro:") pasti.type = _TypeController.text;
+                      else pasti.type = _opcionSeleccionada;
+                    });
+                    updatePills(pasti.pillName!, pasti.numPills!, pasti.userId!, pasti.type!, pasti.pillId!);
+                    Navigator.of(context).pop(); // Cerrar el pop-up de edición
+                  },
+                ),
+                TextButton(
+                  child: const Text('Cancelar'),
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Cerrar el pop-up de edición
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void _mostrarInformacionPastilla(BuildContext context, Pill pasti) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(pasti.pillName!),
+          content: Wrap( // Envuelve el contenido en una columna
+            direction: Axis.horizontal, // Limita el tamaño de la columna
+            children: <Widget>[
+              Text("Cantidad: ${pasti.numPills!}", style: TextStyle(fontSize: 16.0)),
+              // Muestra la descripción
+              Text('Tipo de medicación: ${pasti.type}', style: TextStyle(fontSize: 16.0)),
+            ],
+          ),
+          actions: <Widget>[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                TextButton(
+                  child: Text('Editar'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    _mostrarPopEdicionPastilla(context, pasti);
+                  },
+                ),
+                Spacer(), // Añadir Spacer para distribuir el espacio
+                TextButton(
+                  child: Text('Aceptar'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            )
+          ],
+        );
+      },
+    );
+  }
   @override
   Widget build(BuildContext context) {
 
@@ -74,19 +223,28 @@ class PastilleroState extends State<Pastillero>{
                       splashColor: Colors.grey,
                       onTap: () {
                         debugPrint('Card tapped.');
-                        Navigator.of(context).pushReplacementNamed('/infoMed');
+                        _mostrarInformacionPastilla(context, currentPill);
                       },
                       child: ListTile(
-                        leading: const Icon(Icons.add_a_photo_rounded),
-                        title: Text(' ${currentPill.pillName}'),
-                        subtitle: Text('Cantidad: ${currentPill.numPills} ud.'),
-                        trailing: IconButton(
-                          icon: Icon(Icons.delete),
-                          color: Colors.redAccent,
+                        leading: IconButton(
+                          icon: Icon(Icons.add_a_photo_rounded),
                           onPressed: () {
-                            _showDeleteConfirmationDialog(context, currentPill);
+                            //Ver la imagen/subir nueva imagen en pop up
                           },
                         ),
+                        title: Text(' ${currentPill.pillName}'),
+                        subtitle: Text('Cantidad: ${currentPill.numPills} ud.'),
+                        trailing:
+                          Visibility(
+                            visible: (getRoleId() != 2),
+                            child:IconButton(
+                            icon: Icon(Icons.delete),
+                            color: Colors.redAccent,
+                            onPressed: () {
+                              _showDeleteConfirmationDialog(context, currentPill);
+                            },
+                          ),
+                          ),
                       ),
                     ),
                   );
@@ -168,14 +326,39 @@ class PastilleroState extends State<Pastillero>{
                         children: [
                           ElevatedButton(
                             onPressed: () async {
-                              if(valorSeleccionadoTipo != "Otro:") type = valorSeleccionadoTipo!;
-                              insertPills(pillName, numberOfPills,
-                                  getUserAsociadoId(), "A");
-                              //insertPills(pillName, numberOfPills,
+                              if(pillName == '') {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                        'Por favor, rellena el campo de nombre'),
+                                  ),
+                                );
+                              }
+                              else if(valorSeleccionadoTipo == null){
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Por favor, rellena el campo de tipo de medicación'),
+                                  ),
+                                );
+                              }
+                              else if(valorSeleccionadoTipo == 'Otro:' && type == ''){
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Por favor, si el tipo es otro, introduzca el nombre'),
+                                  ),
+                                );
+                              }
+                              else {
+                                if (valorSeleccionadoTipo != "Otro:")
+                                  type = valorSeleccionadoTipo!;
+                                insertPills(pillName, numberOfPills,
+                                    getUserAsociadoId(), type);
+                                //insertPills(pillName, numberOfPills,
                                 //  getUserAsociadoId(), type);
-                              listaDePills = getPills(getUserAsociadoId());
-                              setState(() {});
-                              Navigator.of(context).pop();
+                                listaDePills = getPills(getUserAsociadoId());
+                                setState(() {});
+                                Navigator.of(context).pop();
+                              }
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.blue,
@@ -194,10 +377,43 @@ class PastilleroState extends State<Pastillero>{
                           // Second button
                           ElevatedButton(
                             onPressed: () async {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) => AddCalendarioDesdePastillero(nombreMed: pillName, numPastillas: numberOfPills,type:type))
-                              );
+                              if (pillName == '') {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                        'Por favor, rellena el campo de nombre'),
+                                  ),
+                                );
+                              }
+                              else if (valorSeleccionadoTipo == null) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                        'Por favor, rellena el campo de tipo de medicación'),
+                                  ),
+                                );
+                              }
+                              else if (valorSeleccionadoTipo == 'Otro:' &&
+                                  type == '') {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                        'Por favor, si el tipo es otro, introduzca el nombre'),
+                                  ),
+                                );
+                              }
+                              else {
+                                if (valorSeleccionadoTipo != "Otro:")
+                                  type = valorSeleccionadoTipo!;
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (context) =>
+                                        AddCalendarioDesdePastillero(
+                                            nombreMed: pillName,
+                                            numPastillas: numberOfPills,
+                                            type: type))
+                                );
+                              }
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.blue,

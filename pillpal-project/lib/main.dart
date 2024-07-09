@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pillpal/pantallas/add_calendario_desdePastillero.dart';
 import 'package:pillpal/pantallas/pantalla_alarmas.dart';
 import 'package:pillpal/pantallas/pantalla_estadisticas.dart';
-import 'package:pillpal/pantallas/pantalla_informacionMed.dart';
 import 'package:pillpal/pantallas/pantalla_inicial.dart';
 
 import 'package:pillpal/pantallas/pantalla_pastillero.dart';
@@ -40,7 +39,6 @@ class MyApp extends StatelessWidget {
         '/pastis': (context) => Pastillero(),
         '/cuenta': (context) => Login(),
         '/registro': (context) => Registro(),
-        '/infoMed': (context) => InfoMed(),
         '/calendario': (context) => PantallaCalendario(),
         '/alarmas' : (context) => AlarmaScreen(),
         '/estadisticas' : (context) => PantallaEstadisticas(),

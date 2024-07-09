@@ -99,6 +99,14 @@ Future<void> insertPills(String pillName, int numPills, int userId, String pill_
   """);
 }
 
+Future<void> updatePills(String pillName, int numPills, int userId, String pill_type, int pill_id) async{
+  await databaseConnection.query("""
+    UPDATE "Pills"
+    SET pill_name = '$pillName', pill_quantity = $numPills, pill_type = '$pill_type'
+    WHERE user_id = $userId and pill_id = $pill_id
+  """);
+}
+
 Future<void> deletePill(Pill pill) async {
   int? pillId = pill.getPillId();
   int? userId = pill.getUserId();
