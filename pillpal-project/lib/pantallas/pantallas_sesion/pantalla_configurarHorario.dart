@@ -180,6 +180,10 @@ class _ConfigurarHorarioState extends State<ConfigurarHorario> {
                             _horaCenar.format(context),
                             _horaDormir.format(context));
 
+                        setHorarioAutosuficiente(_horaDesayuno.format(context),
+                            _horaComer.format(context),
+                            _horaCenar.format(context),
+                            _horaDormir.format(context));
                       }
                       else {
                         updateUser(
@@ -191,6 +195,7 @@ class _ConfigurarHorarioState extends State<ConfigurarHorario> {
                             _horaComer.format(context),
                             _horaCenar.format(context),
                             _horaDormir.format(context));
+
                       }
                         Navigator.of(context).pushReplacementNamed('/pastis');
                       },

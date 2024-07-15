@@ -117,11 +117,16 @@ class PastilleroState extends State<Pastillero>{
                     setState(() {
                       pasti.pillName = _NameController.text;
                       pasti.numPills = int.parse(_NumPillController.text);
-                      if(_opcionSeleccionada == "Otro:") pasti.type = _TypeController.text;
-                      else pasti.type = _opcionSeleccionada;
+                      if(_opcionSeleccionada != null) {
+                        if (_opcionSeleccionada == "Otro:")
+                          pasti.type = _TypeController.text;
+                        else
+                          pasti.type = _opcionSeleccionada;
+                      }
                     });
                     updatePills(pasti.pillName!, pasti.numPills!, pasti.userId!, pasti.type!, pasti.pillId!);
                     Navigator.of(context).pop(); // Cerrar el pop-up de edición
+
                   },
                 ),
                 TextButton(

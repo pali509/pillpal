@@ -82,6 +82,7 @@ class _LoginDemoState extends State<Login> {
                         const SnackBar(content: Text('Correo o contraseña incorrectas!')),
                       );
                       _emailController.clear();
+                      _passwordController.clear();
                     }
                   },
                   style: ElevatedButton.styleFrom(

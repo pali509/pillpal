@@ -55,7 +55,7 @@ Future<void> updateUser(int userId, String? email, String? name, String? pwd, St
           WHERE user_id = $userId;
       """);
     }
-    if(pwd != null){
+    if(pwd != null && pwd != ''){
       await databaseConnection.query("""
           UPDATE "Users"
           SET user_pwd = '$pwd'
@@ -262,7 +262,12 @@ Future<void> deleteRelationship(int id) async {
       WHERE cuidador_id = $id OR paciente_id = $id;
   """);
 }
-
+Future<void> deleteRelationshipUna(int idSup, int idDep) async {
+  await databaseConnection.query("""
+      DELETE FROM "Relationships"
+      WHERE cuidador_id = $idSup AND paciente_id = $idDep;
+  """);
+}
 Future<void> deleteUser(int id) async {
   //borramos user de las relaciones
   await deleteRelationship(id);
@@ -522,7 +527,7 @@ Future<Statistic_type> getSta(DateTime d, int user_id) async {
     wt = map2[0]['']['take'];
     wp = map2[0]['']['prog'];
   }
-
+  debugPrint('pastillas tomadas SEMANALES: $wt');
   List<Map<String, dynamic>> map3 = await databaseConnection.mappedResultsQuery("""
      select sum(programmed) as prog, sum(taken) as take 
      from "Statistics" s 
@@ -533,6 +538,13 @@ Future<Statistic_type> getSta(DateTime d, int user_id) async {
     mt = map3[0]['']['take'];
     mp = map3[0]['']['prog'];
   }
+  debugPrint('pastillas tomadas: $taken');
+  debugPrint('pastillas NO tomadas: $nt');
+  debugPrint('pastillas: $pills');
+  debugPrint('pastillas tomadas SEMANALES: $wt');
+  debugPrint('pastillas NO tomadas SEMANALES: $taken');
+  debugPrint('pastillas tomadas MENSUALES: $mt');
+  debugPrint('pastillas NO tomadas MENSUALES: $mt');
 
   return Statistic_type(taken, nt, pills, wt, wp, mt, mp);
 }

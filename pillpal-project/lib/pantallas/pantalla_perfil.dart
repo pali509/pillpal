@@ -590,6 +590,14 @@ class _PantallaPerfilState extends State<PantallaPerfil> {
                                                                 listaUsers = getAsociados(getUserId());
                                                               }); //Alomejor hay que poner aqui name = nuevoName etc?
                                                               Navigator.of(context).pop();
+                                                              //TODO CAMBIAR
+                                                              /*
+                                                              Navigator.push(
+                                                                context,
+                                                                MaterialPageRoute(builder: (context) => PantallaPerfil()),
+                                                              );
+                                                              */
+                                                               
                                                             },
                                                             child: Text('Guardar cambios'),
                                                             style: ElevatedButton.styleFrom(
@@ -1116,7 +1124,7 @@ class _PantallaPerfilState extends State<PantallaPerfil> {
                             onPressed: ()  {
                               setState(() {
                                 debugPrint("'$selectedIndex'");
-                                deleteUser(int.parse(users[selectedIndex][0]));
+                                deleteRelationshipUna(getUserId(),int.parse(users[selectedIndex][0]));
                               });
                               Navigator.of(context).pop();
                             },
