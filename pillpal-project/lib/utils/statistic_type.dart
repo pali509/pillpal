@@ -19,19 +19,22 @@ class Statistic_type{
       int wt, int wp, int mt, int mp){
     this.taken = t;
     this.programmed = p;
-    List<String> splitPills = pills.split(";");
-    for(int i = 0; i < splitPills.length; i = i+4){
-      if(splitPills[i+3] == "Si"){
-        takenName.add(splitPills[i+1]);
-        takenQ.add(int.parse(splitPills[i]));
-        takenId.add(int.parse(splitPills[i+2]));
-      }
-      else{
-        notTakenName.add(splitPills[i+1]);
-        notTakenQ.add(int.parse(splitPills[i]));
-        notTakenId.add(int.parse(splitPills[i+2]));
-      }
+    if(pills != "") {
+        List<String> splitPills = pills.split(";");
+        for(int i = 0; i < splitPills.length; i = i+4){
+          if(splitPills[i+3] == "Si"){
+            takenName.add(splitPills[i+1]);
+            takenQ.add(int.parse(splitPills[i]));
+            takenId.add(int.parse(splitPills[i+2]));
+          }
+          else{
+            notTakenName.add(splitPills[i+1]);
+            notTakenQ.add(int.parse(splitPills[i]));
+            notTakenId.add(int.parse(splitPills[i+2]));
+          }
+        }
     }
+    
     this.weekProg = wp;
     this.weekTaken = wt;
     this.monthProg = mp;

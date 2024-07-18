@@ -510,7 +510,8 @@ Future<Statistic_type> getSta(DateTime d, int user_id) async {
   List<Map<String, dynamic>> map = await databaseConnection.mappedResultsQuery("""
     select * from "Statistics" s where user_id  = $user_id and fecha = '$d'
   """);
-  if(map[0].isNotEmpty) {
+
+  if(map.isNotEmpty) {
     taken = map[0]['Statistics']['taken'];
     nt = map[0]['Statistics']['programmed'];
     pills = map[0]['Statistics']['summary'];
@@ -520,31 +521,34 @@ Future<Statistic_type> getSta(DateTime d, int user_id) async {
      select sum(programmed) as prog, sum(taken) as take 
      from "Statistics" s 
      where user_id = $user_id and 
-     DATE_PART('week', fecha) = DATE_PART('week', '$d') 
+     DATE_TRUNC('week', fecha::date) = DATE_TRUNC('week', '$d'::date)
      and EXTRACT(YEAR FROM fecha) = ${d.year} 
   """);
-  if(map2[0].isNotEmpty) {
+
+  if(map2[0]['']['take'] != null &&  map2[0]['']['prog'] != null) {
     wt = map2[0]['']['take'];
     wp = map2[0]['']['prog'];
   }
-  debugPrint('pastillas tomadas SEMANALES: $wt');
+
   List<Map<String, dynamic>> map3 = await databaseConnection.mappedResultsQuery("""
      select sum(programmed) as prog, sum(taken) as take 
      from "Statistics" s 
      where user_id = $user_id and EXTRACT(MONTH FROM fecha) = ${d.month}
      and EXTRACT(YEAR FROM fecha) = ${d.year}
   """);
-  if(map3[0].isNotEmpty) {
+
+  if( map3[0]['']['take'] != null && map3[0]['']['prog'] != null) {
     mt = map3[0]['']['take'];
     mp = map3[0]['']['prog'];
   }
+
   debugPrint('pastillas tomadas: $taken');
   debugPrint('pastillas NO tomadas: $nt');
   debugPrint('pastillas: $pills');
   debugPrint('pastillas tomadas SEMANALES: $wt');
   debugPrint('pastillas NO tomadas SEMANALES: $taken');
   debugPrint('pastillas tomadas MENSUALES: $mt');
-  debugPrint('pastillas NO tomadas MENSUALES: $mt');
+  debugPrint('pastillas NO tomadas MENSUALES: $mp');
 
   return Statistic_type(taken, nt, pills, wt, wp, mt, mp);
 }
