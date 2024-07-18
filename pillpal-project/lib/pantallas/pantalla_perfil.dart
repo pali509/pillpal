@@ -585,10 +585,9 @@ class _PantallaPerfilState extends State<PantallaPerfil> {
                                                             onPressed: () async {
                                                               updateUser(
                                                                   getUserAsociadoId(), nuevoCorreo, nuevoName, nuevaCont, null, null, null, null);
-                                                              setState(() {
-                                                                userAsociado = getUser(getUserAsociadoId());
-                                                                listaUsers = getAsociados(getUserId());
-                                                              }); //Alomejor hay que poner aqui name = nuevoName etc?
+                                                              userAsociado = getUser(getUserAsociadoId());
+                                                              listaUsers = getAsociados(getUserId());
+                                                              setState(() {}); //Alomejor hay que poner aqui name = nuevoName etc?
                                                               Navigator.of(context).pop();
                                                               //TODO CAMBIAR
                                                               /*
@@ -597,7 +596,7 @@ class _PantallaPerfilState extends State<PantallaPerfil> {
                                                                 MaterialPageRoute(builder: (context) => PantallaPerfil()),
                                                               );
                                                               */
-                                                               
+
                                                             },
                                                             child: Text('Guardar cambios'),
                                                             style: ElevatedButton.styleFrom(
@@ -897,10 +896,9 @@ class _PantallaPerfilState extends State<PantallaPerfil> {
                                                             onPressed: () async {
                                                               updateUser(
                                                                   int.parse(currentUser[0]), nuevoCorreo, nuevoName, nuevaCont, null, null, null, null);
-                                                              setState(() {
-                                                                listaUsers = getAsociados(getUserId());
-                                                                userAsociado = getUser(getUserAsociadoId());
-                                                              });
+                                                              listaUsers = getAsociados(getUserId());
+                                                              userAsociado = getUser(getUserAsociadoId());
+                                                              setState(() {});
                                                               Navigator.of(context).pop();
                                                             },
                                                             child: Text('Guardar cambios'),
@@ -990,13 +988,12 @@ class _PantallaPerfilState extends State<PantallaPerfil> {
 
                                       ElevatedButton(
                                         onPressed: ()  {
-                                          setState(() {
-                                            debugPrint("'$selectedIndex'");
-                                            userAsociado = getUser(int.parse(users[selectedIndex][0]));
-                                            setUserAsociado(int.parse(users[selectedIndex][0]),
-                                                users[selectedIndex][3],users[selectedIndex][4],
-                                                users[selectedIndex][5], users[selectedIndex][6]);
-                                          });
+                                          debugPrint("'$selectedIndex'");
+                                          userAsociado = getUser(int.parse(users[selectedIndex][0]));
+                                          setUserAsociado(int.parse(users[selectedIndex][0]),
+                                              users[selectedIndex][3],users[selectedIndex][4],
+                                              users[selectedIndex][5], users[selectedIndex][6]);
+                                          setState(() {});
                                           Navigator.of(context).pop();
                                         },
                                         child: Text('Confirmar'),
@@ -1122,10 +1119,9 @@ class _PantallaPerfilState extends State<PantallaPerfil> {
 
                           ElevatedButton(
                             onPressed: ()  {
-                              setState(() {
-                                debugPrint("'$selectedIndex'");
-                                deleteRelationshipUna(getUserId(),int.parse(users[selectedIndex][0]));
-                              });
+                              debugPrint("'$selectedIndex'");
+                              deleteRelationshipUna(getUserId(),int.parse(users[selectedIndex][0]));
+                              setState(() {});
                               Navigator.of(context).pop();
                             },
                             child: Text('Confirmar'),

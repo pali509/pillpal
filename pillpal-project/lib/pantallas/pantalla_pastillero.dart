@@ -112,21 +112,23 @@ class PastilleroState extends State<Pastillero>{
               actions: <Widget>[
                 TextButton(
                   child: const Text('Guardar'),
-                  onPressed: () {
-                    // Guardar los cambios en la alarma
-                    setState(() {
-                      pasti.pillName = _NameController.text;
-                      pasti.numPills = int.parse(_NumPillController.text);
-                      if(_opcionSeleccionada != null) {
-                        if (_opcionSeleccionada == "Otro:")
-                          pasti.type = _TypeController.text;
-                        else
-                          pasti.type = _opcionSeleccionada;
-                      }
-                    });
-                    updatePills(pasti.pillName!, pasti.numPills!, pasti.userId!, pasti.type!, pasti.pillId!);
-                    Navigator.of(context).pop(); // Cerrar el pop-up de edición
+                  onPressed: () async {
+                    if(_opcionSeleccionada != null) {
+                      if (_opcionSeleccionada == "Otro:")
+                        pasti.type = _TypeController.text;
+                      else
+                        pasti.type = _opcionSeleccionada;
+                    }
+                    pasti.pillName = _NameController.text;
+                    pasti.numPills = int.parse(_NumPillController.text);
 
+                    await updatePills(pasti.pillName!, pasti.numPills!, pasti.userId!, pasti.type!, pasti.pillId!);
+
+
+                    listaDePills = getPills(getUserAsociadoId());
+                    setState(() {// Guardar los cambios en la alarma
+                    });
+                    Navigator.of(context).pop();
                   },
                 ),
                 TextButton(
@@ -287,7 +289,7 @@ class PastilleroState extends State<Pastillero>{
                         },
                       ),
                       const SizedBox(height: 15),
-                      const Text('Núm. pastillas:'),
+                      const Text('Núm. dosis:'),
                       TextFormField(
                         keyboardType: TextInputType.number,
                         onChanged: (value) {
@@ -487,8 +489,8 @@ class PastilleroState extends State<Pastillero>{
               ),
             ),
             ElevatedButton(
-              onPressed: () {
-                deletePill(pill);
+              onPressed: () async {
+                await deletePill(pill);
                 listaDePills = getPills(getUserAsociadoId());
                 setState(() {});
                 // Cerrar el diálogo después de realizar la acción
