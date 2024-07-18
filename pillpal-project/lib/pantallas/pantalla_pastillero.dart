@@ -30,11 +30,15 @@ class PastilleroState extends State<Pastillero>{
 
   List<Pill> pills = [];
 
+  void _actualizar(){
+    setState(() {});
+  }
   void _mostrarPopEdicionPastilla(BuildContext context, Pill pasti) {
     showDialog(
       context: context,
       builder: (context) {
         return StatefulBuilder(
+
           // Utilizar StatefulBuilder para gestionar el estado
           builder: (context, setState) {
             final _NameController = TextEditingController(text: pasti.pillName);
@@ -126,9 +130,9 @@ class PastilleroState extends State<Pastillero>{
 
 
                     listaDePills = getPills(getUserAsociadoId());
-                    setState(() {// Guardar los cambios en la alarma
-                    });
+                    setState(() {});
                     Navigator.of(context).pop();
+                    _actualizar();
                   },
                 ),
                 TextButton(
