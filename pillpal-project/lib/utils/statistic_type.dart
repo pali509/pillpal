@@ -34,11 +34,11 @@ class Statistic_type{
           }
         }
     }
-    
+
     this.weekProg = wp;
     this.weekTaken = wt;
     this.monthProg = mp;
-    this.monthProg = mt;
+    this.monthTaken = mt;
   }
 
   int getTaken(){

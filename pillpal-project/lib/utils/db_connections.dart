@@ -498,7 +498,7 @@ Future<void> deleteAlarmBd(int alarm_id) async {
   """);
 }
 
-Future<Statistic_type> getSta(DateTime d, int user_id) async {
+Future<Statistic_type> getSta(DateTime dia, DateTime semMes, int user_id) async {
   int taken = 0;
   int nt = 0;
   String pills = "";
@@ -508,7 +508,7 @@ Future<Statistic_type> getSta(DateTime d, int user_id) async {
   int mp = 0;
 
   List<Map<String, dynamic>> map = await databaseConnection.mappedResultsQuery("""
-    select * from "Statistics" s where user_id  = $user_id and fecha = '$d'
+    select * from "Statistics" s where user_id  = $user_id and fecha = '$dia'
   """);
 
   if(map.isNotEmpty) {
@@ -521,8 +521,8 @@ Future<Statistic_type> getSta(DateTime d, int user_id) async {
      select sum(programmed) as prog, sum(taken) as take 
      from "Statistics" s 
      where user_id = $user_id and 
-     DATE_TRUNC('week', fecha::date) = DATE_TRUNC('week', '$d'::date)
-     and EXTRACT(YEAR FROM fecha) = ${d.year} 
+     DATE_TRUNC('week', fecha::date) = DATE_TRUNC('week', '$semMes'::date)
+     and EXTRACT(YEAR FROM fecha) = ${semMes.year} 
   """);
 
   if(map2[0]['']['take'] != null &&  map2[0]['']['prog'] != null) {
@@ -533,8 +533,8 @@ Future<Statistic_type> getSta(DateTime d, int user_id) async {
   List<Map<String, dynamic>> map3 = await databaseConnection.mappedResultsQuery("""
      select sum(programmed) as prog, sum(taken) as take 
      from "Statistics" s 
-     where user_id = $user_id and EXTRACT(MONTH FROM fecha) = ${d.month}
-     and EXTRACT(YEAR FROM fecha) = ${d.year}
+     where user_id = $user_id and EXTRACT(MONTH FROM fecha) = ${semMes.month}
+     and EXTRACT(YEAR FROM fecha) = ${semMes.year}
   """);
 
   if( map3[0]['']['take'] != null && map3[0]['']['prog'] != null) {

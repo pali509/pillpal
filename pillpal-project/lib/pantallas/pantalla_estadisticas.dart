@@ -38,13 +38,27 @@ class _PantallaEstadisticasState extends State<PantallaEstadisticas> {
   int semanaprevia = 0;
   //DateTime diaFinal = DateTime.now();
 
-  Future<Statistic_type> estadisticas = getSta(DateTime.now(), getUserAsociadoId());
+  Future<Statistic_type> estadisticas = getSta(DateTime.now(),DateTime.now(), getUserAsociadoId());
+  int porcentajeSemanal = 0;
+  int porcentajeDiario = 0;
+  int porcentajeMensual = 0;
 
   int previous = -1;
+  int previousMes = -1;
+  int mesPrevio = 0;
+  DateTime diaparaMes = DateTime.now();
+
+  void _actualizar(){
+    setState(() {});
+  }
 
   void _handleButtonPress(Selection selection) {
     setState(() {
       selected = selection;
+      _focusedDay = _selectedDay!;
+      dia = _focusedDay;
+      diaparaMes = _focusedDay;
+      estadisticas = getSta(_selectedDay!, _selectedDay!, getUserAsociadoId());
     });
   }
   DateTime primerDiaSemana(DateTime hoy){
@@ -133,16 +147,19 @@ class _PantallaEstadisticasState extends State<PantallaEstadisticas> {
         body: FutureBuilder<Statistic_type>(
             future: estadisticas,
             builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
-              } else if (snapshot.hasError) {
+               if (snapshot.hasError) {
                 return Center(child: Text('Error: ${snapshot.error}'));
-              } else if (!snapshot.hasData ) {
+              }
+               /*else if (!snapshot.hasData ) {
                 return const Center(child: Text('Añade un medicamento para comenzar a usar la aplicación.'
                     ,textAlign: TextAlign.center,style: TextStyle(fontSize: 16)));
-              } else {
+              }
+                */
+               else {
                 Statistic_type data = snapshot.data!;
-
+                porcentajeSemanal = data.weekProg != 0? ((data.weekTaken / data.weekProg) * 100).round() : 100;
+                porcentajeDiario = data.taken != 0? ((data.taken / data.programmed) * 100).round() : 100;
+                porcentajeMensual = data.monthTaken != 0? ((data.monthTaken / data.monthProg) * 100).round() : 100;
                 return Column(
                   children: [
                     const SizedBox(height: 20.0),
@@ -186,9 +203,9 @@ class _PantallaEstadisticasState extends State<PantallaEstadisticas> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     const SizedBox(height: 20.0),
-                                    Text('Medicación tomada:         ', style: TextStyle(fontSize: 20)),
+                                    Text('Medicación tomada:   ${data.weekTaken} ($porcentajeSemanal%)', style: TextStyle(fontSize: 20)),
                                     const SizedBox(height: 20.0),
-                                    Text('Total medicación a tomar:    20', style: TextStyle(fontSize: 20)),
+                                    Text('Total medicación a tomar:    ${data.weekProg}', style: TextStyle(fontSize: 20)),
                                     const SizedBox(height: 10.0),
                                   ],
                                 ),
@@ -203,6 +220,7 @@ class _PantallaEstadisticasState extends State<PantallaEstadisticas> {
                                   ),
                                   firstDay: DateTime.utc(2023, 10, 16),
                                   lastDay: DateTime.utc(2030, 3, 14),
+                                  //currentDay: DateTime.now(),
                                   focusedDay: _focusedDay,
                                   calendarFormat: _calendarFormat,
                                   startingDayOfWeek: StartingDayOfWeek.monday,
@@ -212,7 +230,11 @@ class _PantallaEstadisticasState extends State<PantallaEstadisticas> {
                                       setState(() {
                                         _selectedDay = selectedDay;
                                         _focusedDay = focusedDay;
+                                        previous = -1;
+                                        semanaprevia = 0;
                                         diaSeleccionado = weekdays[selectedDay.weekday-1];
+                                        estadisticas = getSta(_selectedDay!, _selectedDay!, getUserAsociadoId());
+                                        //TODO Posible necesidad de metodo actualizar con setState vacio
                                       });
                                     }
                                   },
@@ -240,6 +262,7 @@ class _PantallaEstadisticasState extends State<PantallaEstadisticas> {
                                           dia = dia.subtract(const Duration(days: 7));
                                         }
                                       }
+                                      estadisticas = getSta(_selectedDay!, dia, getUserAsociadoId());
                                     });
                                   },
                                 ),
@@ -252,9 +275,9 @@ class _PantallaEstadisticasState extends State<PantallaEstadisticas> {
                                           const SizedBox(height: 20.0),
                                           Text('Estadística diaria: $diaSeleccionado', style: TextStyle(fontSize: 20)),
                                           const SizedBox(height: 20.0),
-                                          Text('Medicación tomada:         5 (50%)', style: TextStyle(fontSize: 20)),
+                                          Text('Medicación tomada:   ${data.taken} ($porcentajeDiario%)', style: TextStyle(fontSize: 20)),
                                           const SizedBox(height: 20.0),
-                                          Text('Total medicación a tomar:    10', style: TextStyle(fontSize: 20)),
+                                          Text('Total medicación a tomar:    ${data.programmed}', style: TextStyle(fontSize: 20)),
                                           const SizedBox(height: 20.0),
                                         ],
                                       ),
@@ -283,7 +306,7 @@ class _PantallaEstadisticasState extends State<PantallaEstadisticas> {
                                                   return const Padding(
                                                     padding: EdgeInsets.only(top: 25.0, bottom: 15.0),
                                                     child: Center(
-                                                      child: Text("No hay medicación tomada ese día"),
+                                                      child: Text("No hay medicación tomada para este día"),
                                                     ),
                                                   );
 
@@ -331,153 +354,6 @@ class _PantallaEstadisticasState extends State<PantallaEstadisticas> {
                                     ],
                                   ),
                                 ),
-                                /*
-      Expanded(
-        child: FutureBuilder<List<Horario>>(
-          future: getDayPills(diaSeleccionado, getUserAsociadoId()),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            } else {
-              cosas = snapshot.data!;
-              cosas1 = cogerSegunMomento(cosas, 1); //Para coger solo las del desayuno
-              cosas2 = cogerSegunMomento(cosas, 2); //Solo comida
-              cosas3 = cogerSegunMomento(cosas, 3); //Solo cena
-              cosas0 = cogerSegunMomento(cosas, 0);
-              //FALTA DORMIR!
-
-              if (cosas0.isNotEmpty)
-                visibleOtros = true; //Si hay cosas ponerlo visible
-              else
-                visibleOtros = false;
-
-
-              return ListView(
-                scrollDirection: Axis.vertical,
-
-                children: [
-                  Container(
-
-                    child: ListView(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      children:[
-                        const Text(
-                          ' Desayuno',
-                          style: TextStyle(color: Colors.black, fontSize: 25),
-                        ),
-
-                        Container(
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                                color: Colors.blue, width: 5),
-                          ),
-                          child: ListView.builder( //Esto es igual que el de pantalla pastillero
-                            shrinkWrap: true,
-                            itemCount:cosas1.length > 0 ? cosas1.length : 1,
-                            physics: const NeverScrollableScrollPhysics(),
-                            itemBuilder: (context, index) {
-                              if(cosas1.isNotEmpty) {
-                                Horario currentCosa = cosas1[index];
-                                return Container(
-                                  decoration: BoxDecoration(
-                                    border: Border.all(),
-                                    borderRadius: BorderRadius
-                                        .circular(12.0),
-                                  ),
-                                  child: ListTile(
-                                    onTap: () =>
-                                        print('${cosas1[index]}'),
-                                    title: Text('${currentCosa
-                                        .getPillName()}'),
-                                    subtitle: Text(
-                                        'Cantidad: ${currentCosa
-                                            .getNumPills()} ud.'),
-                                  ),
-                                );
-                              }
-                              else {
-                                return const Padding(
-                                  padding:  EdgeInsets.only(top: 25.0, bottom: 15.0),
-                                  child: Center(
-                                    child: Text("No hay medicación programada para el desayuno este dia"),
-                                  ),
-                                );
-                              }
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-
-                  Container(
-
-                    child: ListView(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      children:[
-                        const Text(
-                          ' Comida',
-                          style: TextStyle(color: Colors.black, fontSize: 25),
-                        ),
-
-                        Container(
-
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                                color: Colors.green, width: 5),
-                          ),
-                          child: ListView.builder( //Esto es igual que el de pantalla pastillero
-                            shrinkWrap: true,
-                            itemCount: cosas2.length > 0 ? cosas2.length : 1,
-                            physics: const NeverScrollableScrollPhysics(),
-                            itemBuilder: (context, index) {
-                              if(cosas2.isNotEmpty) {
-                                Horario currentCosa = cosas2[index];
-                                return Container(
-                                  decoration: BoxDecoration(
-                                    border: Border.all(),
-                                    borderRadius: BorderRadius
-                                        .circular(12.0),
-                                  ),
-                                  child: ListTile(
-                                    onTap: () =>
-                                        print('${cosas2[index]}'),
-                                    title: Text('${currentCosa
-                                        .getPillName()}'),
-                                    subtitle: Text(
-                                        'Cantidad: ${currentCosa
-                                            .getNumPills()} ud.'),
-                                  ),
-                                );
-                              }
-                              else {
-                                return const Padding(
-                                  padding:  EdgeInsets.only(top: 25.0, bottom: 15.0),
-                                  child: Center(
-                                    child: Text("No hay medicación programada para la comida este dia"),
-                                  ),
-                                );
-                              }
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              );
-            }
-          },
-
-
-        ),
-      ),
-
-       */
-
                               ]
                           )
                       ),
@@ -494,11 +370,10 @@ class _PantallaEstadisticasState extends State<PantallaEstadisticas> {
                                             children:[
                                               const SizedBox(height: 20.0),
                                               Text('Estadística mensual: ', style: TextStyle(fontSize: 20)),
-
                                               const SizedBox(height: 20.0),
-                                              Text('Medicación tomada:         10 (50%)', style: TextStyle(fontSize: 20)),
+                                              Text('Medicación tomada:   ${data.monthTaken} ($porcentajeMensual%)', style: TextStyle(fontSize: 20)),
                                               const SizedBox(height: 20.0),
-                                              Text('Total medicación a tomar:    20', style: TextStyle(fontSize: 20)),
+                                              Text('Total medicación a tomar:    ${data.monthProg}', style: TextStyle(fontSize: 20)),
                                               const SizedBox(height: 10.0),
                                             ],
                                           ),
@@ -522,14 +397,39 @@ class _PantallaEstadisticasState extends State<PantallaEstadisticas> {
                                                 setState(() {
                                                   _selectedDay = selectedDay;
                                                   _focusedDay = focusedDay;
+                                                  previousMes = -1;
+                                                  mesPrevio = 0;
                                                   diaSeleccionado = weekdays[selectedDay.weekday-1];
+                                                  estadisticas = getSta(_selectedDay!, _selectedDay!, getUserAsociadoId());
                                                 });
                                               }
                                             },
                                             onPageChanged: (focusedDay) {
                                               setState(() {
                                                 _focusedDay = focusedDay;
+
+                                                final difference2 = focusedDay.difference(_selectedDay!).inDays;
+                                                if (mesPrevio < difference2 ) {
+                                                  diaparaMes = diaparaMes.add(const Duration(days: 30));
+                                                  previousMes = 1;
+                                                  mesPrevio = difference2;
+
+                                                } else if ( mesPrevio > difference2) {
+                                                  diaparaMes = diaparaMes.subtract(const Duration(days: 30));
+                                                  previousMes = 0;
+                                                  mesPrevio = difference2;
+                                                }
+                                                else{
+                                                  if(previousMes == 0){
+                                                    diaparaMes = diaparaMes.add(const Duration(days: 30));
+                                                  }
+                                                  else if(previousMes == 1){
+                                                    diaparaMes = diaparaMes.subtract(const Duration(days: 30));
+                                                  }
+                                                }
+                                                estadisticas = getSta(_selectedDay!, diaparaMes, getUserAsociadoId());
                                               });
+
                                             },
                                           ),
                                           Expanded(
@@ -540,9 +440,9 @@ class _PantallaEstadisticasState extends State<PantallaEstadisticas> {
                                                 const SizedBox(height: 20.0),
                                                 Text('Estadística diaria: $diaSeleccionado', style: TextStyle(fontSize: 20)),
                                                 const SizedBox(height: 20.0),
-                                                Text('Medicación tomada:         5 (50%)', style: TextStyle(fontSize: 20)),
+                                                Text('Medicación tomada:   ${data.taken} ($porcentajeDiario%)', style: TextStyle(fontSize: 20)),
                                                 const SizedBox(height: 20.0),
-                                                Text('Total medicación a tomar:    10', style: TextStyle(fontSize: 20)),
+                                                Text('Total medicación a tomar:    ${data.programmed}', style: TextStyle(fontSize: 20)),
                                                 const SizedBox(height: 20.0),
 
                                                 Container(
@@ -568,7 +468,7 @@ class _PantallaEstadisticasState extends State<PantallaEstadisticas> {
                                                             return const Padding(
                                                               padding: EdgeInsets.only(top: 25.0, bottom: 15.0),
                                                               child: Center(
-                                                                child: Text("No hay medicación tomada ese día"),
+                                                                child: Text("No hay medicación tomada para este día"),
                                                               ),
                                                             );
 
@@ -617,47 +517,7 @@ class _PantallaEstadisticasState extends State<PantallaEstadisticas> {
                                             ),
                                           ),
                                           /*
-      Expanded(
-        child: FutureBuilder<List<Horario>>(
-          future: getDayPills(diaSeleccionado, getUserAsociadoId()),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            } else {
-              cosas = snapshot.data!;
-              cosas1 = cogerSegunMomento(cosas, 1); //Para coger solo las del desayuno
-              cosas2 = cogerSegunMomento(cosas, 2); //Solo comida
-              cosas3 = cogerSegunMomento(cosas, 3); //Solo cena
-              cosas0 = cogerSegunMomento(cosas, 0);
-              //FALTA DORMIR!
-
-              if (cosas0.isNotEmpty)
-                visibleOtros = true; //Si hay cosas ponerlo visible
-              else
-                visibleOtros = false;
-
-
-              return ListView(
-                scrollDirection: Axis.vertical,
-
-                children: [
-                  Container(
-
-                    child: ListView(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      children:[
-                        const Text(
-                          ' Desayuno',
-                          style: TextStyle(color: Colors.black, fontSize: 25),
-                        ),
-
-                        Container(
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                                color: Colors.blue, width: 5),
-                          ),
-                          child: ListView.builder( //Esto es igual que el de pantalla pastillero
+                            ListView.builder( //Esto es igual que el de pantalla pastillero
                             shrinkWrap: true,
                             itemCount:cosas1.length > 0 ? cosas1.length : 1,
                             physics: const NeverScrollableScrollPhysics(),
@@ -695,72 +555,6 @@ class _PantallaEstadisticasState extends State<PantallaEstadisticas> {
                       ],
                     ),
                   ),
-
-
-                  Container(
-
-                    child: ListView(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      children:[
-                        const Text(
-                          ' Comida',
-                          style: TextStyle(color: Colors.black, fontSize: 25),
-                        ),
-
-                        Container(
-
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                                color: Colors.green, width: 5),
-                          ),
-                          child: ListView.builder( //Esto es igual que el de pantalla pastillero
-                            shrinkWrap: true,
-                            itemCount: cosas2.length > 0 ? cosas2.length : 1,
-                            physics: const NeverScrollableScrollPhysics(),
-                            itemBuilder: (context, index) {
-                              if(cosas2.isNotEmpty) {
-                                Horario currentCosa = cosas2[index];
-                                return Container(
-                                  decoration: BoxDecoration(
-                                    border: Border.all(),
-                                    borderRadius: BorderRadius
-                                        .circular(12.0),
-                                  ),
-                                  child: ListTile(
-                                    onTap: () =>
-                                        print('${cosas2[index]}'),
-                                    title: Text('${currentCosa
-                                        .getPillName()}'),
-                                    subtitle: Text(
-                                        'Cantidad: ${currentCosa
-                                            .getNumPills()} ud.'),
-                                  ),
-                                );
-                              }
-                              else {
-                                return const Padding(
-                                  padding:  EdgeInsets.only(top: 25.0, bottom: 15.0),
-                                  child: Center(
-                                    child: Text("No hay medicación programada para la comida este dia"),
-                                  ),
-                                );
-                              }
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              );
-            }
-          },
-
-
-        ),
-      ),
-
        */
                                         ]
                                     )
@@ -783,9 +577,27 @@ class _PantallaEstadisticasState extends State<PantallaEstadisticas> {
 }
 
 /*
+Hecho:
+  -Comprobar porcentajes
+
+  -Actualizar datos al cambiar de dia, semana o mes
+Actualizar metodo getSta para que tenga 2 dateTimes como parametro, dia y semana/mes
+Para seleccionar un dia que sean los 2 iguales
+Para cambiar una semana o un mes uno se mantiene como _selectedDay y otro como primerDia de el mes o la semana (por ejemplo)
+
+Problema: A veces para cambios hechos muy rapido se raya con las fechas (yo ya paso)
+
 Falta:
-  -El contenido de los containers ( de momento no se puede )
-  -El mes podria ser mas grande en el header?
+
+ -El contenido de los containers
+ Muy parecido a calendario
+
+ -Necesito algo para que al llegar a esta pantalla no salga pantalla de error al principio
+ Hacer el circulo de carga como antes haria que se hiciera con cada cambio de fecha :/
+
+
+
+
   MENSUAL:
   ======== Exception caught by widgets library =======================================================
 The following assertion was thrown while applying parent data.:
@@ -795,5 +607,9 @@ The ParentDataWidget Expanded(flex: 1) wants to apply ParentData of type FlexPar
 
 Usually, this means that the Expanded widget has the wrong ancestor RenderObjectWidget. Typically, Expanded widgets are placed directly inside Flex widgets.
 The offending Expanded is currently placed inside a RepaintBoundary widget.
+
+
+
+  -El mes podria ser mas grande en el header? -> nose que significa esto
 
  */
