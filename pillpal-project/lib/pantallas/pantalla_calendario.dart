@@ -668,7 +668,6 @@ class _PantallaCalendarioState extends State<PantallaCalendario> {
         visible: (getRoleId() != 2),
          child: ElevatedButton(
           onPressed: () {
-            addPhoto();
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => AddCalendario()),

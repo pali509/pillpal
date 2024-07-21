@@ -6,9 +6,12 @@ class Pill{
     String? pillName;
     int ?userId;
     String? type;
+    String? url;
 
     // Constructor
-    Pill(this.pillId, this.numPills, this.pillName, this.userId, this.type);
+    Pill(this.pillId, this.numPills, this.pillName, this.userId, this.type, String url) {
+        this.url = "https://www.4shared.com/img/" + url;
+    }
     
     int? getPillId(){
         return pillId;
@@ -20,5 +23,8 @@ class Pill{
 
     String? getType(){
         return type;
+    }
+    String? getUrl() {
+        return url;
     }
 }

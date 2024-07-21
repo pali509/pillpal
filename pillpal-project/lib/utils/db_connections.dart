@@ -128,13 +128,16 @@ Future<List<Pill>>? getPills(int userId) async {
       .mappedResultsQuery("""
       SELECT * FROM "Pills" WHERE user_id = $userId """);
   List<Pill>listPills = [];
+  debugPrint("ASTA");
   for(int i = 0; i < mapPills.length; i++) {
+    debugPrint("Aqui" + mapPills[i]['Pills']['pill_photo']);
     listPills.add(Pill(
         mapPills[i]['Pills']['pill_id'],
         mapPills[i]['Pills']['pill_quantity'],
         mapPills[i]['Pills']['pill_name'],
         mapPills[i]['Pills']['user_id'],
-        mapPills[i]['Pills']['pill_type']
+        mapPills[i]['Pills']['pill_type'],
+        mapPills[i]['Pills']['pill_photo']
     ));
   }
   return listPills;
@@ -312,13 +315,13 @@ Future<List<Horario>> getDayPills(DateTime day, int userId) async {
   for(int i = 0; i < mapHorario.length; i++) {
     String real_min = mapHorario[i]['']['minute'], real_hour = mapHorario[i]['']['actual_hour'];
     if(int.parse(mapHorario[i]['']['minute']) < 10) {
-      real_min = '0' + real_min;
+      real_min = '0$real_min';
     }
     if(int.parse(mapHorario[i]['']['actual_hour']) < 10) {
-      real_hour = '0' + real_hour;
+      real_hour = '0$real_hour';
     }
     listHorario.add(Horario(
-        real_hour + ":" + real_min,
+        "$real_hour:$real_min",
         mapHorario[i]['Horario']['quantity'],
         mapHorario[i]['Pills']['pill_name'],
         mapHorario[i]['Horario']['time_of_day']
@@ -376,40 +379,40 @@ Future<String> getHour(int time_of_day) async{
     real_min = mapUserTime[0]['']['minuto_desayuno'];
     real_hour = mapUserTime[0]['']['hora_desayuno'];
     if (int.parse(real_min) < 10) {
-      real_min = '0' + real_min;
+      real_min = '0$real_min';
     }
     if (int.parse(real_hour) < 10) {
-      real_hour = '0' + real_hour;
+      real_hour = '0$real_hour';
     }
   }
   else if(time_of_day == 2) {
     real_min = mapUserTime[0]['']['minuto_comida'];
     real_hour = mapUserTime[0]['']['hora_comida'];
     if (int.parse(real_min) < 10) {
-      real_min = '0' + real_min;
+      real_min = '0$real_min';
     }
     if (int.parse(real_hour) < 10) {
-      real_hour = '0' + real_hour;
+      real_hour = '0$real_hour';
     }
   }
   else if(time_of_day == 3) {
     real_min = mapUserTime[0]['']['minuto_cena'];
     real_hour = mapUserTime[0]['']['hora_cena'];
     if (int.parse(real_min) < 10) {
-      real_min = '0' + real_min;
+      real_min = '0$real_min';
     }
     if (int.parse(real_hour) < 10) {
-      real_hour = '0' + real_hour;
+      real_hour = '0$real_hour';
     }
   }
   else{
     real_min = mapUserTime[0]['']['minuto_dormir'];
     real_hour = mapUserTime[0]['']['hora_dormir'];
     if (int.parse(real_min) < 10) {
-      real_min = '0' + real_min;
+      real_min = '0$real_min';
     }
     if (int.parse(real_hour) < 10) {
-      real_hour = '0' + real_hour;
+      real_hour = '0$real_hour';
     }
   }
 
@@ -476,12 +479,12 @@ Future<List<Alarma_type>>getAlarmas(int user_id) async {
   for(int i = 0; i < mapAlarms.length; i++) {
     String real_min = mapAlarms[i]['']['minute'], real_hour = mapAlarms[i]['']['actual_hour'];
     if(int.parse(mapAlarms[i]['']['minute']) < 10) {
-      real_min = '0' + real_min;
+      real_min = '0$real_min';
     }
     if(int.parse(mapAlarms[i]['']['actual_hour']) < 10) {
-      real_hour = '0' + real_hour;
+      real_hour = '0$real_hour';
     }
-     listAlarms.add(Alarma_type(real_hour + ":" + real_min, mapAlarms[i]['Horario']['quantity'],
+     listAlarms.add(Alarma_type("$real_hour:$real_min", mapAlarms[i]['Horario']['quantity'],
          mapAlarms[i]['Pills']['pill_name'],  mapAlarms[i]['Horario']['time_of_day'],
          mapAlarms[i]['Horario']['id'], mapAlarms[i]['Horario']['alarm_id'],
          mapAlarms[i]['Horario']['period'], mapAlarms[i]['Horario']['date'],
@@ -581,16 +584,13 @@ Future<void>actualizar_alarmas(int user_id, int alarm_id,
 
 }
 
-Future <void> addPhoto() async {
-  const supabaseUrl = 'https://amwzytiutgstvnrpaiju.supabase.co';
-  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFtd3p5dGl1dGdzdHZucnBhaWp1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTgzNDA3MzQsImV4cCI6MjAxMzkxNjczNH0.-15tfv5ltd59NnnC00FKUL-IsCmWvrpk1y4ktfHA2Y4';
-  //const supabase = createClient(supabaseUrl, supabaseKey);
+Future<String>getUrlPhoto(int id) async {
+  List<Map<String, dynamic>>? list = await databaseConnection
+      .mappedResultsQuery("""
+      SELECT pill_photo FROM "Pills" WHERE pill_id = $id""");
+  if(list.isNotEmpty)
+    return list[0]['Pills']['pill_photo'];
+  else
+    return "";
 
-  const bucketName = 'my-bucket';
-  const fileName = 'jojo.jpg';
-  const fileData = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD...';
-
-  await databaseConnection.query("""UPDATE "Pills"
-  SET pill_photo = lo_import('android/app/src/assets/images/jojo.jpg')
-  WHERE user_id = 7 and pill_id = 5""");
 }

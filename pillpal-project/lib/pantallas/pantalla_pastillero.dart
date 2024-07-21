@@ -125,10 +125,7 @@ class PastilleroState extends State<Pastillero>{
                     }
                     pasti.pillName = _NameController.text;
                     pasti.numPills = int.parse(_NumPillController.text);
-
                     await updatePills(pasti.pillName!, pasti.numPills!, pasti.userId!, pasti.type!, pasti.pillId!);
-
-
                     listaDePills = getPills(getUserAsociadoId());
                     setState(() {});
                     Navigator.of(context).pop();
@@ -147,6 +144,10 @@ class PastilleroState extends State<Pastillero>{
         );
       },
     );
+  }
+
+  void _popUpPhoto() {
+
   }
 
   void _mostrarInformacionPastilla(BuildContext context, Pill pasti) {
@@ -188,12 +189,47 @@ class PastilleroState extends State<Pastillero>{
       },
     );
   }
+
+  Widget imageDialog(text, path, context) {
+    return Dialog(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(left: 8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  '$text',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                IconButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  icon: Icon(Icons.close_rounded),
+                  color: Colors.redAccent,
+                ),
+              ],
+            ),
+          ),
+          Container(
+            width: 200,
+            height: 200,
+            child: Image.network(
+              '$path',
+               fit: BoxFit.cover,
+            ),
+          ),
+        ],
+      ),
+    );}
+
+
   @override
   Widget build(BuildContext context) {
-
-
     return Scaffold(
-      
       appBar: AppBar(
         title: Text('Pastillero', style: TextStyle(fontSize: 25.0)),
         backgroundColor: ColorsApp.toolBarColor,
@@ -238,8 +274,14 @@ class PastilleroState extends State<Pastillero>{
                       },
                       child: ListTile(
                         leading: IconButton(
-                          icon: Icon(Icons.add_a_photo_rounded),
-                          onPressed: () {
+                          icon: Image.network(currentPill.url!),
+                          //Image.network(currentPill.url!),
+                          //Icon(Icons.add_a_photo_rounded),
+                          onPressed: () async {
+                            await showDialog(
+                                context: context,
+                                builder: (_) => imageDialog(currentPill.pillName, currentPill.url, context)
+                            );
                             //Ver la imagen/subir nueva imagen en pop up
                           },
                         ),
@@ -281,7 +323,6 @@ class PastilleroState extends State<Pastillero>{
                 builder: (context) {
                   String pillName = '';
                   int numberOfPills = 0;
-
                   return SimpleDialog(
                     contentPadding: const EdgeInsets.symmetric(horizontal: 12),
                     children: [
