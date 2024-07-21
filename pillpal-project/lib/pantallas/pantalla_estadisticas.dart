@@ -48,6 +48,8 @@ class _PantallaEstadisticasState extends State<PantallaEstadisticas> {
   int mesPrevio = 0;
   DateTime diaparaMes = DateTime.now();
 
+  bool iniciado = false;
+
   void _actualizar(){
     setState(() {});
   }
@@ -147,7 +149,10 @@ class _PantallaEstadisticasState extends State<PantallaEstadisticas> {
         body: FutureBuilder<Statistic_type>(
             future: estadisticas,
             builder: (context, snapshot) {
-               if (snapshot.hasError) {
+              if (snapshot.connectionState == ConnectionState.waiting && !iniciado) {
+                iniciado = true;
+                return const Center(child: CircularProgressIndicator());
+              } else if (snapshot.hasError) {
                 return Center(child: Text('Error: ${snapshot.error}'));
               }
                /*else if (!snapshot.hasData ) {
@@ -300,18 +305,38 @@ class _PantallaEstadisticasState extends State<PantallaEstadisticas> {
                                               ),
                                               child: ListView.builder( //Esto es igual que el de pantalla pastillero
                                                 shrinkWrap: true,
-                                                itemCount: 1,
+                                                itemCount:data.taken > 0 ? data.getTakenQ().length : 1,
                                                 physics: const NeverScrollableScrollPhysics(),
                                                 itemBuilder: (context, index) {
-                                                  return const Padding(
-                                                    padding: EdgeInsets.only(top: 25.0, bottom: 15.0),
-                                                    child: Center(
-                                                      child: Text("No hay medicación tomada para este día"),
-                                                    ),
-                                                  );
+                                                  if(data.taken > 0) {
+                                                    String takenName = data.getTakenName()[index];
+                                                    int takenQ = data.getTakenQ()[index];
 
+                                                    return Container(
+                                                      decoration: BoxDecoration(
+                                                        border: Border.all(),
+                                                        borderRadius: BorderRadius
+                                                            .circular(12.0),
+                                                      ),
+                                                      child: ListTile(
+                                                        //onTap: () => , TODO meter aqui informacion medicamento?
+                                                        title: Text('${takenName}'),
+                                                        subtitle: Text(
+                                                            'Cantidad: ${takenQ} ud.'),
+                                                      ),
+                                                    );
+                                                  }
+                                                  else {
+                                                    return const Padding(
+                                                      padding:  EdgeInsets.only(top: 25.0, bottom: 15.0),
+                                                      child: Center(
+                                                        child: Text("No hay medicación tomada este día"),
+                                                      ),
+                                                    );
+                                                  }
                                                 },
                                               ),
+
                                             ),
                                           ],
                                         ),
@@ -334,18 +359,37 @@ class _PantallaEstadisticasState extends State<PantallaEstadisticas> {
                                                     color: Colors.red, width: 5),
                                               ),
                                               child: ListView.builder( //Esto es igual que el de pantalla pastillero
-                                                  shrinkWrap: true,
-                                                  itemCount: 1,
-                                                  physics: const NeverScrollableScrollPhysics(),
-                                                  itemBuilder: (context, index) {
+                                                shrinkWrap: true,
+                                                itemCount:data.getNotTakenId().isNotEmpty ? data.getNotTakenId().length : 1,
+                                                physics: const NeverScrollableScrollPhysics(),
+                                                itemBuilder: (context, index) {
+                                                  if(data.getNotTakenId().isNotEmpty) {
+                                                    String nottakenName = data.getNotTakenName()[index];
+                                                    int nottakenQ = data.getNotTakenQ()[index];
 
-                                                    return const Padding(
-                                                      padding: EdgeInsets.only(top: 25.0, bottom: 15.0),
-                                                      child: Center(
-                                                        child: Text("No hay medicación programada para este dia"),
+                                                    return Container(
+                                                      decoration: BoxDecoration(
+                                                        border: Border.all(),
+                                                        borderRadius: BorderRadius
+                                                            .circular(12.0),
+                                                      ),
+                                                      child: ListTile(
+                                                        //onTap: () => , TODO meter aqui informacion medicamento?
+                                                        title: Text('${nottakenName}'),
+                                                        subtitle: Text(
+                                                            'Cantidad: ${nottakenQ} ud.'),
                                                       ),
                                                     );
                                                   }
+                                                  else {
+                                                    return const Padding(
+                                                      padding:  EdgeInsets.only(top: 25.0, bottom: 15.0),
+                                                      child: Center(
+                                                        child: Text("No hay medicación no tomada este día"),
+                                                      ),
+                                                    );
+                                                  }
+                                                },
                                               ),
                                             ),
                                           ],
@@ -462,18 +506,38 @@ class _PantallaEstadisticasState extends State<PantallaEstadisticas> {
                                                         ),
                                                         child: ListView.builder( //Esto es igual que el de pantalla pastillero
                                                           shrinkWrap: true,
-                                                          itemCount: 1,
+                                                          itemCount:data.taken > 0 ? data.getTakenQ().length : 1,
                                                           physics: const NeverScrollableScrollPhysics(),
                                                           itemBuilder: (context, index) {
-                                                            return const Padding(
-                                                              padding: EdgeInsets.only(top: 25.0, bottom: 15.0),
-                                                              child: Center(
-                                                                child: Text("No hay medicación tomada para este día"),
-                                                              ),
-                                                            );
+                                                            if(data.taken > 0) {
+                                                              String takenName = data.getTakenName()[index];
+                                                              int takenQ = data.getTakenQ()[index];
 
+                                                              return Container(
+                                                                decoration: BoxDecoration(
+                                                                  border: Border.all(),
+                                                                  borderRadius: BorderRadius
+                                                                      .circular(12.0),
+                                                                ),
+                                                                child: ListTile(
+                                                                  //onTap: () => , TODO meter aqui informacion medicamento?
+                                                                  title: Text('${takenName}'),
+                                                                  subtitle: Text(
+                                                                      'Cantidad: ${takenQ} ud.'),
+                                                                ),
+                                                              );
+                                                            }
+                                                            else {
+                                                              return const Padding(
+                                                                padding:  EdgeInsets.only(top: 25.0, bottom: 15.0),
+                                                                child: Center(
+                                                                  child: Text("No hay medicación tomada este día"),
+                                                                ),
+                                                              );
+                                                            }
                                                           },
                                                         ),
+
                                                       ),
                                                     ],
                                                   ),
@@ -496,18 +560,37 @@ class _PantallaEstadisticasState extends State<PantallaEstadisticas> {
                                                               color: Colors.red, width: 5),
                                                         ),
                                                         child: ListView.builder( //Esto es igual que el de pantalla pastillero
-                                                            shrinkWrap: true,
-                                                            itemCount: 1,
-                                                            physics: const NeverScrollableScrollPhysics(),
-                                                            itemBuilder: (context, index) {
+                                                          shrinkWrap: true,
+                                                          itemCount:data.getNotTakenId().isNotEmpty ? data.getNotTakenId().length : 1,
+                                                          physics: const NeverScrollableScrollPhysics(),
+                                                          itemBuilder: (context, index) {
+                                                            if(data.getNotTakenId().isNotEmpty) {
+                                                              String nottakenName = data.getNotTakenName()[index];
+                                                              int nottakenQ = data.getNotTakenQ()[index];
 
-                                                              return const Padding(
-                                                                padding: EdgeInsets.only(top: 25.0, bottom: 15.0),
-                                                                child: Center(
-                                                                  child: Text("No hay medicación programada para este dia"),
+                                                              return Container(
+                                                                decoration: BoxDecoration(
+                                                                  border: Border.all(),
+                                                                  borderRadius: BorderRadius
+                                                                      .circular(12.0),
+                                                                ),
+                                                                child: ListTile(
+                                                                  //onTap: () => , TODO meter aqui informacion medicamento?
+                                                                  title: Text('${nottakenName}'),
+                                                                  subtitle: Text(
+                                                                      'Cantidad: ${nottakenQ} ud.'),
                                                                 ),
                                                               );
                                                             }
+                                                            else {
+                                                              return const Padding(
+                                                                padding:  EdgeInsets.only(top: 25.0, bottom: 15.0),
+                                                                child: Center(
+                                                                  child: Text("No hay medicación no tomada este día"),
+                                                                ),
+                                                              );
+                                                            }
+                                                          },
                                                         ),
                                                       ),
                                                     ],
@@ -516,46 +599,6 @@ class _PantallaEstadisticasState extends State<PantallaEstadisticas> {
                                               ],
                                             ),
                                           ),
-                                          /*
-                            ListView.builder( //Esto es igual que el de pantalla pastillero
-                            shrinkWrap: true,
-                            itemCount:cosas1.length > 0 ? cosas1.length : 1,
-                            physics: const NeverScrollableScrollPhysics(),
-                            itemBuilder: (context, index) {
-                              if(cosas1.isNotEmpty) {
-                                Horario currentCosa = cosas1[index];
-                                return Container(
-                                  decoration: BoxDecoration(
-                                    border: Border.all(),
-                                    borderRadius: BorderRadius
-                                        .circular(12.0),
-                                  ),
-                                  child: ListTile(
-                                    onTap: () =>
-                                        print('${cosas1[index]}'),
-                                    title: Text('${currentCosa
-                                        .getPillName()}'),
-                                    subtitle: Text(
-                                        'Cantidad: ${currentCosa
-                                            .getNumPills()} ud.'),
-                                  ),
-                                );
-                              }
-                              else {
-                                return const Padding(
-                                  padding:  EdgeInsets.only(top: 25.0, bottom: 15.0),
-                                  child: Center(
-                                    child: Text("No hay medicación programada para el desayuno este dia"),
-                                  ),
-                                );
-                              }
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-       */
                                         ]
                                     )
                                 )
@@ -577,39 +620,20 @@ class _PantallaEstadisticasState extends State<PantallaEstadisticas> {
 }
 
 /*
-Hecho:
-  -Comprobar porcentajes
-
-  -Actualizar datos al cambiar de dia, semana o mes
-Actualizar metodo getSta para que tenga 2 dateTimes como parametro, dia y semana/mes
-Para seleccionar un dia que sean los 2 iguales
-Para cambiar una semana o un mes uno se mantiene como _selectedDay y otro como primerDia de el mes o la semana (por ejemplo)
-
-Problema: A veces para cambios hechos muy rapido se raya con las fechas (yo ya paso)
 
 Falta:
 
- -El contenido de los containers
- Muy parecido a calendario
-
- -Necesito algo para que al llegar a esta pantalla no salga pantalla de error al principio
- Hacer el circulo de carga como antes haria que se hiciera con cada cambio de fecha :/
-
-
-
+ A veces para cambios hechos muy rapido se raya con las fechas (yo ya paso)
 
   MENSUAL:
   ======== Exception caught by widgets library =======================================================
 The following assertion was thrown while applying parent data.:
 Incorrect use of ParentDataWidget.
 
-The ParentDataWidget Expanded(flex: 1) wants to apply ParentData of type FlexParentData to a RenderObject, which has been set up to accept ParentData of incompatible type ParentData.
+The ParentDataWidget Expanded(flex: 1) wants to apply ParentData of type FlexParentData to a RenderObject, which has been set up to accept
+ParentData of incompatible type ParentData.
 
 Usually, this means that the Expanded widget has the wrong ancestor RenderObjectWidget. Typically, Expanded widgets are placed directly inside Flex widgets.
 The offending Expanded is currently placed inside a RepaintBoundary widget.
-
-
-
-  -El mes podria ser mas grande en el header? -> nose que significa esto
 
  */
