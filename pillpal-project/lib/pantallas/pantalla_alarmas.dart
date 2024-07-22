@@ -285,8 +285,19 @@ class _AlarmaScreenState extends State<AlarmaScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Alarmas'),
+        title: Text('Recordatorios', style: TextStyle(fontSize: 25.0)),
         backgroundColor: ColorsApp.toolBarColor,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.person),
+            onPressed: () =>  {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => PantallaPerfil()),
+              ),
+            }, // Define button action
+          ),
+        ],
       ),
       drawer: MyDrawer(),
       body: Column(
@@ -325,7 +336,9 @@ class _AlarmaScreenState extends State<AlarmaScreen> {
               },
             ),
           ),
-          ElevatedButton(
+          Visibility(
+            visible: getRoleId() != 2,
+            child: ElevatedButton(
             onPressed: () {
               Navigator.push(
                 context,
@@ -333,6 +346,7 @@ class _AlarmaScreenState extends State<AlarmaScreen> {
               );
             },
             child: Text('Añadir'),
+          ),
           ),
         ],
       ),

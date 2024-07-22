@@ -6,6 +6,7 @@ import 'package:pillpal/constants/colors.dart';
 import 'package:pillpal/pantallas/pantalla_perfil.dart';
 import '../utils/db_connections.dart';
 import '../utils/horario.dart';
+import '../utils/statistic_type.dart';
 import '../utils/user.dart';
 import 'navigation_drawer.dart';
 
@@ -21,6 +22,7 @@ class PantallaInicial extends StatefulWidget {
     List<Horario> cosas1 = [];
     List<Horario> cosas2 = [];
     List<Horario> cosas3 = [];
+    List<Horario> cosas4 = [];
 
     List<String> weekdays = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
     List<String> months= ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre",];
@@ -28,6 +30,9 @@ class PantallaInicial extends StatefulWidget {
 
 
     bool visibleOtros = false;
+
+    late Statistic_type stats;
+    List<String> nombres = [];
 
     @override
     Widget build(BuildContext context) {
@@ -66,7 +71,7 @@ class PantallaInicial extends StatefulWidget {
                       });
                     },
                   ),
-                  Text("${weekdays[diaSeleccionado.weekday - 1]}, ${diaSeleccionado.day} ${months[diaSeleccionado.month]}",style: TextStyle(fontSize: 26.0)),
+                  Text("${weekdays[diaSeleccionado.weekday - 1]}, ${diaSeleccionado.day} ${months[diaSeleccionado.month - 1]}",style: TextStyle(fontSize: 26.0)),
 
                   IconButton(
                     icon: Icon(Icons.arrow_forward, size: 30.0), // Left arrow icon
@@ -78,20 +83,26 @@ class PantallaInicial extends StatefulWidget {
                   ),
                 ],
               ),
+
               const SizedBox(height: 30.0),
               Expanded(
-                child: FutureBuilder<List<Horario>>(
-                  future: getDayPills(diaSeleccionado, getUserAsociadoId()),
-                  builder: (context, snapshot) {
+                child: FutureBuilder(
+                  future: Future.wait([
+                    getDayPills(diaSeleccionado, getUserAsociadoId()), //Future that returns bool
+                    getStaDia(diaSeleccionado, getUserAsociadoId()), //Future that returns bool
+                  ]),
+                  builder:(context, AsyncSnapshot<List<dynamic>> snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const Center(child: CircularProgressIndicator());
                     } else {
-                      cosas = snapshot.data!;
+                      stats = snapshot.data?[1];
+                      nombres = stats.getTakenName();
+                      cosas = snapshot.data?[0];
                       cosas1 = cogerSegunMomento(cosas, 1); //Para coger solo las del desayuno
                       cosas2 = cogerSegunMomento(cosas, 2); //Solo comida
                       cosas3 = cogerSegunMomento(cosas, 3); //Solo cena
+                      cosas4 = cogerSegunMomento(cosas, 4); //Solo dormir
                       cosas0 = cogerSegunMomento(cosas, 0);
-                      //FALTA DORMIR!
 
                       if (cosas0.isNotEmpty)
                         visibleOtros = true; //Si hay cosas ponerlo visible
@@ -290,11 +301,11 @@ class PantallaInicial extends StatefulWidget {
                                     ),
                                     child: ListView.builder( //Esto es igual que el de pantalla pastillero
                                       shrinkWrap: true,
-                                      itemCount: cosas2.length > 0 ? cosas2.length : 1, //cambiar por cosas 4 !!!!!!!!!!!!!!!!!!
+                                      itemCount: cosas4.length > 0 ? cosas4.length : 1, //cambiar por cosas 4 !!!!!!!!!!!!!!!!!!
                                       physics: const NeverScrollableScrollPhysics(),
                                       itemBuilder: (context, index) {
-                                        if(cosas2.isNotEmpty) {
-                                          Horario currentCosa = cosas2[index];
+                                        if(cosas4.isNotEmpty) {
+                                          Horario currentCosa = cosas4[index];
                                           return Container(
                                             decoration: BoxDecoration(
                                               border: Border.all(),
@@ -303,7 +314,7 @@ class PantallaInicial extends StatefulWidget {
                                             ),
                                             child: ListTile(
                                               onTap: () =>
-                                                  print('${cosas2[index]}'),
+                                                  print('${cosas4[index]}'),
                                               title: Text('${currentCosa
                                                   .getPillName()}'),
                                               subtitle: Text(
@@ -352,7 +363,17 @@ class PantallaInicial extends StatefulWidget {
                                       physics: const NeverScrollableScrollPhysics(),
                                       itemBuilder: (context, index) {
                                         Horario currentCosa = cosas0[index];
-
+                                        bool tomado = false;
+                                        if(nombres.contains(currentCosa.getPillName())){
+                                          tomado = true;
+                                          nombres.remove(currentCosa.getPillName());
+                                        }
+                                        /*
+                                        debugPrint('${stats.taken}');
+                                        debugPrint('${stats.getTakenName()}');
+                                        debugPrint('${currentCosa.getPillName()}');
+                                        debugPrint('${stats.getTakenName().contains(currentCosa.getPillName())}');
+                                         */
                                           return Container(
                                             decoration: BoxDecoration(
                                               border: Border.all(),
@@ -361,7 +382,13 @@ class PantallaInicial extends StatefulWidget {
                                             child: ListTile(
                                               onTap: () => print('${cosas0[index]}'),
                                               title: Text(
-                                                  '${currentCosa.getPillName()}'),
+                                                  '${currentCosa.getPillName()}',
+                                              style: TextStyle(
+                                                decoration:
+                                                tomado?
+                                                TextDecoration.lineThrough : TextDecoration.none,
+                                              ),
+                                              ),
                                               subtitle: Text('Cantidad: ${currentCosa
                                                   .getNumPills()} ud.     Tomar a las: ${currentCosa
                                                   .getHour()}'),

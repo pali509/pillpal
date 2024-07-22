@@ -27,12 +27,7 @@ class _RegistroAsState extends State<RegistroAs> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-        onWillPop: () async {
-      await deleteUser(id_asociado);
-      return true;
-    },
-    child: Scaffold(
+    return Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
           title: const Text("Nueva cuenta de asociado"),
@@ -126,7 +121,7 @@ class _RegistroAsState extends State<RegistroAs> {
             ],
           ),
         ),
-    ),
+
     );
   }
 }

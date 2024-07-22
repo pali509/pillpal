@@ -1051,7 +1051,7 @@ class _PantallaPerfilState extends State<PantallaPerfil> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => LoginAs(id_asociado: getUserId())));
+                                    builder: (context) => LoginAs(id_asociado: getUserId(), op: 1,)));
                           },
                           child: Text('Añadir usuario dependiente'),
                           style: ElevatedButton.styleFrom(
@@ -1119,6 +1119,11 @@ class _PantallaPerfilState extends State<PantallaPerfil> {
                             onPressed: ()  async {
                               debugPrint("'$selectedIndex'");
                               await deleteRelationshipUna(getUserId(),int.parse(users[selectedIndex][0]));
+                              users.removeAt(selectedIndex);
+                              userAsociado = getUser(int.parse(users[0][0]));
+                              setUserAsociado(int.parse(users[0][0]),
+                                  users[0][3],users[0][4],
+                                  users[0][5], users[0][6]);
                               listaUsers = getAsociados(getUserId());
                               setState(() {});
                               Navigator.of(context).pop();

@@ -128,7 +128,7 @@ class _RegistroState extends State<Registro> {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => LoginAs(id_asociado: id)));
+                                  builder: (context) => LoginAs(id_asociado: id, op: 0,)));
                         }
                       }
                     }

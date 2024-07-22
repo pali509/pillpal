@@ -556,6 +556,28 @@ Future<Statistic_type> getSta(DateTime dia, DateTime semMes, int user_id) async 
   return Statistic_type(taken, nt, pills, wt, wp, mt, mp);
 }
 
+Future<Statistic_type> getStaDia(DateTime dia, int user_id) async {
+  int taken = 0;
+  int nt = 0;
+  String pills = "";
+  int wt = 0;
+  int wp = 0;
+  int mt = 0;
+  int mp = 0;
+
+  List<Map<String, dynamic>> map = await databaseConnection.mappedResultsQuery("""
+    select * from "Statistics" s where user_id  = $user_id and fecha = '$dia'
+  """);
+
+  if(map.isNotEmpty) {
+    taken = map[0]['Statistics']['taken'];
+    nt = map[0]['Statistics']['programmed'];
+    pills = map[0]['Statistics']['summary'];
+  }
+
+  return Statistic_type(taken, nt, pills, wt, wp, mt, mp);
+}
+
 Future<int> subPills(int user_id, int pill_id, int q) async {
   List<Map<String, dynamic>> map = await databaseConnection.mappedResultsQuery(
       """
