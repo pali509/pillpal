@@ -30,6 +30,8 @@ class PastilleroState extends State<Pastillero>{
 
   List<Pill> pills = [];
 
+  final controllerTipo = TextEditingController();
+
   void _actualizar(){
     setState(() {});
   }
@@ -59,6 +61,7 @@ class PastilleroState extends State<Pastillero>{
                       controller: _NumPillController,
                       decoration: const InputDecoration(
                           labelText: 'Cantidad disponible'),
+                      keyboardType: TextInputType.number,
                     ),
                     ListTile(
                       title: const Text("Tipo"),
@@ -161,6 +164,7 @@ class PastilleroState extends State<Pastillero>{
             children: <Widget>[
               Text("Cantidad: ${pasti.numPills!}", style: TextStyle(fontSize: 16.0)),
               // Muestra la descripción
+              const SizedBox(width: 30.0),//para separar
               Text('Tipo de medicación: ${pasti.type}', style: TextStyle(fontSize: 16.0)),
             ],
           ),
@@ -246,7 +250,10 @@ class PastilleroState extends State<Pastillero>{
         ],
       ),
       drawer: MyDrawer(),
-        body: FutureBuilder<List<Pill>>(
+        body: Column(
+        children: [
+          Expanded(
+          child: FutureBuilder<List<Pill>>(
           future: listaDePills,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
@@ -263,7 +270,6 @@ class PastilleroState extends State<Pastillero>{
                 itemCount: pills.length,
                 itemBuilder: (context, index) {
                   Pill currentPill = pills[index];
-
                   return Card(
                     clipBehavior: Clip.hardEdge,
                     child: InkWell(
@@ -305,16 +311,11 @@ class PastilleroState extends State<Pastillero>{
               );
             }
           },
+          ),
         ),
 
         //Boton para añadir pastis
-
-      floatingActionButton:
-      Padding(
-        padding: EdgeInsets.only(left: 30.0, top: 750.0),
-        // Ajusta este valor según tus necesidades
-        child: Center(
-          child: Visibility(
+        Visibility(
             visible: (rol != 2),
             child: ElevatedButton(
             onPressed: () {
@@ -323,165 +324,196 @@ class PastilleroState extends State<Pastillero>{
                 builder: (context) {
                   String pillName = '';
                   int numberOfPills = 0;
-                  return SimpleDialog(
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 12),
-                    children: [
-                      const SizedBox(height: 20),
-                      const Text('Nombre:'),
-                      TextFormField(
-                        onChanged: (value) {
-                          pillName = value;
-                        },
-                      ),
-                      const SizedBox(height: 15),
-                      const Text('Núm. dosis:'),
-                      TextFormField(
-                        keyboardType: TextInputType.number,
-                        onChanged: (value) {
-                          numberOfPills = int.tryParse(value) ?? 0;
-                        },
-                      ),
-                      const Text('Tipo de medicación:', style: TextStyle(fontSize: 16)),
-                      const SizedBox(width: 16, height: 50),
-                      Row(
-                        children: [
-                          DropdownButton<String>(
+                  return StatefulBuilder(
+                  builder: (context, setState)
+                  {
+                    return SimpleDialog(
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 12),
+                      children: [
+                        const SizedBox(height: 20),
+                        const Text('Nombre:'),
+                        TextFormField(
+                          onChanged: (value) {
+                            pillName = value;
+                          },
+                        ),
+                        const SizedBox(height: 15),
+                        const Text('Núm. dosis:'),
+                        TextFormField(
+                          keyboardType: TextInputType.number,
+                          onChanged: (value) {
+                            numberOfPills = int.tryParse(value) ?? 0;
+                          },
+                        ),
+
+                        const SizedBox(height: 20),
+                        ListTile(
+                          title: const Text("Tipo de medicación:"),
+                          trailing: DropdownButton<String>(
                             value: valorSeleccionadoTipo,
-                            items: tipo.map((opcion) => DropdownMenuItem(
-                              value: opcion,
-                              child: Text(opcion),
-                            )).toList(),
-                            onChanged: (valor) {
-                              setState((){
-                                valorSeleccionadoTipo = valor;
+                            items: const [
+                              DropdownMenuItem<String>(
+                                value: "Pastillas",
+                                child: Text('Pastillas'),
+                              ),
+                              DropdownMenuItem<String>(
+                                value: "Sobres",
+                                child: Text('Sobres'),
+                              ),
+                              DropdownMenuItem<String>(
+                                value: "Gotas",
+                                child: Text("Gotas"),
+                              ),
+                              DropdownMenuItem<String>(
+                                value: "Jarabe",
+                                child: Text('Jarabe'),
+                              ),
+                              DropdownMenuItem<String>(
+                                value: "Otro:",
+                                child: Text('Otro:'),
+                              ),
+                            ],
+                            onChanged: (String? nuevoValor) {
+                              setState(() {
+                                valorSeleccionadoTipo = nuevoValor!;
                               });
                             },
                           ),
-                        ],
-                      ),
-                      Visibility(
-                        visible: (valorSeleccionadoTipo == "Otro:"),
-                        child: Column(
+                        ),
+                        Visibility(
+                            visible: (valorSeleccionadoTipo == "Otro:"),
+                            child: SizedBox(
+                                height: 130.0,
+                                child: Scaffold(
+                                  body: Center(
+                                    // Adjust the value as needed
+                                    child: TextField(
+                                      controller: controllerTipo,
+                                      decoration: const InputDecoration(),
+                                    ),
+                                  ),
+                                )
+                            )
+
+                        ),
+
+                        const SizedBox(height: 20),
+                        Row(
                           children: [
-                            const SizedBox(height: 20),
-                            TextFormField(
-                              onChanged: (value) {
-                                type = value;
+                            ElevatedButton(
+                              onPressed: () async {
+                                type = controllerTipo.text;
+                                if (pillName == '') {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text(
+                                          'Por favor, rellena el campo de nombre'),
+                                    ),
+                                  );
+                                }
+                                else if (valorSeleccionadoTipo == null) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text(
+                                          'Por favor, rellena el campo de tipo de medicación'),
+                                    ),
+                                  );
+                                }
+                                else if (valorSeleccionadoTipo == 'Otro:' &&
+                                    type == '') {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text(
+                                          'Por favor, si el tipo es otro, introduzca el nombre'),
+                                    ),
+                                  );
+                                }
+                                else {
+                                  if (valorSeleccionadoTipo != "Otro:")
+                                    type = valorSeleccionadoTipo!;
+                                  insertPills(pillName, numberOfPills,
+                                      getUserAsociadoId(), type);
+                                  //insertPills(pillName, numberOfPills,
+                                  //  getUserAsociadoId(), type);
+                                  listaDePills = getPills(getUserAsociadoId());
+                                  setState(() {});
+                                  Navigator.of(context).pop();
+                                  _actualizar();
+                                }
                               },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.blue,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+
+                                textStyle: const TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              child: const Text('Añadir'),
+                            ),
+                            const SizedBox(width: 45.0),
+
+                            ElevatedButton(
+                              onPressed: () async {
+                                if (pillName == '') {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text(
+                                          'Por favor, rellena el campo de nombre'),
+                                    ),
+                                  );
+                                }
+                                else if (valorSeleccionadoTipo == null) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text(
+                                          'Por favor, rellena el campo de tipo de medicación'),
+                                    ),
+                                  );
+                                }
+                                else if (valorSeleccionadoTipo == 'Otro:' &&
+                                    type == '') {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text(
+                                          'Por favor, si el tipo es otro, introduzca el nombre'),
+                                    ),
+                                  );
+                                }
+                                else {
+                                  if (valorSeleccionadoTipo != "Otro:")
+                                    type = valorSeleccionadoTipo!;
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(builder: (context) =>
+                                          AddCalendarioDesdePastillero(
+                                              nombreMed: pillName,
+                                              numPastillas: numberOfPills,
+                                              type: type))
+                                  );
+                                }
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.blue,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                textStyle: const TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              child: const Text('Añadir y programar'),
                             ),
                           ],
                         ),
-                      ),
-
-                      const SizedBox(height: 20),
-                      Row(
-                        children: [
-                          ElevatedButton(
-                            onPressed: () async {
-                              if(pillName == '') {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text(
-                                        'Por favor, rellena el campo de nombre'),
-                                  ),
-                                );
-                              }
-                              else if(valorSeleccionadoTipo == null){
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('Por favor, rellena el campo de tipo de medicación'),
-                                  ),
-                                );
-                              }
-                              else if(valorSeleccionadoTipo == 'Otro:' && type == ''){
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('Por favor, si el tipo es otro, introduzca el nombre'),
-                                  ),
-                                );
-                              }
-                              else {
-                                if (valorSeleccionadoTipo != "Otro:")
-                                  type = valorSeleccionadoTipo!;
-                                insertPills(pillName, numberOfPills,
-                                    getUserAsociadoId(), type);
-                                //insertPills(pillName, numberOfPills,
-                                //  getUserAsociadoId(), type);
-                                listaDePills = getPills(getUserAsociadoId());
-                                setState(() {});
-                                Navigator.of(context).pop();
-                              }
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.blue,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-
-                              textStyle: const TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            child: const Text('Añadir'),
-                          ),
-                          const SizedBox(width: 10.0), // Setting width to 0 effectively removes spacing
-                          // Second button
-                          ElevatedButton(
-                            onPressed: () async {
-                              if (pillName == '') {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text(
-                                        'Por favor, rellena el campo de nombre'),
-                                  ),
-                                );
-                              }
-                              else if (valorSeleccionadoTipo == null) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text(
-                                        'Por favor, rellena el campo de tipo de medicación'),
-                                  ),
-                                );
-                              }
-                              else if (valorSeleccionadoTipo == 'Otro:' &&
-                                  type == '') {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text(
-                                        'Por favor, si el tipo es otro, introduzca el nombre'),
-                                  ),
-                                );
-                              }
-                              else {
-                                if (valorSeleccionadoTipo != "Otro:")
-                                  type = valorSeleccionadoTipo!;
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(builder: (context) =>
-                                        AddCalendarioDesdePastillero(
-                                            nombreMed: pillName,
-                                            numPastillas: numberOfPills,
-                                            type: type))
-                                );
-                              }
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.blue,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              textStyle: const TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            child: const Text('Añadir y programar'),
-                          ),
-                        ],
-                      ),
-                    ],
+                      ],
+                    );
+                  },
                   );
                 },
               );
@@ -502,8 +534,8 @@ class PastilleroState extends State<Pastillero>{
 
           ),
           ),
-        ),
-      ),
+        ],
+    ),
     );
   }
 
@@ -543,7 +575,7 @@ class PastilleroState extends State<Pastillero>{
               },
               child: Text('Aceptar'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.purple,
+                backgroundColor: ColorsApp.buttonColor,
                 padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                 textStyle: const TextStyle(
                   fontSize: 15,
@@ -551,6 +583,7 @@ class PastilleroState extends State<Pastillero>{
                 ),
               ),
             ),
+
           ],
         );
       },

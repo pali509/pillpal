@@ -39,6 +39,7 @@ class _PantallaEstadisticasState extends State<PantallaEstadisticas> {
   //DateTime diaFinal = DateTime.now();
 
   Future<Statistic_type> estadisticas = getSta(DateTime.now(),DateTime.now(), getUserAsociadoId());
+
   int porcentajeSemanal = 0;
   int porcentajeDiario = 0;
   int porcentajeMensual = 0;
@@ -49,6 +50,9 @@ class _PantallaEstadisticasState extends State<PantallaEstadisticas> {
   DateTime diaparaMes = DateTime.now();
 
   bool iniciado = false;
+
+  List<Horario> cosas = [];
+  int programadas = 0;
 
   void _actualizar(){
     setState(() {});
@@ -122,7 +126,13 @@ class _PantallaEstadisticasState extends State<PantallaEstadisticas> {
     }
     return ultimoDia;
   }
-
+  int calcularProg(List<Horario> cosas){
+    int suma = 0;
+    for(int i = 0; i < cosas.length; i++){
+      suma += cosas[i].getNumPills()!;
+    }
+    return suma;
+  }
   @override
   Widget build(BuildContext context) {
     return
@@ -146,9 +156,13 @@ class _PantallaEstadisticasState extends State<PantallaEstadisticas> {
           ],
         ),
         drawer: MyDrawer(),
-        body: FutureBuilder<Statistic_type>(
-            future: estadisticas,
-            builder: (context, snapshot) {
+        body: FutureBuilder(
+            future: Future.wait([
+              getDayPills(_selectedDay!, getUserAsociadoId()),
+              estadisticas,
+            ]),
+            builder:(context, AsyncSnapshot<List<dynamic>> snapshot) {
+              debugPrint('${getUserAsociadoId()}');
               if (snapshot.connectionState == ConnectionState.waiting && !iniciado) {
                 iniciado = true;
                 return const Center(child: CircularProgressIndicator());
@@ -161,10 +175,12 @@ class _PantallaEstadisticasState extends State<PantallaEstadisticas> {
               }
                 */
                else {
-                Statistic_type data = snapshot.data!;
-                porcentajeSemanal = data.weekProg != 0? ((data.weekTaken / data.weekProg) * 100).round() : 100;
-                porcentajeDiario = data.taken != 0? ((data.taken / data.programmed) * 100).round() : 100;
-                porcentajeMensual = data.monthTaken != 0? ((data.monthTaken / data.monthProg) * 100).round() : 100;
+                 cosas =  snapshot.data?[0];
+                 programadas = calcularProg(cosas);
+                 Statistic_type data = snapshot.data?[1];
+                 porcentajeSemanal = data.weekProg != 0? ((data.weekTaken / data.weekProg) * 100).round() : 100;
+                 porcentajeDiario = data.taken != 0? ((data.taken / data.programmed) * 100).round() : 100;
+                 porcentajeMensual = data.monthTaken != 0? ((data.monthTaken / data.monthProg) * 100).round() : 100;
                 return Column(
                   children: [
                     const SizedBox(height: 20.0),
@@ -282,7 +298,9 @@ class _PantallaEstadisticasState extends State<PantallaEstadisticas> {
                                           const SizedBox(height: 20.0),
                                           Text('Medicación tomada:   ${data.taken} ($porcentajeDiario%)', style: TextStyle(fontSize: 20)),
                                           const SizedBox(height: 20.0),
-                                          Text('Total medicación a tomar:    ${data.programmed}', style: TextStyle(fontSize: 20)),
+                                          Text(_selectedDay!.isBefore(DateTime.now())?
+                                          'Total medicación a tomar:    ${data.programmed}':'Total medicación a tomar:    ${programadas}',
+                                              style: TextStyle(fontSize: 20)),
                                           const SizedBox(height: 20.0),
                                         ],
                                       ),
@@ -360,34 +378,70 @@ class _PantallaEstadisticasState extends State<PantallaEstadisticas> {
                                               ),
                                               child: ListView.builder( //Esto es igual que el de pantalla pastillero
                                                 shrinkWrap: true,
-                                                itemCount:data.getNotTakenId().isNotEmpty ? data.getNotTakenId().length : 1,
+                                                itemCount:
+                                                _selectedDay!.isBefore(DateTime.now())?
+                                                (data.getNotTakenId().isNotEmpty ? data.getNotTakenId().length : 1) :
+                                                cosas.isNotEmpty? cosas.length : 1,
                                                 physics: const NeverScrollableScrollPhysics(),
                                                 itemBuilder: (context, index) {
-                                                  if(data.getNotTakenId().isNotEmpty) {
-                                                    String nottakenName = data.getNotTakenName()[index];
-                                                    int nottakenQ = data.getNotTakenQ()[index];
+                                                  if(_selectedDay!.isBefore(DateTime.now())) {
+                                                    if (data.getNotTakenId().isNotEmpty) {
+                                                      String nottakenName = data
+                                                          .getNotTakenName()[index];
+                                                      int nottakenQ = data
+                                                          .getNotTakenQ()[index];
 
-                                                    return Container(
-                                                      decoration: BoxDecoration(
-                                                        border: Border.all(),
-                                                        borderRadius: BorderRadius
-                                                            .circular(12.0),
-                                                      ),
-                                                      child: ListTile(
-                                                        //onTap: () => , TODO meter aqui informacion medicamento?
-                                                        title: Text('${nottakenName}'),
-                                                        subtitle: Text(
-                                                            'Cantidad: ${nottakenQ} ud.'),
-                                                      ),
-                                                    );
+                                                      return Container(
+                                                        decoration: BoxDecoration(
+                                                          border: Border.all(),
+                                                          borderRadius: BorderRadius
+                                                              .circular(12.0),
+                                                        ),
+                                                        child: ListTile(
+                                                          //onTap: () => , TODO meter aqui informacion medicamento?
+                                                          title: Text(
+                                                              '${nottakenName}'),
+                                                          subtitle: Text(
+                                                              'Cantidad: ${nottakenQ} ud.'),
+                                                        ),
+                                                      );
+                                                    }
+                                                    else {
+                                                      return const Padding(
+                                                        padding:  EdgeInsets.only(top: 25.0, bottom: 15.0),
+                                                        child: Center(
+                                                          child: Text("No hay medicación no tomada este día"),
+                                                        ),
+                                                      );
+                                                    }
                                                   }
-                                                  else {
-                                                    return const Padding(
-                                                      padding:  EdgeInsets.only(top: 25.0, bottom: 15.0),
-                                                      child: Center(
-                                                        child: Text("No hay medicación no tomada este día"),
-                                                      ),
-                                                    );
+                                                  else{ //Aqui habra que hacer un else if para cuando implementemos el presente
+                                                    if (cosas.isNotEmpty) {
+                                                      String nottakenName = cosas[index].getPillName()!;
+                                                      int nottakenQ = cosas[index].getNumPills()!;
+                                                      return Container(
+                                                        decoration: BoxDecoration(
+                                                          border: Border.all(),
+                                                          borderRadius: BorderRadius
+                                                              .circular(12.0),
+                                                        ),
+                                                        child: ListTile(
+                                                          //onTap: () => , TODO meter aqui informacion medicamento?
+                                                          title: Text(
+                                                              '${nottakenName}'),
+                                                          subtitle: Text(
+                                                              'Cantidad: ${nottakenQ} ud.'),
+                                                        ),
+                                                      );
+                                                    }
+                                                    else {
+                                                      return const Padding(
+                                                        padding:  EdgeInsets.only(top: 25.0, bottom: 15.0),
+                                                        child: Center(
+                                                          child: Text("No hay medicación no tomada este día"),
+                                                        ),
+                                                      );
+                                                    }
                                                   }
                                                 },
                                               ),
@@ -486,7 +540,9 @@ class _PantallaEstadisticasState extends State<PantallaEstadisticas> {
                                                 const SizedBox(height: 20.0),
                                                 Text('Medicación tomada:   ${data.taken} ($porcentajeDiario%)', style: TextStyle(fontSize: 20)),
                                                 const SizedBox(height: 20.0),
-                                                Text('Total medicación a tomar:    ${data.programmed}', style: TextStyle(fontSize: 20)),
+                                                Text(_selectedDay!.isBefore(DateTime.now())?
+                                                'Total medicación a tomar:    ${data.programmed}':'Total medicación a tomar:    ${programadas}',
+                                                    style: TextStyle(fontSize: 20)),
                                                 const SizedBox(height: 20.0),
 
                                                 Container(

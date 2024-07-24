@@ -360,19 +360,23 @@ Future<void> insertSchedule(String pillName, int userId, String time_of_day,
 }
 
 Future<String> getHour(int time_of_day) async{
+  user_id = getUserAsociadoId();
+
   List<Map<String, dynamic>> mapUserTime = await databaseConnection
-      .mappedResultsQuery("""
-          select EXTRACT (HOUR from u.hora_desayuno) as hora_desayuno,
-          EXTRACT (MINUTE FROM u.hora_desayuno) as minuto_desayuno,
-          EXTRACT (HOUR from u.hora_comida) as hora_comida,
-          EXTRACT (MINUTE FROM u.hora_comida) as minuto_comida,
-          EXTRACT (HOUR from u.hora_cena) as hora_cena,
-          EXTRACT (MINUTE FROM u.hora_cena) as minuto_cena,
-          EXTRACT (HOUR from u.hora_dormir) as hora_dormir,
-          EXTRACT (MINUTE FROM u.hora_dormir) as minuto_dormir
+      .mappedResultsQuery('''
+    SELECT 
+      EXTRACT(HOUR FROM TO_TIMESTAMP(u."hora_desayuno", 'HH24:MI')) AS hora_desayuno,
+      EXTRACT(MINUTE FROM TO_TIMESTAMP(u."hora_desayuno", 'HH24:MI')) AS minuto_desayuno,
+      EXTRACT(HOUR FROM TO_TIMESTAMP(u."hora_comida", 'HH24:MI')) AS hora_comida,
+      EXTRACT(MINUTE FROM TO_TIMESTAMP(u."hora_comida", 'HH24:MI')) AS minuto_comida,
+      EXTRACT(HOUR FROM TO_TIMESTAMP(u."hora_cena", 'HH24:MI')) AS hora_cena,
+      EXTRACT(MINUTE FROM TO_TIMESTAMP(u."hora_cena", 'HH24:MI')) AS minuto_cena,
+      EXTRACT(HOUR FROM TO_TIMESTAMP(u."hora_dormir", 'HH24:MI')) AS hora_dormir,
+      EXTRACT(MINUTE FROM TO_TIMESTAMP(u."hora_dormir", 'HH24:MI')) AS minuto_dormir
           from "Users" u
           where u.user_id = $user_id
-      """);
+      ''');
+
   String real_min = "00";
   String real_hour = "09";
   if(time_of_day == 1) {

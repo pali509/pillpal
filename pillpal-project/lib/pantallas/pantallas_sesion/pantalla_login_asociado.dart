@@ -105,6 +105,7 @@ class _LoginAsState extends State<LoginAs> {
                         }
                         else {
                           await addRelationship(getUserId(), id);
+                          setUserAsociadoSoloId(id);
                           Navigator.of(context).pushReplacementNamed('/home');
                         }
 

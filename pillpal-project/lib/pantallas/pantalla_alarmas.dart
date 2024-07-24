@@ -316,7 +316,8 @@ class _AlarmaScreenState extends State<AlarmaScreen> {
                         leading: Icon(Icons.medication), // Icono a la izquierda
                         title: Text(alarma.getPillName()!), // Texto principal
                         trailing: IconButton(
-                          icon: Icon(Icons.delete), // Icono a la derecha
+                          icon: Icon(Icons.delete),
+                          color: Colors.redAccent,// Icono a la derecha
                           onPressed: () {
                             _showDeleteConfirmationDialog(context, alarma);
                           },
@@ -345,7 +346,18 @@ class _AlarmaScreenState extends State<AlarmaScreen> {
                 MaterialPageRoute(builder: (context) => AddCalendario()),
               );
             },
-            child: Text('Añadir'),
+            child: Text('Añadir recordatorio'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.purple,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                padding: EdgeInsets.symmetric(horizontal: 40, vertical: 20),
+                textStyle: const TextStyle(
+                  fontSize: 30,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
           ),
           ),
         ],

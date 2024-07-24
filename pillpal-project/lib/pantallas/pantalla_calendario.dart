@@ -207,8 +207,9 @@ class _PantallaCalendarioState extends State<PantallaCalendario> {
                            visible: visibleDesayuno,
                            //Bool que decide si aparece o no, segun si hay eventos
                            child: Container(
-                             height: 250,
+
                            child: ListView(
+                             shrinkWrap: true,
                              physics: const NeverScrollableScrollPhysics(),
                            children:[
                               const Text(
@@ -297,9 +298,10 @@ class _PantallaCalendarioState extends State<PantallaCalendario> {
                           visible: visibleComida,
 
                           child: Container(
-                            height: 250,
+
                             child: ListView(
                               physics: const NeverScrollableScrollPhysics(),
+                              shrinkWrap: true,
                               children:[
                                 const Text(
                                   ' Comida',
@@ -387,8 +389,8 @@ class _PantallaCalendarioState extends State<PantallaCalendario> {
                         Visibility(
                           visible: visibleCena,
                           child: Container(
-                            height: 250,
                             child: ListView(
+                              shrinkWrap: true,
                               physics: const NeverScrollableScrollPhysics(),
                               children:[
                                 const Text(
@@ -478,8 +480,8 @@ class _PantallaCalendarioState extends State<PantallaCalendario> {
                         Visibility(
                           visible: visibleDormir,
                           child: Container(
-                            height: 250,
                             child: ListView(
+                              shrinkWrap: true,
                               physics: const NeverScrollableScrollPhysics(),
                               children:[
                                 const Text(
@@ -488,7 +490,6 @@ class _PantallaCalendarioState extends State<PantallaCalendario> {
                                 ),
 
                                 Container(
-
                                   decoration: BoxDecoration(
                                     border: Border.all(
                                         color: Colors.cyanAccent, width: 5),
@@ -570,8 +571,8 @@ class _PantallaCalendarioState extends State<PantallaCalendario> {
                             Visibility(
                               visible: visibleOtros,
                               child: Container(
-                                height: 250,
                                 child: ListView(
+                                  shrinkWrap: true,
                                   physics: const NeverScrollableScrollPhysics(),
                                   children:[
                                     const Text(
@@ -703,229 +704,3 @@ class _PantallaCalendarioState extends State<PantallaCalendario> {
   }
 
 }
-/*
-return Visibility(
-                           visible: visibleDesayuno,
-                           //Bool que decide si aparece o no, segun si hay eventos
-                           child: Container(
-                             height: 200,
-                             decoration: BoxDecoration(
-                               border: Border.all(
-                                   color: Colors.blue, width: 5),
-                             ),
-                             child:
-                             ListView.builder( //Esto es igual que el de pantalla pastillero
-                               itemCount: visibleBotonDesayuno ? 2 : cosas.length,
-                               physics: const NeverScrollableScrollPhysics(),
-
-                               itemBuilder: (context, index) {
-                                 Horario currentCosa = cosas[index];
-                                 return Container(
-                                   decoration: BoxDecoration(
-                                     border: Border.all(),
-                                     borderRadius: BorderRadius.circular(12.0),
-                                   ),
-                                   child: ListTile(
-                                     onTap: () => print('${cosas[index]}'),
-                                     title: Text(
-                                         '${currentCosa.getPillName()}'),
-                                     subtitle: Text('Cantidad: ${currentCosa
-                                         .getNumPills()} ud.'),
-                                   ),
-                                 );
-                               },
-
-                             ),
-                           ),
-                         );
-                       }
-                      },
-                    ),
-
-              FutureBuilder<List<Horario>>( //Misma cosa para comida
-                future: _getEventsForDay(_selectedDay!),
-                builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: Opacity(opacity: 0.0, child: CircularProgressIndicator()));
-                } else {
-                  cosas = snapshot.data!;
-                  cosas = cogerSegunMomento(cosas, 2);
-                  if (cosas.isNotEmpty) {
-                    visibleComida = true;
-                    if (cosas.length > 2) {
-                      visibleBotonComida = true;
-                    }
-                    else
-                      visibleBotonComida = false;
-                  }
-                  else {
-                    visibleComida = false;
-                  }
-                  return Visibility(
-                    visible: visibleComida,
-
-                    child: Container(
-                      height: 200,
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.green, width: 5),
-                      ),
-                      child: ListView.builder(
-                        itemCount: visibleBotonComida ? 2 : cosas.length,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemBuilder: (context, index) {
-                          Horario currentCosa = cosas[index];
-                          return Container(
-                            decoration: BoxDecoration(
-                              border: Border.all(),
-                              borderRadius: BorderRadius.circular(12.0),
-                            ),
-                            child: ListTile(
-                              onTap: () => print('${cosas[index]}'),
-                              title: Text('${currentCosa.getPillName()}'),
-                              subtitle: Text(
-                                  'Cantidad: ${currentCosa.getNumPills()} ud.'),
-                            ),
-                          );
-                        },
-                      ),),
-                  );
-                }
-                },
-              ),
-
-              FutureBuilder<List<Horario>>( //Misma cosa para cena
-                future: _getEventsForDay(_selectedDay!),
-                builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: Opacity(opacity: 0.0, child: CircularProgressIndicator()));
-                } else {
-                  cosas = snapshot.data!;
-                  cosas = cogerSegunMomento(cosas, 3);
-                  if (cosas.isNotEmpty) {
-                    visibleCena = true;
-                    if (cosas.length > 2) {
-                      visibleBotonCena = true;
-                    }
-                    else
-                      visibleBotonCena = false;
-                  }
-                  else {
-                    visibleCena = false;
-                  }
-                  return Visibility(
-                    visible: visibleCena,
-                    child: Container(
-                      height: 200,
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.red, width: 5),
-                      ),
-                      child: ListView.builder(
-                        itemCount: visibleBotonCena ? 2 : cosas.length,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemBuilder: (context, index) {
-                          Horario currentCosa = cosas[index];
-                          return Container(
-                            decoration: BoxDecoration(
-                              border: Border.all(),
-                              borderRadius: BorderRadius.circular(12.0),
-                            ),
-                            child: ListTile(
-                              onTap: () => print('${cosas[index]}'),
-                              title: Text('${currentCosa.getPillName()}'),
-                              subtitle: Text(
-                                  'Cantidad: ${currentCosa.getNumPills()} ud.'),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  );
-                }
-                },
-              ),
-              FutureBuilder<List<Horario>>( //Misma cosa para dormir
-                future: _getEventsForDay(_selectedDay!),
-                builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: Opacity(opacity: 0.0, child: CircularProgressIndicator()));
-                } else {
-                  cosas = snapshot.data!;
-                  cosas = cogerSegunMomento(cosas, 4);
-                  if (cosas.isNotEmpty) {
-                    visibleDormir = true;
-                    if (cosas.length > 2) {
-                      visibleBotonDormir = true;
-                    }
-                    else
-                      visibleBotonDormir = false;
-                  }
-                  else {
-                    visibleDormir = false;
-                  }
-                  return Visibility(
-                    visible: visibleDormir,
-                    child: Container(
-                      height: 200,
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.cyanAccent, width: 5),
-                      ),
-                      child: ListView.builder(
-                        itemCount: visibleBotonDormir ? 2 : cosas.length,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemBuilder: (context, index) {
-                          Horario currentCosa = cosas[index];
-                          return Container(
-                            decoration: BoxDecoration(
-                              border: Border.all(),
-                              borderRadius: BorderRadius.circular(12.0),
-                            ),
-                            child: ListTile(
-                              onTap: () => print('${cosas[index]}'),
-                              title: Text('${currentCosa.getPillName()}'),
-                              subtitle: Text(
-                                  'Cantidad: ${currentCosa.getNumPills()} ud.'),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  );
-                }
-                },
-              ),
- */
-
-
-
-
-/*
-          child: FutureBuilder<List<Horario>>(
-            future: _selectedEvents,
-            builder: (context, snapshot) {
-              cosas = snapshot.data!;
-              return ListView.builder(
-                itemCount: cosas.length,
-                itemBuilder: (context, index) {
-                  Horario currentCosa = cosas[index];
-
-                  return Container(
-                    margin: const EdgeInsets.symmetric(
-                      horizontal: 12.0,
-                      vertical: 4.0,
-                    ),
-                    decoration: BoxDecoration(
-                      border: Border.all(),
-                      borderRadius: BorderRadius.circular(12.0),
-                    ),
-                    child: ListTile(
-                      onTap: () => print('${cosas[index]}'),
-                      title: Text('${currentCosa.getPillName()}'),
-                      subtitle: Text('Cantidad: ${currentCosa.getNumPills()} ud.'),
-                    ),
-                  );
-                },
-              );
-            },
-          ),
- */
-

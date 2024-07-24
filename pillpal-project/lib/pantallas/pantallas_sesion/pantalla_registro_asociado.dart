@@ -100,6 +100,7 @@ class _RegistroAsState extends State<RegistroAs> {
                           await insertUser(nombre!, email!, password!, 2, 2);
                           int id = await getUsId(email!); //id de el asociado
                           addRelationship(id_asociado, id);
+                          setUserAsociadoSoloId(id);
                           // Navega a la pantalla '/home' con los datos ingresados
                           Navigator.of(context).pushReplacementNamed('/home');
                         }

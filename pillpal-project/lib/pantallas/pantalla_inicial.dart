@@ -88,8 +88,8 @@ class PantallaInicial extends StatefulWidget {
               Expanded(
                 child: FutureBuilder(
                   future: Future.wait([
-                    getDayPills(diaSeleccionado, getUserAsociadoId()), //Future that returns bool
-                    getStaDia(diaSeleccionado, getUserAsociadoId()), //Future that returns bool
+                    getDayPills(diaSeleccionado, getUserAsociadoId()),
+                    getStaDia(diaSeleccionado, getUserAsociadoId()),
                   ]),
                   builder:(context, AsyncSnapshot<List<dynamic>> snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
@@ -109,13 +109,10 @@ class PantallaInicial extends StatefulWidget {
                       else
                         visibleOtros = false;
 
-
                       return ListView(
                         scrollDirection: Axis.vertical,
-
                         children: [
                           Container(
-
                               child: ListView(
                                 shrinkWrap: true,
                                 physics: const NeverScrollableScrollPhysics(),

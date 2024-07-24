@@ -69,6 +69,9 @@ void setHorarioAutosuficiente(String desayuno, String comida, String cena, Strin
     hora_cena = cena;
     hora_dormir = dormir;
 }
+void setUserAsociadoSoloId(int userN){
+        user_asociado = userN;
+}
 void setUserAsociado(int userAs, String desayuno, String comida, String cena, String dormir){
     user_asociado = userAs;
     hora_desayuno = desayuno;
