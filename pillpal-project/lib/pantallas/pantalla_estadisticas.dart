@@ -36,6 +36,7 @@ class _PantallaEstadisticasState extends State<PantallaEstadisticas> {
   String diaSeleccionado = weekdays[DateTime.now().weekday - 1];
   DateTime dia = DateTime.now();
   int semanaprevia = 0;
+
   //DateTime diaFinal = DateTime.now();
 
   Future<Statistic_type> estadisticas = getSta(DateTime.now(),DateTime.now(), getUserAsociadoId());
@@ -57,7 +58,56 @@ class _PantallaEstadisticasState extends State<PantallaEstadisticas> {
   void _actualizar(){
     setState(() {});
   }
+  bool esHoy(DateTime seleccionado){
+    Duration difference = _selectedDay!.difference(DateTime.now());
+    debugPrint("diferencia${difference.inHours}");
+    if(difference.inHours.abs() < 24)
+      return true;
+    else
+      return false;
 
+  }
+  bool esLaMisma(List<int> takenQ, List<String> takenName, String nombre, int cant){
+    for(int i = 0; i < takenQ.length; i++){
+      if(takenQ[i] == cant && takenName[i] == nombre)
+        return true;
+    }
+    return false;
+  }
+  int calcularItemCount(List<Horario> programadas, Statistic_type data){
+    List<String> total = [];
+    debugPrint("length taken ${data.takenName.length}");
+    for(int i = 0; i < programadas.length; i++){
+      if(!data.takenName.contains(programadas[i].pillName)){
+        total.add(programadas[i].pillName!);
+      }
+      else if(data.takenName.contains(programadas[i].pillName) && !data.takenQ.contains(programadas[i].numPills)) {
+        total.add(programadas[i].pillName!);
+      }
+      else if(data.takenName.contains(programadas[i].pillName) && data.takenQ.contains(programadas[i].numPills)
+      && !esLaMisma(data.takenQ, data.takenName, programadas[i].pillName!, programadas[i].numPills!)){
+        total.add(programadas[i].pillName!);
+      }
+    }
+    debugPrint("length ${total.length}");
+    return total.length;
+  }
+  List<Horario> getSinTomar(List<Horario> programadas, Statistic_type data){
+    List<Horario> aux = [];
+    for(int i = 0; i < programadas.length; i++){
+      if(!data.takenName.contains(programadas[i].pillName)){
+        aux.add(programadas[i]);
+      }
+      else if(data.takenName.contains(programadas[i].pillName) && !data.takenQ.contains(programadas[i].numPills)) {
+        aux.add(programadas[i]);
+      }
+      else if(data.takenName.contains(programadas[i].pillName) && data.takenQ.contains(programadas[i].numPills)
+          && !esLaMisma(data.takenQ, data.takenName, programadas[i].pillName!, programadas[i].numPills!)){
+        aux.add(programadas[i]);
+      }
+    }
+    return aux;
+  }
   void _handleButtonPress(Selection selection) {
     setState(() {
       selected = selection;
@@ -376,18 +426,22 @@ class _PantallaEstadisticasState extends State<PantallaEstadisticas> {
                                                 border: Border.all(
                                                     color: Colors.red, width: 5),
                                               ),
-                                              child: ListView.builder( //Esto es igual que el de pantalla pastillero
+                                              child: ListView.builder(
                                                 shrinkWrap: true,
                                                 itemCount:
-                                                _selectedDay!.isBefore(DateTime.now())?
+                                                (_selectedDay!.isBefore(DateTime.now()) && esHoy(_selectedDay!))?
+                                                calcularItemCount(cosas, data):
+                                                (_selectedDay!.isBefore(DateTime.now())&&!esHoy(_selectedDay!))?
                                                 (data.getNotTakenId().isNotEmpty ? data.getNotTakenId().length : 1) :
                                                 cosas.isNotEmpty? cosas.length : 1,
                                                 physics: const NeverScrollableScrollPhysics(),
                                                 itemBuilder: (context, index) {
-                                                  if(_selectedDay!.isBefore(DateTime.now())) {
+                                                  //PASADO
+                                                  if(_selectedDay!.isBefore(DateTime.now())&&!esHoy(_selectedDay!)) {
                                                     if (data.getNotTakenId().isNotEmpty) {
                                                       String nottakenName = data
                                                           .getNotTakenName()[index];
+
                                                       int nottakenQ = data
                                                           .getNotTakenQ()[index];
 
@@ -415,7 +469,40 @@ class _PantallaEstadisticasState extends State<PantallaEstadisticas> {
                                                       );
                                                     }
                                                   }
-                                                  else{ //Aqui habra que hacer un else if para cuando implementemos el presente
+                                                  //HOY!
+                                                  else if(_selectedDay!.isBefore(DateTime.now())&& esHoy(_selectedDay!)) {
+                                                    List<Horario> sinTomar = getSinTomar(cosas, data);
+                                                    if (sinTomar.isNotEmpty) {
+                                                       String nottakenName = sinTomar[index]
+                                                            .getPillName()!;
+                                                       int nottakenQ = sinTomar[index]
+                                                            .getNumPills()!;
+                                                      return Container(
+                                                        decoration: BoxDecoration(
+                                                          border: Border.all(),
+                                                          borderRadius: BorderRadius
+                                                              .circular(12.0),
+                                                        ),
+                                                        child: ListTile(
+                                                          //onTap: () => , TODO meter aqui informacion medicamento?
+                                                          title: Text(
+                                                              '${nottakenName}'),
+                                                          subtitle: Text(
+                                                              'Cantidad: ${nottakenQ} ud.'),
+                                                        ),
+                                                      );
+                                                    }
+                                                    else {
+                                                      return const Padding(
+                                                        padding:  EdgeInsets.only(top: 25.0, bottom: 15.0),
+                                                        child: Center(
+                                                          child: Text("No hay medicación no tomada este día"),
+                                                        ),
+                                                      );
+                                                    }
+                                                  }
+                                                  //FUTURO
+                                                  else{
                                                     if (cosas.isNotEmpty) {
                                                       String nottakenName = cosas[index].getPillName()!;
                                                       int nottakenQ = cosas[index].getNumPills()!;
@@ -617,34 +704,107 @@ class _PantallaEstadisticasState extends State<PantallaEstadisticas> {
                                                         ),
                                                         child: ListView.builder( //Esto es igual que el de pantalla pastillero
                                                           shrinkWrap: true,
-                                                          itemCount:data.getNotTakenId().isNotEmpty ? data.getNotTakenId().length : 1,
+                                                          itemCount:
+                                                          (_selectedDay!.isBefore(DateTime.now()) && esHoy(_selectedDay!))?
+                                                          calcularItemCount(cosas, data):
+                                                          (_selectedDay!.isBefore(DateTime.now())&&!esHoy(_selectedDay!))?
+                                                          (data.getNotTakenId().isNotEmpty ? data.getNotTakenId().length : 1) :
+                                                          cosas.isNotEmpty? cosas.length : 1,
                                                           physics: const NeverScrollableScrollPhysics(),
                                                           itemBuilder: (context, index) {
-                                                            if(data.getNotTakenId().isNotEmpty) {
-                                                              String nottakenName = data.getNotTakenName()[index];
-                                                              int nottakenQ = data.getNotTakenQ()[index];
+                                                            //PASADO
+                                                            if(_selectedDay!.isBefore(DateTime.now())&&!esHoy(_selectedDay!)) {
+                                                              if (data.getNotTakenId().isNotEmpty) {
+                                                                String nottakenName = data
+                                                                    .getNotTakenName()[index];
 
-                                                              return Container(
-                                                                decoration: BoxDecoration(
-                                                                  border: Border.all(),
-                                                                  borderRadius: BorderRadius
-                                                                      .circular(12.0),
-                                                                ),
-                                                                child: ListTile(
-                                                                  //onTap: () => , TODO meter aqui informacion medicamento?
-                                                                  title: Text('${nottakenName}'),
-                                                                  subtitle: Text(
-                                                                      'Cantidad: ${nottakenQ} ud.'),
-                                                                ),
-                                                              );
+                                                                int nottakenQ = data
+                                                                    .getNotTakenQ()[index];
+
+                                                                return Container(
+                                                                  decoration: BoxDecoration(
+                                                                    border: Border.all(),
+                                                                    borderRadius: BorderRadius
+                                                                        .circular(12.0),
+                                                                  ),
+                                                                  child: ListTile(
+                                                                    //onTap: () => , TODO meter aqui informacion medicamento?
+                                                                    title: Text(
+                                                                        '${nottakenName}'),
+                                                                    subtitle: Text(
+                                                                        'Cantidad: ${nottakenQ} ud.'),
+                                                                  ),
+                                                                );
+                                                              }
+                                                              else {
+                                                                return const Padding(
+                                                                  padding:  EdgeInsets.only(top: 25.0, bottom: 15.0),
+                                                                  child: Center(
+                                                                    child: Text("No hay medicación no tomada este día"),
+                                                                  ),
+                                                                );
+                                                              }
                                                             }
-                                                            else {
-                                                              return const Padding(
-                                                                padding:  EdgeInsets.only(top: 25.0, bottom: 15.0),
-                                                                child: Center(
-                                                                  child: Text("No hay medicación no tomada este día"),
-                                                                ),
-                                                              );
+                                                            //HOY!
+                                                            else if(_selectedDay!.isBefore(DateTime.now())&& esHoy(_selectedDay!)) {
+                                                              List<Horario> sinTomar = getSinTomar(cosas, data);
+                                                              if (sinTomar.isNotEmpty) {
+                                                                String nottakenName = sinTomar[index]
+                                                                    .getPillName()!;
+                                                                int nottakenQ = sinTomar[index]
+                                                                    .getNumPills()!;
+                                                                return Container(
+                                                                  decoration: BoxDecoration(
+                                                                    border: Border.all(),
+                                                                    borderRadius: BorderRadius
+                                                                        .circular(12.0),
+                                                                  ),
+                                                                  child: ListTile(
+                                                                    //onTap: () => , TODO meter aqui informacion medicamento?
+                                                                    title: Text(
+                                                                        '${nottakenName}'),
+                                                                    subtitle: Text(
+                                                                        'Cantidad: ${nottakenQ} ud.'),
+                                                                  ),
+                                                                );
+                                                              }
+                                                              else {
+                                                                return const Padding(
+                                                                  padding:  EdgeInsets.only(top: 25.0, bottom: 15.0),
+                                                                  child: Center(
+                                                                    child: Text("No hay medicación no tomada este día"),
+                                                                  ),
+                                                                );
+                                                              }
+                                                            }
+                                                            //FUTURO
+                                                            else{
+                                                              if (cosas.isNotEmpty) {
+                                                                String nottakenName = cosas[index].getPillName()!;
+                                                                int nottakenQ = cosas[index].getNumPills()!;
+                                                                return Container(
+                                                                  decoration: BoxDecoration(
+                                                                    border: Border.all(),
+                                                                    borderRadius: BorderRadius
+                                                                        .circular(12.0),
+                                                                  ),
+                                                                  child: ListTile(
+                                                                    //onTap: () => , TODO meter aqui informacion medicamento?
+                                                                    title: Text(
+                                                                        '${nottakenName}'),
+                                                                    subtitle: Text(
+                                                                        'Cantidad: ${nottakenQ} ud.'),
+                                                                  ),
+                                                                );
+                                                              }
+                                                              else {
+                                                                return const Padding(
+                                                                  padding:  EdgeInsets.only(top: 25.0, bottom: 15.0),
+                                                                  child: Center(
+                                                                    child: Text("No hay medicación no tomada este día"),
+                                                                  ),
+                                                                );
+                                                              }
                                                             }
                                                           },
                                                         ),

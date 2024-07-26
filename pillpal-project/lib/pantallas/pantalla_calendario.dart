@@ -38,7 +38,7 @@ class _PantallaCalendarioState extends State<PantallaCalendario> {
   List<Horario> cosas1 = [];
   List<Horario> cosas2 = [];
   List<Horario> cosas3 = [];
-
+  List<Horario> cosas4 = [];
 
   bool visibleDesayuno = false;
   bool visibleComida = false;
@@ -153,7 +153,7 @@ class _PantallaCalendarioState extends State<PantallaCalendario> {
                          cosas2 = cogerSegunMomento(cosas, 2); //Solo comida
                          cosas3 = cogerSegunMomento(cosas, 3); //Solo cena
                          cosas0 = cogerSegunMomento(cosas, 0);
-                          //FALTA DORMIR!
+                         cosas4 = cogerSegunMomento(cosas, 4);
 
                          if (cosas0.isNotEmpty) {
                            visibleOtros = true; //Si hay cosas ponerlo visible
@@ -199,6 +199,17 @@ class _PantallaCalendarioState extends State<PantallaCalendario> {
                          else
                            visibleCena = false;
 
+                         if (cosas4.isNotEmpty) {
+                           visibleDormir = true; //Si hay cosas ponerlo visible
+                           if (cosas4.length > 2) {
+                             visibleBotonDormir = true;
+                           }
+                           else
+                             visibleBotonDormir = false;
+                         }
+                         else
+                           visibleDormir = false;
+                         
                          return ListView(
                            scrollDirection: Axis.vertical,
 

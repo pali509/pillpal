@@ -40,7 +40,7 @@ class _LoginDemoState extends State<Login> {
                 child: Container(
                   width: 200,
                   height: 150,
-                  child: Image.network(url),
+                  child: Image.asset('android/app/src/assets/images/Logo.png'),
                 ),
               ),
             ),

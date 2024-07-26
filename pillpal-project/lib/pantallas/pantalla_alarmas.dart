@@ -285,7 +285,7 @@ class _AlarmaScreenState extends State<AlarmaScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Recordatorios', style: TextStyle(fontSize: 25.0)),
+        title: Text('Alarmas', style: TextStyle(fontSize: 25.0)),
         backgroundColor: ColorsApp.toolBarColor,
         actions: [
           IconButton(
@@ -346,7 +346,7 @@ class _AlarmaScreenState extends State<AlarmaScreen> {
                 MaterialPageRoute(builder: (context) => AddCalendario()),
               );
             },
-            child: Text('Añadir recordatorio'),
+            child: Text('Añadir alarma'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.purple,
                 shape: RoundedRectangleBorder(
