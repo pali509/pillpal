@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:pillpal/utils/user.dart';
 
 import '../../utils/db_connections.dart';
 import '../../utils/alarms.dart';
@@ -81,7 +82,8 @@ class _LoginDemoState extends State<Login> {
                     password = _passwordController.text;
                     if (await checkUser(email!, password!)) {
                       Navigator.of(context).pushReplacementNamed('/home');
-                      //await flutterLocalNotificationsPlugin.cancelAll();
+                      alarms_class().cancelAll();
+                      alarms_class().cargarAlarmas(getUserId());
 
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(

@@ -12,11 +12,12 @@ class Alarma_type{
   DateTime? day;
   int? period;
   String? days;
+  int? pill_id;
 
   // Constructor
   Alarma_type(this.hour, this.numPills, this.pillName, this.timeOfDay,
       this.id, this.alarm_id, this.period,
-      this.day, this.days);
+      this.day, this.days, this.pill_id);
 
   String? getHour(){
     return hour;
@@ -52,5 +53,9 @@ class Alarma_type{
 
   String? getDay() {
     return day.toString();
+  }
+
+  int? getPillId(){
+    return pill_id;
   }
 }

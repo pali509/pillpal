@@ -2,6 +2,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pillpal/pantallas/pantallas_sesion/pantalla_login_asociado.dart';
+import 'package:pillpal/utils/alarms.dart';
 import 'package:pillpal/utils/db_connections.dart';
 import 'package:pillpal/utils/user.dart';
 
@@ -1216,6 +1217,7 @@ class _PantallaPerfilState extends State<PantallaPerfil> {
                             ElevatedButton(
                               onPressed: () async {
                                 Navigator.of(context).pop();
+                                alarms_class().cancelAll();
                               },
                               child: Text('Cancelar'),
                               style: ElevatedButton.styleFrom(

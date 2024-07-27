@@ -471,7 +471,7 @@ Future<List<Alarma_type>>getAlarmas(int user_id) async {
   //pill name, id, id_alarma, fecha, hora, periodo, timeofday, cantidad, dias
   List<Map<String, dynamic>> mapAlarms = await databaseConnection
       .mappedResultsQuery("""
-          select p.pill_name, h.id, h.alarm_id, h."date", h."period", h.time_of_day, h.quantity, h.days, 
+          select p.pill_name, h.id, h.alarm_id, h."date", h."period", h.time_of_day, h.quantity, h.days, p.pill_id,
 	        EXTRACT (HOUR from h."hour") as actual_hour, 
           EXTRACT (MINUTE FROM h."hour") as minute
           from "Horario" h join "Pills" p on h.pill_id = p.pill_id
@@ -492,7 +492,7 @@ Future<List<Alarma_type>>getAlarmas(int user_id) async {
          mapAlarms[i]['Pills']['pill_name'],  mapAlarms[i]['Horario']['time_of_day'],
          mapAlarms[i]['Horario']['id'], mapAlarms[i]['Horario']['alarm_id'],
          mapAlarms[i]['Horario']['period'], mapAlarms[i]['Horario']['date'],
-         mapAlarms[i]['Horario']['days']));
+         mapAlarms[i]['Horario']['days'],  mapAlarms[i]['Pills']['pill_id']));
   }
   return listAlarms;
 }
@@ -506,6 +506,8 @@ Future<void> deleteAlarmBd(int alarm_id) async {
 }
 
 Future<Statistic_type> getSta(DateTime dia, DateTime semMes, int user_id) async {
+  DateTime hoyAM = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, 0, 0, 0, 0, 0);
+  DateTime hoyPM = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, 23, 59, 59, 99, 99);
   int taken = 0;
   int nt = 0;
   String pills = "";
@@ -530,12 +532,18 @@ Future<Statistic_type> getSta(DateTime dia, DateTime semMes, int user_id) async 
      where user_id = $user_id and 
      DATE_TRUNC('week', fecha::date) = DATE_TRUNC('week', '$semMes'::date)
      and EXTRACT(YEAR FROM fecha) = ${semMes.year} 
+     and s.fecha < '$hoyAM'
   """);
 
   if(map2[0]['']['take'] != null &&  map2[0]['']['prog'] != null) {
     wt = map2[0]['']['take'];
     wp = map2[0]['']['prog'];
   }
+
+    List<Map<String, dynamic>> map4 = await databaseConnection.mappedResultsQuery("""
+     
+  """);
+  if(map4.isNotEmpty) wp = map4[0]['']['prog'] + wp;
 
   List<Map<String, dynamic>> map3 = await databaseConnection.mappedResultsQuery("""
      select sum(programmed) as prog, sum(taken) as take 

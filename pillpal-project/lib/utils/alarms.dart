@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:pillpal/utils/alarma_type.dart';
 import 'package:pillpal/utils/user.dart';
 import 'package:timezone/timezone.dart';
 import 'package:uuid/uuid.dart';
@@ -56,6 +57,8 @@ class alarms_class {
       insert_statistics(today, getUserId(), 0,
           int.parse(payload[0]), s);
     }
+
+    flutterLocalNotificationsPlugin.cancel(int.parse(payload[4]));
     if(payload[2] != '0000000') {
       DateTime nextDay = calcularDiaSiguiente(today, payload[2]);
       debugPrint('HORA FINAL: ${nextDay.day}/${nextDay.month}/${nextDay.year}');
@@ -87,7 +90,17 @@ class alarms_class {
       status = await Permission.notification.request();
     }
 
-    final alarmTime = TZDateTime.from(DateTime(diaDeInicio.year, diaDeInicio.month, diaDeInicio.day, h, m), zonedTime.location);
+    TZDateTime alarmTime = TZDateTime.from(DateTime(diaDeInicio.year, diaDeInicio.month, diaDeInicio.day, h, m), zonedTime.location);
+    if(days != '0000000') {
+      DateTime nextDay;
+      if(diaDeInicio.isBefore(DateTime.now())) {
+        nextDay = calcularDiaSiguiente(DateTime.now(), days);
+      }
+      else{
+        nextDay = calcularDiaSiguiente(diaDeInicio, days);
+      }
+      alarmTime = TZDateTime.from(DateTime(nextDay.year, nextDay.month, nextDay.day, h, m), zonedTime.location);
+    }
 
     AndroidNotificationDetails and = AndroidNotificationDetails(
       'alarm_clock_channel',
@@ -190,6 +203,13 @@ class alarms_class {
     await flutterLocalNotificationsPlugin.show(
         notification_id, title, value, notificationDetails, payload: '');
   }
+   void cargarAlarmas(int userId) async{
+      List<Alarma_type> alarms = await getAlarmas(userId);
+      for(Alarma_type a in alarms){
+        una_vez(a.getAlarmId()!, a.day!, a.getHour()!, a.getPillName()!,
+            a.getNumPills()!, a.getDays()!, a.getPillId()!);
+      }
+   }
 }
 
 

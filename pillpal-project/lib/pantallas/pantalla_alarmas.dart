@@ -189,7 +189,7 @@ class _AlarmaScreenState extends State<AlarmaScreen> {
                             child: Text('Personalizada'),
                           ),
                           DropdownMenuItem<int>(
-                            value: 3,
+                            value: 2,
                             child: Text('Una vez'),
                           ),
                         ],
