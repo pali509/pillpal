@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:postgres/postgres.dart';
 import 'package:pillpal/utils/user.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:quiver/time.dart';
 
 
 var databaseConnection = PostgreSQLConnection(
@@ -540,21 +541,42 @@ Future<Statistic_type> getSta(DateTime dia, DateTime semMes, int user_id) async 
     wp = map2[0]['']['prog'];
   }
 
+  List<DateTime> futureDays = futuredays(dia);
+  for(int i = 0; i < futureDays.length; i++){
     List<Map<String, dynamic>> map4 = await databaseConnection.mappedResultsQuery("""
-     
+     SELECT sum(h.quantity) as prog
+      FROM "Horario" h
+      WHERE h.user_id = $user_id AND ((h."period" = 0 and h.date <= '${futureDays[i]}') OR 
+      (h."period" = 2 and h.date = '${futureDays[i]}') 
+      OR (h."period" = 1 and substring(h.days, ${futureDays[i].weekday} , 1) ='1' and h.date <= '${futureDays[i]}'))
   """);
-  if(map4.isNotEmpty) wp = map4[0]['']['prog'] + wp;
+    if(map4[0]['']['prog'] != null) wp = map4[0]['']['prog'] + wp;
+  }
 
   List<Map<String, dynamic>> map3 = await databaseConnection.mappedResultsQuery("""
      select sum(programmed) as prog, sum(taken) as take 
      from "Statistics" s 
      where user_id = $user_id and EXTRACT(MONTH FROM fecha) = ${semMes.month}
      and EXTRACT(YEAR FROM fecha) = ${semMes.year}
+     and s.fecha < '$hoyAM'
   """);
 
   if( map3[0]['']['take'] != null && map3[0]['']['prog'] != null) {
     mt = map3[0]['']['take'];
     mp = map3[0]['']['prog'];
+  }
+
+
+  List<DateTime> futureDaysM = futuredaysMonth(dia);
+  for(int i = 0; i < futureDaysM.length; i++){
+    List<Map<String, dynamic>> map5 = await databaseConnection.mappedResultsQuery("""
+     SELECT sum(h.quantity) as prog
+      FROM "Horario" h
+      WHERE h.user_id = $user_id AND ((h."period" = 0 and h.date <= '${futureDaysM[i]}') OR 
+      (h."period" = 2 and h.date = '${futureDaysM[i]}') 
+      OR (h."period" = 1 and substring(h.days, ${futureDaysM[i].weekday} , 1) ='1' and h.date <= '${futureDaysM[i]}'))
+  """);
+    if(map5[0]['']['prog'] != null) mp = map5[0]['']['prog'] + mp;
   }
 
   debugPrint('pastillas tomadas: $taken');
@@ -566,6 +588,52 @@ Future<Statistic_type> getSta(DateTime dia, DateTime semMes, int user_id) async 
   debugPrint('pastillas NO tomadas MENSUALES: $mp');
 
   return Statistic_type(taken, nt, pills, wt, wp, mt, mp);
+}
+
+List<DateTime> futuredaysMonth(DateTime dia) {
+  List<DateTime> daysInM = [];
+  DateTime hoy = DateTime.now();
+  if(dia.year < hoy.year || (dia.year == hoy.year && dia.month < hoy.month)){
+  }
+  else if(dia.year > hoy.year || (dia.year == hoy.year && dia.month > hoy.month)){
+   int days = daysInMonth(dia.year, dia.month);
+   for (int i = 1; i <= days;i++){
+     daysInM.add(DateTime(dia.year, dia.month, i));
+   }
+  }
+  else if(dia.year == hoy.year && dia.month == hoy.month){
+    int days = daysInMonth(dia.year, dia.month);
+    for (int i = hoy.day + 1; i <= days;i++){
+      daysInM.add(DateTime(dia.year, dia.month, i));
+    }
+  }
+  return daysInM;
+}
+
+List<DateTime> futuredays(DateTime dia) {
+  DateTime hoy = DateTime.now();
+  List<DateTime> daysInWeek = [];
+  DateTime sun = dia.add(Duration(days: (7 - dia.weekday)));
+  DateTime mon = dia.subtract(Duration(days: (dia.weekday - 1)));
+  if (hoy.isAfter(sun)){
+  }
+  else if(hoy.isBefore(mon)){
+    daysInWeek.add(mon);
+    for(int i = 0; i < 6; i++){
+      daysInWeek.add(daysInWeek.last.add(const Duration(days: 1)));
+    }
+  }
+  else{
+    if(hoy.weekday != 7){
+      int aux = hoy.weekday + 2;
+      daysInWeek.add(hoy.add(const Duration(days: 1)));
+      while (aux <= 7){
+        daysInWeek.add(daysInWeek.last.add(const Duration(days: 1)));
+        aux++;
+      }
+    }
+  }
+  return daysInWeek;
 }
 
 Future<Statistic_type> getStaDia(DateTime dia, int user_id) async {
