@@ -9,6 +9,7 @@ import 'package:postgres/postgres.dart';
 import 'package:pillpal/utils/user.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:quiver/time.dart';
+import 'package:jiffy/jiffy.dart';
 
 
 var databaseConnection = PostgreSQLConnection(
@@ -578,6 +579,20 @@ Future<Statistic_type> getSta(DateTime dia, DateTime semMes, int user_id) async 
   """);
     if(map5[0]['']['prog'] != null) mp = map5[0]['']['prog'] + mp;
   }
+  int hoyWeek = Jiffy.parse('${hoyAM.year}-${hoyAM.month}-${hoyAM.day}').weekOfYear;
+  int diaWeek = Jiffy.parse('${dia.year}-${dia.month}-${dia.day}').weekOfYear;
+  if(hoyAM.year == dia.year && hoyWeek == diaWeek){
+    List<int> hoyPills = await hoypills(user_id);
+    wp = hoyPills[1] + wp;
+    wt = hoyPills[0] + wt;
+    mp = hoyPills[1] + mp;
+    mt = hoyPills[0] + mt;
+  }
+  else if(hoyAM.year == dia.year && hoyAM.month == dia.month){
+    List<int> hoyPills = await hoypills(user_id);
+    mp = hoyPills[1] + mp;
+    mt = hoyPills[0] + mt;
+  }
 
   debugPrint('pastillas tomadas: $taken');
   debugPrint('pastillas NO tomadas: $nt');
@@ -588,6 +603,62 @@ Future<Statistic_type> getSta(DateTime dia, DateTime semMes, int user_id) async 
   debugPrint('pastillas NO tomadas MENSUALES: $mp');
 
   return Statistic_type(taken, nt, pills, wt, wp, mt, mp);
+}
+
+Future<List<int>> hoypills(int user_id) async {
+  List<int> pillFinales = [];
+  pillFinales.add(0);
+  pillFinales.add(0);
+  List<String> nameSta = [];
+  List<int> qsta = [];
+  List<String> nameHor = [];
+  List<int> qhor = [];
+  DateTime hoy = DateTime.now();
+  List<Map<String, dynamic>> map = await databaseConnection.mappedResultsQuery("""
+    select * from "Statistics" s where user_id  = $user_id and fecha = '$hoy'
+  """);
+  if(map.isNotEmpty){
+    String pills = map[0]['Statistics']['summary'];
+    List<String> splitPills = pills.split(";");
+    for(int i = 0; i < splitPills.length; i = i+4) {
+      if (splitPills[i + 3] == "Si") {
+        pillFinales[0] = int.parse(splitPills[i]) + pillFinales[0];
+      }
+      nameSta.add(splitPills[i + 1]);
+      qsta.add(int.parse(splitPills[i]));
+    }
+  }
+  List<Map<String, dynamic>> map2 = await databaseConnection.mappedResultsQuery("""
+      SELECT p.pill_name, h.quantity
+      FROM "Horario" h JOIN "Pills" p on h.pill_id = p.pill_id 
+      WHERE h.user_id = $user_id AND p.user_id = $user_id AND ((h."period" = 0 and h.date <= '$hoy') OR 
+      (h."period" = 2 and h.date = '$hoy') 
+      OR (h."period" = 1 and substring(h.days, ${hoy.weekday} , 1) ='1' and h.date <= '$hoy'))
+  """);
+  if(map2.isNotEmpty){
+    debugPrint(map2.toString());
+    for(int i = 0; i < map2.length; i++) {
+      nameHor.add(map2[i]['Pills']['pill_name']);
+      qhor.add(map2[i]['Horario']['quantity']);
+    }
+  }
+  for (int i = 0; i < nameSta.length; i++){
+    pillFinales[1] = pillFinales[1] + qsta[i];
+    bool found = false;
+    int j = 0;
+    while (!found && j < nameHor.length) {
+      if (nameSta[i] == nameHor[j] && qsta[i] == qhor[j]) {
+        found = true;
+        nameHor.removeAt(j);
+        qhor.removeAt(j);
+      }
+      j++;
+    }
+  }
+  for(int i = 0; i < qhor.length; i++){
+    pillFinales[1] = pillFinales[1] + qhor[i];
+  }
+  return pillFinales;
 }
 
 List<DateTime> futuredaysMonth(DateTime dia) {
