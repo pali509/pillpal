@@ -34,6 +34,118 @@ class PantallaInicial extends StatefulWidget {
     late Statistic_type stats;
     List<String> nombres = [];
 
+    void _cambiarTomaDialog(BuildContext context, int op, Horario currentCosa, DateTime diaSeleccionado, Statistic_type stats) {
+      int nuevoTaken = stats.getTaken();
+      int nuevoProgrammed = stats.getProgrammed();
+      String nuevoSummary = "";
+      int pillId;
+
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text('¿Quieres cambiar el estado de toma del medicamento?'),
+            content: op == 1? const Text(
+              'Esta acción hará que se considere el medicamento como NO TOMADO. ¿Quieres continuar?',
+            ) : const Text(
+              'Esta acción hará que se considere el medicamento como TOMADO. ¿Quieres continuar?',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(); // Cerrar el diálogo
+                },
+                child: const Text('Cancelar'),
+                style: TextButton.styleFrom(
+                  foregroundColor: Colors.purple,
+                  textStyle: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  if(op == 1)
+                    nuevoTaken -= currentCosa.getNumPills()!;
+                  else nuevoTaken += currentCosa.getNumPills()!;
+
+                  List<String> takenNames = stats.getTakenName();
+                  List<String> notTakenNames = stats.getNotTakenName();
+                  bool encontrado = false;
+                  pillId = await getPillId(
+                      currentCosa.getPillName()!,
+                      getUserAsociadoId())!;
+
+                  for (int i = 0; i < takenNames.length; i++) {
+                    if (esLaMismaUna(stats.getTakenQ(), takenNames,
+                        currentCosa.getPillName()!,
+                        currentCosa.getNumPills()!, i) && !encontrado) {
+                      nuevoSummary +=
+                      "${currentCosa.getNumPills()!};${currentCosa.getPillName()!};$pillId;No;";
+                      encontrado = true;
+                    }
+                    else {
+                      nuevoSummary +=
+                      "${stats.getTakenQ()[i]};${takenNames[i]};$pillId;Si;";
+                    }
+                    debugPrint('socorrooo $nuevoSummary');
+                  }
+                  for (int i = 0; i < notTakenNames.length; i++) {
+                    if (esLaMismaUna(stats.getNotTakenQ(), notTakenNames,
+                        currentCosa.getPillName()!,
+                        currentCosa.getNumPills()!, i) && !encontrado) {
+
+                      nuevoSummary +=
+                      "${currentCosa.getNumPills()!};${currentCosa.getPillName()!};$pillId;Si;";
+                      encontrado = true;
+                    }
+                    else {
+                      nuevoSummary +=
+                      "${stats.getNotTakenQ()[i]};${notTakenNames[i]};$pillId;No;";
+                    }
+                  }
+
+                  debugPrint('socorrooo $nuevoSummary');
+                  nuevoSummary = nuevoSummary.substring(0, nuevoSummary.length - 1);
+                  edit_stadistics(diaSeleccionado, getUserAsociadoId(), nuevoTaken, nuevoProgrammed, nuevoSummary);
+
+                  setState(() {});
+                  Navigator.of(context).pop();
+                },
+                child: Text('Aceptar'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: ColorsApp.buttonColor,
+                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  textStyle: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+
+            ],
+          );
+        },
+      );
+    }
+
+    bool esLaMisma(List<int> takenQ, List<String> takenName, String nombre, int cant){
+      for(int i = 0; i < takenQ.length;i++) {
+        if (takenQ[i] == cant && takenName[i] == nombre)
+          return true;
+      }
+      return false;
+
+    }
+
+    bool esLaMismaUna(List<int> takenQ, List<String> takenName, String nombre, int cant, int i){
+        if(takenQ[i] == cant && takenName[i] == nombre)
+          return true;
+
+      return false;
+    }
+
     @override
     Widget build(BuildContext context) {
       return Scaffold(
@@ -97,6 +209,7 @@ class PantallaInicial extends StatefulWidget {
                     } else {
                       stats = snapshot.data?[1];
                       nombres = stats.getTakenName();
+                      Statistic_type aux = stats;
                       cosas = snapshot.data?[0];
                       cosas1 = cogerSegunMomento(cosas, 1); //Para coger solo las del desayuno
                       cosas2 = cogerSegunMomento(cosas, 2); //Solo comida
@@ -361,9 +474,13 @@ class PantallaInicial extends StatefulWidget {
                                       itemBuilder: (context, index) {
                                         Horario currentCosa = cosas0[index];
                                         bool tomado = false;
-                                        if(nombres.contains(currentCosa.getPillName())){
+                                        //debugPrint('wowowo ${aux.takenName}');
+
+                                        if(esLaMisma(aux.takenQ, aux.takenName, currentCosa.getPillName()!, currentCosa.getNumPills()!)){
                                           tomado = true;
-                                          nombres.remove(currentCosa.getPillName());
+                                          //aux.takenQ.removeAt(aux.getTakenName().indexOf(currentCosa.getPillName()!));
+                                          //aux.takenName.remove(currentCosa.getPillName());
+                                          //debugPrint('wowowo2 ${aux.takenName}');
                                         }
                                         /*
                                         debugPrint('${stats.taken}');
@@ -377,7 +494,7 @@ class PantallaInicial extends StatefulWidget {
                                               borderRadius: BorderRadius.circular(12.0),
                                             ),
                                             child: ListTile(
-                                              onTap: () => print('${cosas0[index]}'),
+                                              
                                               title: Text(
                                                   '${currentCosa.getPillName()}',
                                               style: TextStyle(
@@ -389,6 +506,20 @@ class PantallaInicial extends StatefulWidget {
                                               subtitle: Text('Cantidad: ${currentCosa
                                                   .getNumPills()} ud.     Tomar a las: ${currentCosa
                                                   .getHour()}'),
+                                              trailing:
+                                              Visibility(
+                                                visible: (getRoleId() != 2),
+                                                child:IconButton(
+                                                  icon: Icon(Icons.edit),
+                                                  color: Colors.black,
+                                                  onPressed: () {
+                                                    debugPrint('ayyy ${stats.notTakenName}');
+                                                    debugPrint('ayyy2 ${stats.takenName}');
+                                                    tomado? _cambiarTomaDialog(context, 1, currentCosa, diaSeleccionado, stats) :
+                                                    _cambiarTomaDialog(context, 2, currentCosa, diaSeleccionado, stats);
+                                                  },
+                                                ),
+                                              ),
                                             ),
                                           );
 

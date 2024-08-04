@@ -78,14 +78,7 @@ class _PantallaEstadisticasState extends State<PantallaEstadisticas> {
     List<String> total = [];
     debugPrint("length taken ${data.takenName.length}");
     for(int i = 0; i < programadas.length; i++){
-      if(!data.takenName.contains(programadas[i].pillName)){
-        total.add(programadas[i].pillName!);
-      }
-      else if(data.takenName.contains(programadas[i].pillName) && !data.takenQ.contains(programadas[i].numPills)) {
-        total.add(programadas[i].pillName!);
-      }
-      else if(data.takenName.contains(programadas[i].pillName) && data.takenQ.contains(programadas[i].numPills)
-      && !esLaMisma(data.takenQ, data.takenName, programadas[i].pillName!, programadas[i].numPills!)){
+      if(!esLaMisma(data.takenQ, data.takenName, programadas[i].pillName!, programadas[i].numPills!)){
         total.add(programadas[i].pillName!);
       }
     }

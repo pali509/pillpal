@@ -144,7 +144,20 @@ Future<List<Pill>>? getPills(int userId) async {
   }
   return listPills;
 }
-
+Future<int> getPillId(String pillName, int userId) async {
+  List<List<dynamic>> results = await databaseConnection.query(
+    'SELECT pill_id FROM "Pills" WHERE pill_name = @pillName AND user_id = @userId',
+    substitutionValues: {
+      'pillName': pillName,
+      'userId': userId,
+    },
+  );
+  if (results.isNotEmpty) {
+    return results.first.first as int;
+  } else {
+    return -1;
+  }
+}
 Future<bool> checkUser(String email, String pwd) async {
   List<Map<String, dynamic>>? userList = await databaseConnection
       .mappedResultsQuery("""
@@ -423,6 +436,14 @@ Future<String> getHour(int time_of_day) async{
   }
 
   return "$real_hour:$real_min";
+}
+void edit_stadistics(DateTime date, int userId, int taken, int programmed, String summary) async{
+
+  await databaseConnection.query("""
+          UPDATE "Statistics"
+          SET taken = $taken, programmed = $programmed, summary = '$summary'
+          WHERE user_id = $userId and fecha = '$date'
+      """);
 }
 
 void insert_statistics(DateTime date, int userId, int taken, int programmed, String summary) async{
