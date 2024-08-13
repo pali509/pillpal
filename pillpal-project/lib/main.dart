@@ -19,13 +19,20 @@ import 'package:pillpal/utils/alarms.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:pillpal/utils/db_connections.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+
 
 Future<void> main() async {
   initDatabaseConnection();
-  //connecting()
   await alarms_class().initialize();
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   initializeDateFormatting().then((_) => runApp(MyApp()));
-  //var moonLanding = DateTime.parse("2020-02-10 12:00:00Z");
 }
 final supabase = Supabase.instance.client;
 

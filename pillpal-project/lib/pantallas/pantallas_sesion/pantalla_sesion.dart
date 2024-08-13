@@ -6,6 +6,7 @@ import '../../utils/db_connections.dart';
 import '../../utils/alarms.dart';
 import 'package:pillpal/constants/colors.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 
 import '../../email.dart';
@@ -21,11 +22,24 @@ class _LoginDemoState extends State<Login> {
   TextEditingController _emailController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
   String? email, password;
+  final storageRef = FirebaseStorage.instance.ref();
+  String getUrl = '';
+  @override
+  void initState() {
+    super.initState();
+    getImage();
+  }
+
+  @override
+  void getImage() async {
+    getUrl = await storageRef.child("/delulu.jpg").getDownloadURL();
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
-    String url = 'https://www.4shared.com/img/yVf4sXocge/s25/190c6dfef78/jojo'; // The download link
     FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+
     return Scaffold(
       backgroundColor: ColorsApp.backgroundColor,
       appBar: AppBar(
@@ -41,7 +55,7 @@ class _LoginDemoState extends State<Login> {
                 child: Container(
                   width: 200,
                   height: 150,
-                  child: Image.asset('android/app/src/assets/images/Logo.png'),
+                  child: Image.network(getUrl),
                 ),
               ),
             ),

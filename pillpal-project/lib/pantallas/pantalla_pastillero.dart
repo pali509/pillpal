@@ -1,5 +1,10 @@
+import 'dart:io';
+
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:pillpal/pantallas/pantalla_perfil.dart';
 import 'package:pillpal/utils/db_connections.dart';
 import 'package:pillpal/utils/user.dart';
@@ -9,6 +14,9 @@ import 'package:pillpal/constants/colors.dart';
 
 import '../utils/pills.dart';
 import 'navigation_drawer.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:image_picker/image_picker.dart';
+
 
 class Pastillero extends StatefulWidget {
   Pastillero({super.key});
@@ -154,6 +162,7 @@ class PastilleroState extends State<Pastillero>{
   }
 
   void _mostrarInformacionPastilla(BuildContext context, Pill pasti) {
+    final storageRef = FirebaseStorage.instance.ref();
     showDialog(
       context: context,
       builder: (context) {
@@ -195,6 +204,8 @@ class PastilleroState extends State<Pastillero>{
   }
 
   Widget imageDialog(text, path, context) {
+    final picker = ImagePicker();
+    final storageRef = FirebaseStorage.instance.ref();
     return Dialog(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -214,6 +225,26 @@ class PastilleroState extends State<Pastillero>{
                   },
                   icon: Icon(Icons.close_rounded),
                   color: Colors.redAccent,
+                ),
+                TextButton(
+                  onPressed: () async {
+                    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+                    if (pickedFile != null) {
+                      path = pickedFile.path;
+                      File file = File(path);
+                      //TODO: añadir a BD la url y cambiar nombre image1.jpg al nombre que queramos :)
+                      UploadTask uploadTask = storageRef.child("image1.jpg").putFile(file);
+                      //final String url = await storageRef.getDownloadURL();
+                      final String url = await storageRef.child("/image1.jpg").getDownloadURL();
+                      debugPrint("The download URL is $url");
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) =>
+                            imageDialog(text, url, context),
+                      );
+                    }
+                  },
+                  child: Text('Editar'),
                 ),
               ],
             ),
@@ -288,6 +319,7 @@ class PastilleroState extends State<Pastillero>{
                                 context: context,
                                 builder: (_) => imageDialog(currentPill.pillName, currentPill.url, context)
                             );
+
                             //Ver la imagen/subir nueva imagen en pop up
                           },
                         ),
