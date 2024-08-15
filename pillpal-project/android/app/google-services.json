@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "1013779694428",
+    "project_id": "pillpal-45177",
+    "storage_bucket": "pillpal-45177.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1013779694428:android:b4ba6971544b2539503799",
+        "android_client_info": {
+          "package_name": "com.example.pillpal"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBeTTGFqb-VhtUbhcFd8H_tJKPvszhgzGM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1013779694428:android:4dce74fddf4ab43c503799",
+        "android_client_info": {
+          "package_name": "pillpal.project.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBeTTGFqb-VhtUbhcFd8H_tJKPvszhgzGM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

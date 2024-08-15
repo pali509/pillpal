@@ -94,17 +94,18 @@ Future<void> updateUser(int userId, String? email, String? name, String? pwd, St
     }
 }
 
-Future<void> insertPills(String pillName, int numPills, int userId, String pill_type) async {
+Future<void> insertPills(String pillName, int numPills, int userId, String pill_type, String url) async {
+  debugPrint("HELP $url");
   await databaseConnection.query("""
-    INSERT INTO "Pills"(pill_name, user_id, pill_quantity, pill_type)
-    VALUES ('$pillName', $userId, $numPills, '$pill_type');
+    INSERT INTO "Pills"(pill_name, user_id, pill_quantity, pill_type, pill_photo)
+    VALUES ('$pillName', $userId, $numPills, '$pill_type', '$url');
   """);
 }
 
-Future<void> updatePills(String pillName, int numPills, int userId, String pill_type, int pill_id) async{
+Future<void> updatePills(String pillName, int numPills, int userId, String pill_type, int pill_id, String url) async{
   await databaseConnection.query("""
     UPDATE "Pills"
-    SET pill_name = '$pillName', pill_quantity = $numPills, pill_type = '$pill_type'
+    SET pill_name = '$pillName', pill_quantity = $numPills, pill_type = '$pill_type', pill_photo = '$url'
     WHERE user_id = $userId and pill_id = $pill_id
   """);
 }
@@ -132,7 +133,7 @@ Future<List<Pill>>? getPills(int userId) async {
   List<Pill>listPills = [];
   debugPrint("ASTA");
   for(int i = 0; i < mapPills.length; i++) {
-    debugPrint("Aqui" + mapPills[i]['Pills']['pill_photo']);
+    debugPrint("Aqui " + mapPills[i]['Pills']['pill_photo']);
     listPills.add(Pill(
         mapPills[i]['Pills']['pill_id'],
         mapPills[i]['Pills']['pill_quantity'],
