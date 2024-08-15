@@ -24,6 +24,7 @@ class _LoginDemoState extends State<Login> {
   String? email, password;
   final storageRef = FirebaseStorage.instance.ref();
   String getUrl = '';
+
   @override
   void initState() {
     super.initState();

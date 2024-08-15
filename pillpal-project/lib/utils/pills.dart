@@ -9,9 +9,7 @@ class Pill{
     String? url;
 
     // Constructor
-    Pill(this.pillId, this.numPills, this.pillName, this.userId, this.type, String url) {
-        this.url = "https://www.4shared.com/img/" + url;
-    }
+    Pill(this.pillId, this.numPills, this.pillName, this.userId, this.type, this.url);
     
     int? getPillId(){
         return pillId;

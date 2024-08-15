@@ -136,7 +136,7 @@ class PastilleroState extends State<Pastillero>{
                     }
                     pasti.pillName = _NameController.text;
                     pasti.numPills = int.parse(_NumPillController.text);
-                    await updatePills(pasti.pillName!, pasti.numPills!, pasti.userId!, pasti.type!, pasti.pillId!);
+                    await updatePills(pasti.pillName!, pasti.numPills!, pasti.userId!, pasti.type!, pasti.pillId!, pasti.url!);
                     listaDePills = getPills(getUserAsociadoId());
                     setState(() {});
                     Navigator.of(context).pop();
@@ -155,10 +155,6 @@ class PastilleroState extends State<Pastillero>{
         );
       },
     );
-  }
-
-  void _popUpPhoto() {
-
   }
 
   void _mostrarInformacionPastilla(BuildContext context, Pill pasti) {
@@ -203,7 +199,7 @@ class PastilleroState extends State<Pastillero>{
     );
   }
 
-  Widget imageDialog(text, path, context) {
+  Widget imageDialog(text, path, context, Pill pasti) {
     final picker = ImagePicker();
     final storageRef = FirebaseStorage.instance.ref();
     return Dialog(
@@ -232,16 +228,15 @@ class PastilleroState extends State<Pastillero>{
                     if (pickedFile != null) {
                       path = pickedFile.path;
                       File file = File(path);
-                      //TODO: añadir a BD la url y cambiar nombre image1.jpg al nombre que queramos :)
-                      UploadTask uploadTask = storageRef.child("image1.jpg").putFile(file);
-                      //final String url = await storageRef.getDownloadURL();
-                      final String url = await storageRef.child("/image1.jpg").getDownloadURL();
+                      String name = "${pasti.userId}-${pasti.pillId}-${pasti.pillName}";
+                      UploadTask uploadTask = storageRef.child("$name.jpg").putFile(file);
+                      sleep(const Duration(seconds: 3));
+                      final String url = await storageRef.child("/$name.jpg").getDownloadURL();
                       debugPrint("The download URL is $url");
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) =>
-                            imageDialog(text, url, context),
-                      );
+                      pasti.url = url;
+                      await updatePills(pasti.pillName!, pasti.numPills!, pasti.userId!, pasti.type!, pasti.pillId!, pasti.url!);
+                      _actualizar();
+                      Navigator.of(context).pop();
                     }
                   },
                   child: Text('Editar'),
@@ -252,10 +247,7 @@ class PastilleroState extends State<Pastillero>{
           Container(
             width: 200,
             height: 200,
-            child: Image.network(
-              '$path',
-               fit: BoxFit.cover,
-            ),
+            child: Image.network(pasti.url!),
           ),
         ],
       ),
@@ -312,14 +304,12 @@ class PastilleroState extends State<Pastillero>{
                       child: ListTile(
                         leading: IconButton(
                           icon: Image.network(currentPill.url!),
-                          //Image.network(currentPill.url!),
-                          //Icon(Icons.add_a_photo_rounded),
                           onPressed: () async {
                             await showDialog(
                                 context: context,
-                                builder: (_) => imageDialog(currentPill.pillName, currentPill.url, context)
+                                builder: (_) => imageDialog(currentPill.pillName, currentPill.url, context, currentPill)
                             );
-
+                            _actualizar();
                             //Ver la imagen/subir nueva imagen en pop up
                           },
                         ),
@@ -462,12 +452,14 @@ class PastilleroState extends State<Pastillero>{
                                   );
                                 }
                                 else {
+                                  final storageRef = FirebaseStorage.instance.ref();
+                                  String url = "https://firebasestorage.googleapis.com/v0/b/pillpal-45177.appspot.com/o/no.jpg?alt=media&token=ce7754c7-6aa0-47f5-9f07-17745cbca5ba";
                                   if (valorSeleccionadoTipo != "Otro:")
                                     type = valorSeleccionadoTipo!;
+
                                   insertPills(pillName, numberOfPills,
-                                      getUserAsociadoId(), type);
-                                  //insertPills(pillName, numberOfPills,
-                                  //  getUserAsociadoId(), type);
+                                      getUserAsociadoId(), type, url);
+
                                   listaDePills = getPills(getUserAsociadoId());
                                   setState(() {});
                                   Navigator.of(context).pop();

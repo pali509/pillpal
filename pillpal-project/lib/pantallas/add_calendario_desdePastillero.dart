@@ -231,8 +231,9 @@ class _AddCalendarioPasState extends State<AddCalendarioDesdePastillero> {
                         daysOfWeek = daysOfWeek + "0";
                     }
                   }
-                  insertPills(this.nombreMed, this.numPastillas,
-                      getUserAsociadoId(), this.type);
+                  //TODO: ESTA COMENTADO --> DESCOMENTAR CUANDO SE MODIFIQUE
+                  //insertPills(this.nombreMed, this.numPastillas,
+                    //  getUserAsociadoId(), this.type, );
                   insertSchedule(this.nombreMed, getUserAsociadoId(),
                       valorSeleccionadoPeriod!, fechaSeleccionada, hour,
                       cantidadPastillas!, frecuenciaInt, daysOfWeek, 0);
