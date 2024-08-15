@@ -158,6 +158,68 @@ Future<int> getPillId(String pillName, int userId) async {
     return -1;
   }
 }
+
+Future<bool> getUserByEmail(String email) async {
+  List<Map<String, dynamic>>? userList = await databaseConnection
+      .mappedResultsQuery("""
+      SELECT * FROM "Users" WHERE user_email = '$email'""");
+  if(userList.isNotEmpty) {
+    //debugPrint(userList[0]['Users']['user_role_id']);
+    if(userList[0]['Users']['user_role_id'] == 0 || userList[0]['Users']['user_role_id'] == 2) {
+      setUser(
+          userList[0]['Users']['user_id'],
+          userList[0]['Users']['user_email'],
+          userList[0]['Users']['user_name'],
+          userList[0]['Users']['user_role_id'],
+          userList[0]['Users']['user_id'],
+          userList[0]['Users']['hora_desayuno'],
+          userList[0]['Users']['hora_comida'],
+          userList[0]['Users']['hora_cena'],
+          userList[0]['Users']['hora_dormir']);
+    }
+    else {
+      int id_cuidador = userList[0]['Users']['user_id'];
+      List<Map<String, dynamic>>? relationList = await databaseConnection
+          .mappedResultsQuery("""
+          SELECT r.paciente_id, u.hora_desayuno, u.hora_comida, u.hora_cena, u.hora_dormir 
+          FROM "Relationships" r join "Users" u on r.paciente_id = u.user_id  
+          WHERE r.cuidador_id = $id_cuidador
+          """);
+      if(relationList.isNotEmpty) {
+        setUser(
+            userList[0]['Users']['user_id'],
+            userList[0]['Users']['user_email'],
+            userList[0]['Users']['user_name'],
+            userList[0]['Users']['user_role_id'],
+            relationList[0]['Relationships']['paciente_id'],
+            relationList[0]['Users']['hora_desayuno'],
+            relationList[0]['Users']['hora_comida'],
+            relationList[0]['Users']['hora_cena'],
+            relationList[0]['Users']['hora_dormir']);
+        debugPrint("MIRA:");
+        debugPrint(relationList[0]['Users']['hora_desayuno']);
+      }
+      else{
+        setUser(
+            userList[0]['Users']['user_id'],
+            userList[0]['Users']['user_email'],
+            userList[0]['Users']['user_name'],
+            userList[0]['Users']['user_role_id'],
+            userList[0]['Users']['user_id'],
+            userList[0]['Users']['hora_desayuno'],
+            userList[0]['Users']['hora_comida'],
+            userList[0]['Users']['hora_cena'],
+            userList[0]['Users']['hora_dormir']);
+
+        debugPrint("MIRA:");
+        debugPrint(userList[0]['Users']['hora_desayuno']);
+      }
+    }
+    return true;
+  }
+  return false;
+}
+
 Future<bool> checkUser(String email, String pwd) async {
   List<Map<String, dynamic>>? userList = await databaseConnection
       .mappedResultsQuery("""

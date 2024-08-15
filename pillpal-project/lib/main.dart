@@ -7,6 +7,7 @@ import 'package:pillpal/pantallas/pantalla_inicial.dart';
 
 import 'package:pillpal/pantallas/pantalla_pastillero.dart';
 import 'package:pillpal/pantallas/navigation_drawer.dart';
+import 'package:pillpal/pantallas/pantallas_sesion/pantalla_carga_sesion.dart';
 import 'package:pillpal/pantallas/pantallas_sesion/pantalla_configurarHorario.dart';
 import 'package:pillpal/pantallas/pantallas_sesion/pantalla_login_asociado.dart';
 import 'package:pillpal/pantallas/pantallas_sesion/pantalla_registro.dart';
@@ -33,9 +34,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      initialRoute: '/cuenta', // Ruta inicial
+      initialRoute: '/cargaInicio', // Ruta inicial
       routes: {
         '/home': (context) => PantallaInicial(),
+        '/cargaInicio': (context) => PantallaCargaSesion(),
         '/pastis': (context) => Pastillero(),
         '/cuenta': (context) => Login(),
         '/registro': (context) => Registro(),

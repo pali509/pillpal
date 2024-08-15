@@ -7,6 +7,7 @@ import 'package:pillpal/utils/db_connections.dart';
 import 'package:pillpal/utils/user.dart';
 
 import '../constants/colors.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class PantallaPerfil extends StatefulWidget {
   const PantallaPerfil({super.key});
@@ -644,11 +645,11 @@ class _PantallaPerfilState extends State<PantallaPerfil> {
 
                         const SizedBox(height: 15.0),
 
-                        Text(
+                        const Text(
                           'Horario establecido:',
                           style: TextStyle(fontSize: 18.0),
                         ),
-                        Divider(
+                        const Divider(
                           height: 10.0, // Set a small height for the line
                           color: Colors.black, // Set the line color
                           thickness: 1.0, // Optional: Set line thickness (defaults to 1.0)
@@ -1198,7 +1199,9 @@ class _PantallaPerfilState extends State<PantallaPerfil> {
                         Row(
                           children:[
                             ElevatedButton(
-                              onPressed: () {
+                              onPressed: () async {
+                                SharedPreferences prefs = await SharedPreferences.getInstance();
+                                await prefs.remove('username');
                                 Navigator.of(context).pushNamedAndRemoveUntil('/cuenta', (Route route) => false);
                               },
                               child: Text('Confirmar'),
@@ -1268,6 +1271,8 @@ class _PantallaPerfilState extends State<PantallaPerfil> {
                           children:[
                             ElevatedButton(
                               onPressed: () async {
+                                SharedPreferences prefs = await SharedPreferences.getInstance();
+                                await prefs.remove('username');
                                 deleteUser(getUserId());
                                 Navigator.of(context).pushNamedAndRemoveUntil('/cuenta', (Route route) => false);
                               },

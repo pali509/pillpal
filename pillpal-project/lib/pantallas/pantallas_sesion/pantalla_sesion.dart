@@ -7,6 +7,7 @@ import '../../utils/alarms.dart';
 import 'package:pillpal/constants/colors.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../email.dart';
 
@@ -21,6 +22,7 @@ class _LoginDemoState extends State<Login> {
   TextEditingController _emailController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
   String? email, password;
+
 
   @override
   Widget build(BuildContext context) {
@@ -81,6 +83,9 @@ class _LoginDemoState extends State<Login> {
                     email = _emailController.text;
                     password = _passwordController.text;
                     if (await checkUser(email!, password!)) {
+                      SharedPreferences prefs = await SharedPreferences.getInstance();
+                      await prefs.setString('username', _emailController.text);
+
                       Navigator.of(context).pushReplacementNamed('/home');
                       alarms_class().cancelAll();
                       alarms_class().cargarAlarmas(getUserId());

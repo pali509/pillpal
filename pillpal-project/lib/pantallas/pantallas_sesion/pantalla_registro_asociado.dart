@@ -85,7 +85,7 @@ class _RegistroAsState extends State<RegistroAs> {
                       nombre = _nombreController.text;
                       if(await userExists(email!)) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Correo o contraseña incorrectas!')),
+                          const SnackBar(content: Text('Ya hay una cuenta registrada con este correo!')),
                         );
 
                       } else {
@@ -102,7 +102,7 @@ class _RegistroAsState extends State<RegistroAs> {
                           addRelationship(id_asociado, id);
                           setUserAsociadoSoloId(id);
                           // Navega a la pantalla '/home' con los datos ingresados
-                          Navigator.of(context).pushReplacementNamed('/home');
+                          Navigator.of(context).pushReplacementNamed('/horario');
                         }
                       }
                     },

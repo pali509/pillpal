@@ -222,7 +222,9 @@ class _PantallaEstadisticasState extends State<PantallaEstadisticas> {
                  programadas = calcularProg(cosas);
                  Statistic_type data = snapshot.data?[1];
                  porcentajeSemanal = data.weekProg != 0? ((data.weekTaken / data.weekProg) * 100).round() : 100;
-                 porcentajeDiario = data.taken != 0? ((data.taken / data.programmed) * 100).round() : 100;
+                 porcentajeDiario = _selectedDay!.isBefore(DateTime.now())?(
+                 data.programmed != 0? ((data.taken / data.programmed) * 100).round() : 100) :
+                 programadas != 0? ((data.taken / programadas) * 100).round() : 100;
                  porcentajeMensual = data.monthTaken != 0? ((data.monthTaken / data.monthProg) * 100).round() : 100;
                 return Column(
                   children: [
