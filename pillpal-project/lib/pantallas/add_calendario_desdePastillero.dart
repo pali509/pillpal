@@ -234,9 +234,9 @@ class _AddCalendarioPasState extends State<AddCalendarioDesdePastillero> {
                   //TODO: ESTA COMENTADO --> DESCOMENTAR CUANDO SE MODIFIQUE
                   //insertPills(this.nombreMed, this.numPastillas,
                     //  getUserAsociadoId(), this.type, );
-                  insertSchedule(this.nombreMed, getUserAsociadoId(),
+                 /* insertSchedule(this.nombreMed, getUserAsociadoId(),
                       valorSeleccionadoPeriod!, fechaSeleccionada, hour,
-                      cantidadPastillas!, frecuenciaInt, daysOfWeek, 0);
+                      cantidadPastillas!, frecuenciaInt, daysOfWeek, 0);*/
                   Navigator.pushReplacementNamed(context, '/pastis');
                 }
               },

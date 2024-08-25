@@ -32,11 +32,13 @@ class _AddCalendarioState extends State<AddCalendario> {
 
   // Variable para el valor seleccionado del Dropdown Menu
   String? valorSeleccionadoNombre;
+  String? nombreReal;
 
   List<String>frecuencia = ["Diaria", "Una vez", "Personalizado"];
   String? valorSeleccionadoFrec;
 
-  List<String>periodo = ["Desayuno", "Comida", "Cena", "Dormir", "Otro"];
+  List<String>periodo = ["Otro", "Desayuno", "Comida", "Cena", "Dormir"];
+  final List<bool> _selectedTOD = List.filled(5, false);
   String? valorSeleccionadoTOD;
 
   final List<String> diasSemana = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
@@ -85,6 +87,22 @@ class _AddCalendarioState extends State<AddCalendario> {
             Row(
               children: [
                 const Text('Nombre:', style: TextStyle(fontSize: 16)),
+                const SizedBox(width: 16, height: 50),
+                SizedBox(
+                  height: 50, // constrain height
+                  width: 100,
+                  child: TextFormField(
+                    keyboardType: TextInputType.text,
+                    onChanged: (texto) {
+                      nombreReal = texto;
+                    },
+                  ),
+                )
+              ],
+            ),
+            Row(
+              children: [
+                const Text('Medicación:', style: TextStyle(fontSize: 16)),
                 const SizedBox(width: 16, height: 50),
                 DropdownButton<String>(
                   value: valorSeleccionadoNombre,
@@ -183,35 +201,28 @@ class _AddCalendarioState extends State<AddCalendario> {
                       },
                     ),
                   // Display selected days (optional)
-                  if (_selectedDays.any((bool selected) => selected)) // Check if any day is selected
-                    Text('Dias seleccionados: ${_selectedDays.asMap().entries.where((entry) => entry.value).map((entry) => diasSemana[entry.key]).join(', ')}'), // Format selected days
                 ],
               ),
             ),
 
-            Row(
+            Column(
               children: [
                 const Text('Periodo:', style: TextStyle(fontSize: 16)),
-                const SizedBox(
-                    width: 16,
-                    height: 50,
-                ),
-                DropdownButton<String>(
-                  value: valorSeleccionadoTOD,
-                  items: periodo.map((opcion) => DropdownMenuItem(
-                    value: opcion,
-                    child: Text(opcion),
-                  )).toList(),
-                  onChanged: (valor) {
-                    setState(() {
-                      valorSeleccionadoTOD = valor;
-                    });
-                  },
-                ),
+                for (int i = 0; i < periodo.length; i++)
+                  CheckboxListTile(
+                    title: Text(periodo[i]),
+                    value: _selectedTOD[i],
+                    onChanged: (bool? value) {
+                      setState(() {
+                        _selectedTOD[i] = value!;
+                        // Verificar si al menos uno está seleccionado
+                      });
+                    },
+                  )
               ],
             ),
             Visibility(
-              visible: (valorSeleccionadoTOD == "Otro"),
+              visible: (_selectedTOD[0]),
               child: Row(
                 children: [
                   const Text('Hora:', style: TextStyle(fontSize: 16)),
@@ -222,7 +233,6 @@ class _AddCalendarioState extends State<AddCalendario> {
                   IconButton(
                     onPressed: () async {
                       TimeOfDay? hora = await showTimePicker(
-
                         context: context,
                         initialTime: _horaSeleccionada,
                         hourLabelText : "Seleccione hora",
@@ -262,10 +272,17 @@ class _AddCalendarioState extends State<AddCalendario> {
           height: 50.0,
             child: ElevatedButton(
               onPressed: () async {
+                if(nombreReal == null || nombreReal == '') {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Por favor, rellena el campo del nombre'),
+                    ),
+                  );
+                }
                 if (valorSeleccionadoNombre == null) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                      content: Text('Por favor, rellena el campo de nombre'),
+                      content: Text('Por favor, rellena el campo del medicamento'),
                     ),
                   );
                   // Implementar la acción del botón
@@ -274,13 +291,6 @@ class _AddCalendarioState extends State<AddCalendario> {
                     const SnackBar(
                       content: Text(
                           'Por favor, rellena el campo de frecuencia'),
-                    ),
-                  );
-                }
-                else if(valorSeleccionadoTOD == null) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Por favor, rellena el campo de periodo'),
                     ),
                   );
                 }
@@ -325,13 +335,16 @@ class _AddCalendarioState extends State<AddCalendario> {
                   hora_String = _horaSeleccionada.format(context);
                   Random random = Random();
                   int randomNumber = random.nextInt(10000);
-                  alarms_class.una_vez(randomNumber, fechaSeleccionada!, hora_String!,
-                      valorSeleccionadoNombre!, cantidadPastillas!, daysOfWeek,
-                      pills[opciones.indexOf(valorSeleccionadoNombre!)].pillId!);
-                  await insertSchedule(valorSeleccionadoNombre!, getUserAsociadoId(),
-                      valorSeleccionadoTOD!, fechaSeleccionada, hora_String, cantidadPastillas!,
-                      frecuenciaInt, daysOfWeek, randomNumber);
-                  Navigator.of(context).pushReplacementNamed('/calendario');
+
+                  for(int i = 0; i < _selectedTOD.length; i++) {
+                    if(_selectedTOD[i]) {
+                      int randomNumber = random.nextInt(10000);
+                      await insertSchedule(valorSeleccionadoNombre!, getUserAsociadoId(),
+                        periodo[i], fechaSeleccionada, hora_String, cantidadPastillas!,
+                        frecuenciaInt, daysOfWeek, randomNumber, nombreReal!);
+                      }
+                  }
+                  Navigator.of(context).pushReplacementNamed('/alarmas');
                 }
               },
               child: Text('Añadir'),

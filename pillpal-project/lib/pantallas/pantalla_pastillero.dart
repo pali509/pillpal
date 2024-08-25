@@ -1,3 +1,4 @@
+import 'dart:ffi';
 import 'dart:io';
 
 import 'package:firebase_core/firebase_core.dart';
@@ -33,6 +34,9 @@ class PastilleroState extends State<Pastillero>{
   String? valorSeleccionadoTipo;
   String type = "";
   String? _opcionSeleccionada;
+
+  String pillImageUrl = 'https://firebasestorage.googleapis.com/v0/b/pillpal-45177.appspot.com/o/no.jpg?alt=media&token=ce7754c7-6aa0-47f5-9f07-17745cbca5ba';
+  File file = File("/jojo.jpg");
 
   Future<List<Pill>>? listaDePills = getPills(getUserAsociadoId());
 
@@ -197,6 +201,16 @@ class PastilleroState extends State<Pastillero>{
         );
       },
     );
+  }
+
+  Future<void> _pickImage() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      var path = pickedFile.path;
+      file = File(path);
+      debugPrint("EL PATH:" + file.path);
+    }
   }
 
   Widget imageDialog(text, path, context, Pill pasti) {
@@ -368,7 +382,6 @@ class PastilleroState extends State<Pastillero>{
                             numberOfPills = int.tryParse(value) ?? 0;
                           },
                         ),
-
                         const SizedBox(height: 20),
                         ListTile(
                           title: const Text("Tipo de medicación:"),
@@ -425,6 +438,9 @@ class PastilleroState extends State<Pastillero>{
                           children: [
                             ElevatedButton(
                               onPressed: () async {
+                                final storageRef = FirebaseStorage.instance.ref();
+
+                                String url = "https://firebasestorage.googleapis.com/v0/b/pillpal-45177.appspot.com/o/no.jpg?alt=media&token=ce7754c7-6aa0-47f5-9f07-17745cbca5ba";
                                 type = controllerTipo.text;
                                 if (pillName == '') {
                                   ScaffoldMessenger.of(context).showSnackBar(
@@ -452,19 +468,28 @@ class PastilleroState extends State<Pastillero>{
                                   );
                                 }
                                 else {
-                                  final storageRef = FirebaseStorage.instance.ref();
-                                  String url = "https://firebasestorage.googleapis.com/v0/b/pillpal-45177.appspot.com/o/no.jpg?alt=media&token=ce7754c7-6aa0-47f5-9f07-17745cbca5ba";
                                   if (valorSeleccionadoTipo != "Otro:")
                                     type = valorSeleccionadoTipo!;
 
-                                  insertPills(pillName, numberOfPills,
-                                      getUserAsociadoId(), type, url);
+                                  await showDialog(
+                                      context: context,
+                                      builder: (_) => popUpImage(pillName, url, context, getUserAsociadoId())
+                                  );
 
+                                  insertPills(pillName, numberOfPills,
+                                      getUserAsociadoId(), type, pillImageUrl);
+
+                                  pillImageUrl = 'https://firebasestorage.googleapis.com/v0/b/pillpal-45177.appspot.com/o/no.jpg?alt=media&token=ce7754c7-6aa0-47f5-9f07-17745cbca5ba';
                                   listaDePills = getPills(getUserAsociadoId());
                                   setState(() {});
                                   Navigator.of(context).pop();
                                   _actualizar();
                                 }
+
+                                //here
+                                //currentPill.pillName, currentPill.url, context, currentPill
+
+
                               },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.blue,
@@ -480,7 +505,6 @@ class PastilleroState extends State<Pastillero>{
                               child: const Text('Añadir'),
                             ),
                             const SizedBox(width: 45.0),
-
                             ElevatedButton(
                               onPressed: () async {
                                 if (pillName == '') {
@@ -607,12 +631,68 @@ class PastilleroState extends State<Pastillero>{
                 ),
               ),
             ),
-
           ],
         );
       },
     );
   }
+
+  Widget popUpImage(String pillName, String path, BuildContext context, int userId) {
+    final picker = ImagePicker();
+    final storageRef = FirebaseStorage.instance.ref();
+    return Dialog(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(left: 8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  pillName,
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                TextButton(
+                  child: Text('Añadir Foto'),
+                  onPressed: () async {
+                    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+                    if (pickedFile != null) {
+                      path = pickedFile.path;
+                      File file = File(path);
+                      String name = "$userId-$pillName";
+                      UploadTask uploadTask = storageRef.child("/$name.jpg").putFile(file);
+                      sleep(const Duration(seconds: 3));
+                      final String url = await storageRef.child("/$name.jpg").getDownloadURL();
+                      debugPrint("The download URL is $url");
+                      setState(() {
+                        pillImageUrl = url;
+                      });
+                    }
+                    sleep(const Duration(seconds: 3));
+                    _actualizar();
+                  },
+
+                ),
+                TextButton(
+                  child: Text('Continuar'),
+                  onPressed: () async {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            ),
+          ),
+          Container(
+            width: 200,
+            height: 200,
+            child: Image.network(pillImageUrl),
+          ),
+        ],
+      ),
+    );}
+
+
 
 }
 
