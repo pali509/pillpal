@@ -272,7 +272,7 @@ class PastilleroState extends State<Pastillero>{
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Pastillero', style: TextStyle(fontSize: 25.0)),
+        title: Text('Medicamentos', style: TextStyle(fontSize: 25.0)),
         backgroundColor: ColorsApp.toolBarColor,
         actions: [
           IconButton(
@@ -375,7 +375,7 @@ class PastilleroState extends State<Pastillero>{
                           },
                         ),
                         const SizedBox(height: 15),
-                        const Text('Núm. dosis:'),
+                        const Text('Núm. dosis disponibles:'),
                         TextFormField(
                           keyboardType: TextInputType.number,
                           onChanged: (value) {
@@ -669,7 +669,7 @@ class PastilleroState extends State<Pastillero>{
                         pillImageUrl = url;
                       });
                     }
-                    sleep(const Duration(seconds: 3));
+                    Navigator.of(context).pop();
                     _actualizar();
                   },
 
