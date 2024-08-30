@@ -38,7 +38,7 @@ class MyDrawer extends StatelessWidget {
             height: 100,
             child: ListTile(
               title: const Text(
-                'Pastillero',
+                'Medicamentos',
                 style: TextStyle(fontSize: 30.0),
               ),
               contentPadding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),

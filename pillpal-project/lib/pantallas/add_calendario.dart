@@ -32,7 +32,6 @@ class _AddCalendarioState extends State<AddCalendario> {
 
   // Variable para el valor seleccionado del Dropdown Menu
   String? valorSeleccionadoNombre;
-  String? nombreReal;
 
   List<String>frecuencia = ["Diaria", "Una vez", "Personalizado"];
   String? valorSeleccionadoFrec;
@@ -84,22 +83,6 @@ class _AddCalendarioState extends State<AddCalendario> {
         child: Column(
           children: [
             // Fila con el texto "Nombre:" y el Dropdown Menu
-            Row(
-              children: [
-                const Text('Nombre:', style: TextStyle(fontSize: 16)),
-                const SizedBox(width: 16, height: 50),
-                SizedBox(
-                  height: 50, // constrain height
-                  width: 100,
-                  child: TextFormField(
-                    keyboardType: TextInputType.text,
-                    onChanged: (texto) {
-                      nombreReal = texto;
-                    },
-                  ),
-                )
-              ],
-            ),
             Row(
               children: [
                 const Text('Medicación:', style: TextStyle(fontSize: 16)),
@@ -272,13 +255,6 @@ class _AddCalendarioState extends State<AddCalendario> {
           height: 50.0,
             child: ElevatedButton(
               onPressed: () async {
-                if(nombreReal == null || nombreReal == '') {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Por favor, rellena el campo del nombre'),
-                    ),
-                  );
-                }
                 if (valorSeleccionadoNombre == null) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
@@ -341,7 +317,7 @@ class _AddCalendarioState extends State<AddCalendario> {
                       int randomNumber = random.nextInt(10000);
                       await insertSchedule(valorSeleccionadoNombre!, getUserAsociadoId(),
                         periodo[i], fechaSeleccionada, hora_String, cantidadPastillas!,
-                        frecuenciaInt, daysOfWeek, randomNumber, nombreReal!);
+                        frecuenciaInt, daysOfWeek, randomNumber);
                       }
                   }
                   Navigator.of(context).pushReplacementNamed('/alarmas');

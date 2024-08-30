@@ -123,14 +123,14 @@ class _AlarmaScreenState extends State<AlarmaScreen> {
             final _hourController = TextEditingController(text: alarma.getHour());
 
             return AlertDialog(
-              title: const Text('Editar Alarma'),
+              title: const Text('Editar Recordatorio'),
               content: SingleChildScrollView(
                 child: Column(
                   children: <Widget>[
                     TextField(
                       controller: _NumPillController,
                       decoration: const InputDecoration(
-                          labelText: 'Cantidad pastillas'),
+                          labelText: 'Dosis'),
                     ),
                     TextField(
                       controller: _DayController,
@@ -252,7 +252,7 @@ class _AlarmaScreenState extends State<AlarmaScreen> {
               // Muestra la descripción
               Text('Se toma el ${alarm?[0]} a las ${alarma.getHour()}', style: TextStyle(fontSize: 16.0)),
               Text(timeOfDayInfo(alarma.timeOfDay!), style: TextStyle(fontSize: 16.0)),
-              Text("Esta alarma suena ${getPeriodoInfo(alarma.period!)}", style: TextStyle(fontSize: 16.0)),
+              Text("Este recordatorio salta ${getPeriodoInfo(alarma.period!)}", style: TextStyle(fontSize: 16.0)),
             ],
           ),
           actions: <Widget>[
@@ -285,7 +285,7 @@ class _AlarmaScreenState extends State<AlarmaScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Alarmas', style: TextStyle(fontSize: 25.0)),
+        title: Text('Recordatorios', style: TextStyle(fontSize: 25.0)),
         backgroundColor: ColorsApp.toolBarColor,
         actions: [
           IconButton(
@@ -330,7 +330,7 @@ class _AlarmaScreenState extends State<AlarmaScreen> {
                     },
                   );
                 } else if (snapshot.hasError) {
-                  return Text('Error al cargar alarmas: ${snapshot.error}');
+                  return Text('Error al cargar recordatorios: ${snapshot.error}');
                 } else {
                   return CircularProgressIndicator();
                 }
@@ -346,7 +346,7 @@ class _AlarmaScreenState extends State<AlarmaScreen> {
                 MaterialPageRoute(builder: (context) => AddCalendario()),
               );
             },
-            child: Text('Añadir alarma'),
+            child: Text('Añadir recordatorio'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.purple,
                 shape: RoundedRectangleBorder(

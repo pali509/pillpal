@@ -202,6 +202,14 @@ class _ConfigurarHorarioState extends State<ConfigurarHorario> {
                             _horaDormir.format(context));
                       }
                         Navigator.of(context).pushReplacementNamed('/pastis');
+                        if(role_id == 1){
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                  'Enhorabuena! Ahora ves la información de tu dependiente.'),
+                            ),
+                          );
+                        }
                       },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.purple, // Ajusta el color del fondo aquí
