@@ -34,7 +34,7 @@ class _LoginDemoState extends State<Login> {
 
   @override
   void getImage() async {
-    getUrl = await storageRef.child("/delulu.jpg").getDownloadURL();
+    getUrl = await storageRef.child("/Logo.png").getDownloadURL();
     setState(() {});
   }
 
