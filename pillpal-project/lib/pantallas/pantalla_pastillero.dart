@@ -181,12 +181,15 @@ class PastilleroState extends State<Pastillero>{
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-                TextButton(
+                Visibility(
+                  visible: getRoleId() != 2,
+                  child: TextButton(
                   child: Text('Editar'),
                   onPressed: () {
                     Navigator.of(context).pop();
                     _mostrarPopEdicionPastilla(context, pasti);
                   },
+                ),
                 ),
                 Spacer(), // Añadir Spacer para distribuir el espacio
                 TextButton(
@@ -218,25 +221,20 @@ class PastilleroState extends State<Pastillero>{
     final storageRef = FirebaseStorage.instance.ref();
     return Dialog(
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisSize: MainAxisSize.min,
         children: [
           Padding(
             padding: const EdgeInsets.only(left: 8.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  '$text',
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                Text(text.toString().length <= 15 ?
+                  '$text': '${text.toString().substring(0,14)}...',
+                  style: TextStyle(fontWeight: FontWeight.bold,fontSize: 25),
                 ),
-                IconButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  icon: Icon(Icons.close_rounded),
-                  color: Colors.redAccent,
-                ),
-                TextButton(
+                Visibility(
+                  visible: getRoleId() != 2,
+                  child: TextButton(
                   onPressed: () async {
                     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
                     if (pickedFile != null) {
@@ -253,7 +251,9 @@ class PastilleroState extends State<Pastillero>{
                       Navigator.of(context).pop();
                     }
                   },
-                  child: Text('Editar'),
+                  child: Text('Editar',
+                      style: TextStyle(fontWeight: FontWeight.bold,fontSize: 25, color: ColorsApp.buttonColor),),
+                ),
                 ),
               ],
             ),
@@ -312,7 +312,6 @@ class PastilleroState extends State<Pastillero>{
                     child: InkWell(
                       splashColor: Colors.grey,
                       onTap: () {
-                        debugPrint('Card tapped.');
                         _mostrarInformacionPastilla(context, currentPill);
                       },
                       child: ListTile(
@@ -328,7 +327,7 @@ class PastilleroState extends State<Pastillero>{
                           },
                         ),
                         title: Text(' ${currentPill.pillName}'),
-                        subtitle: Text('Cantidad: ${currentPill.numPills} ud.'),
+                        subtitle: Text(' Cantidad disponible: ${currentPill.numPills} ud.'),
                         trailing:
                           Visibility(
                             visible: (getRoleId() != 2),
@@ -642,62 +641,71 @@ class PastilleroState extends State<Pastillero>{
     final storageRef = FirebaseStorage.instance.ref();
     return Dialog(
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+      Padding(
+      padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Padding(
-            padding: const EdgeInsets.only(left: 8.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  pillName,
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                TextButton(
-                  child: Text('Añadir Foto'),
-                  onPressed: () async {
-                    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-                    if (pickedFile != null) {
-                      path = pickedFile.path;
-                      File file = File(path);
-                      String name = "$userId-$pillName";
-                      UploadTask uploadTask = storageRef.child("/$name.jpg").putFile(file);
-                      sleep(const Duration(seconds: 3));
-                      final String url = await storageRef.child("/$name.jpg").getDownloadURL();
-                      debugPrint("The download URL is $url");
-                      setState(() {
-                        pillImageUrl = url;
-                      });
-                    }
-                    Navigator.of(context).pop();
-                    _actualizar();
-                  },
+          Text(
+            pillName,
+            style: TextStyle(fontWeight: FontWeight.bold,fontSize: 25),
+          ),
+          Text(
+            'Antes de terminar, ¿Quieres añadir una imagen para reconocer mejor el medicamento?',
+            style: TextStyle(fontSize: 17),textAlign: TextAlign.center,
+          ),
 
-                ),
-                TextButton(
-                  child: Text('Continuar'),
-                  onPressed: () async {
-                    Navigator.of(context).pop();
-                  },
-                ),
-              ],
-            ),
+          TextButton(
+            child: Text('Elegir foto',
+              style: TextStyle(fontWeight: FontWeight.bold,fontSize: 25, color: ColorsApp.buttonColor),),
+            onPressed: () async {
+              final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+              if (pickedFile != null) {
+                path = pickedFile.path;
+                File file = File(path);
+                String name = "$userId-$pillName";
+                UploadTask uploadTask = storageRef.child("/$name.jpg").putFile(file);
+                sleep(const Duration(seconds: 3));
+                final String url = await storageRef.child("/$name.jpg").getDownloadURL();
+                debugPrint("The download URL is $url");
+                setState(() {
+                  pillImageUrl = url;
+                });
+              }
+              Navigator.of(context).pop();
+              _actualizar();
+            },
+
           ),
           Container(
             width: 200,
             height: 200,
             child: Image.network(pillImageUrl),
           ),
+          TextButton(
+            child: Text('Continuar sin elegir',style: TextStyle(fontSize: 17, color: ColorsApp.buttonColor),textAlign: TextAlign.center,),
+            onPressed: () async {
+              Navigator.of(context).pop();
+            },
+          ),
+          Text(
+            '(Podrás añadirlo también más tarde pulsando el icono a la izquierda del medicamento)',
+            style: TextStyle(fontSize: 17),textAlign: TextAlign.center,
+          ),
+          Container(
+            height: 20,
+          ),
         ],
       ),
+
+
+    ),
+    ],
+    ),
     );}
 
 
 
 }
-
-/*TODO
--Boton añadir -> No se centra :(
--Pastillas -> Imagen y boton para eliminar pastilla
--Num Pastillas -> Que sea modificable (?????)
- */

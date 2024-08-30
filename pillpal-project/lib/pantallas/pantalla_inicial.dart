@@ -1,3 +1,4 @@
+import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -6,9 +7,16 @@ import 'package:pillpal/constants/colors.dart';
 import 'package:pillpal/pantallas/pantalla_perfil.dart';
 import '../utils/db_connections.dart';
 import '../utils/horario.dart';
+import '../utils/pills.dart';
 import '../utils/statistic_type.dart';
 import '../utils/user.dart';
 import 'navigation_drawer.dart';
+
+
+
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:image_picker/image_picker.dart';
+
 
 class PantallaInicial extends StatefulWidget {
   const PantallaInicial({super.key});
@@ -28,11 +36,19 @@ class PantallaInicial extends StatefulWidget {
     List<String> months= ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre",];
     DateTime diaSeleccionado = DateTime.now();
 
+    List<Pill> pills = [];
 
     bool visibleOtros = false;
 
     late Statistic_type stats;
     List<String> nombres = [];
+
+    String pillImageUrl = 'https://firebasestorage.googleapis.com/v0/b/pillpal-45177.appspot.com/o/no.jpg?alt=media&token=ce7754c7-6aa0-47f5-9f07-17745cbca5ba';
+    File file = File("/jojo.jpg");
+
+    void _actualizar(){
+      setState(() {});
+    }
 
     void _cambiarTomaDialog(BuildContext context, int op, Horario currentCosa, DateTime diaSeleccionado, Statistic_type stats) {
       int nuevoTaken = stats.getTaken();
@@ -146,6 +162,57 @@ class PantallaInicial extends StatefulWidget {
       return false;
     }
 
+    Widget imageDialog(text, path, context, Pill pasti) {
+      final picker = ImagePicker();
+      final storageRef = FirebaseStorage.instance.ref();
+      return Dialog(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(text.toString().length <= 15 ?
+                  '$text': '${text.toString().substring(0,14)}...',
+                    style: TextStyle(fontWeight: FontWeight.bold,fontSize: 25),
+                  ),
+                  Visibility(
+                    visible: getRoleId() != 2,
+                    child: TextButton(
+                      onPressed: () async {
+                        final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+                        if (pickedFile != null) {
+                          path = pickedFile.path;
+                          File file = File(path);
+                          String name = "${pasti.userId}-${pasti.pillId}-${pasti.pillName}";
+                          UploadTask uploadTask = storageRef.child("$name.jpg").putFile(file);
+                          sleep(const Duration(seconds: 3));
+                          final String url = await storageRef.child("/$name.jpg").getDownloadURL();
+                          debugPrint("The download URL is $url");
+                          pasti.url = url;
+                          await updatePills(pasti.pillName!, pasti.numPills!, pasti.userId!, pasti.type!, pasti.pillId!, pasti.url!);
+                          _actualizar();
+                          Navigator.of(context).pop();
+                        }
+                      },
+                      child: Text('Editar',
+                        style: TextStyle(fontWeight: FontWeight.bold,fontSize: 25, color: ColorsApp.buttonColor),),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              width: 200,
+              height: 200,
+              child: Image.network(pasti.url!),
+            ),
+          ],
+        ),
+      );}
+
     @override
     Widget build(BuildContext context) {
       return Scaffold(
@@ -202,6 +269,7 @@ class PantallaInicial extends StatefulWidget {
                   future: Future.wait([
                     getDayPills(diaSeleccionado, getUserAsociadoId()),
                     getStaDia(diaSeleccionado, getUserAsociadoId()),
+                    getPills(getUserAsociadoId()),
                   ]),
                   builder:(context, AsyncSnapshot<List<dynamic>> snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
@@ -216,6 +284,8 @@ class PantallaInicial extends StatefulWidget {
                       cosas3 = cogerSegunMomento(cosas, 3); //Solo cena
                       cosas4 = cogerSegunMomento(cosas, 4); //Solo dormir
                       cosas0 = cogerSegunMomento(cosas, 0);
+
+                      pills = snapshot.data?[2];
 
                       if (cosas0.isNotEmpty)
                         visibleOtros = true; //Si hay cosas ponerlo visible
@@ -247,6 +317,13 @@ class PantallaInicial extends StatefulWidget {
                                       itemBuilder: (context, index) {
                                         if(cosas1.isNotEmpty) {
                                           Horario currentCosa = cosas1[index];
+                                          Pill currentPill = getPill(pills, currentCosa.pillName);
+                                          bool tomado = false;
+                                          //debugPrint('wowowo ${aux.takenName}');
+
+                                          if(esLaMisma(aux.takenQ, aux.takenName, currentCosa.getPillName()!, currentCosa.getNumPills()!))
+                                            tomado = true;
+
                                           return Container(
                                             decoration: BoxDecoration(
                                               border: Border.all(),
@@ -254,13 +331,43 @@ class PantallaInicial extends StatefulWidget {
                                                   .circular(12.0),
                                             ),
                                             child: ListTile(
-                                              onTap: () =>
-                                                  print('${cosas1[index]}'),
-                                              title: Text('${currentCosa
-                                                  .getPillName()}'),
+                                              leading: IconButton(
+                                                icon: Image.network(currentPill.url!),
+                                                onPressed: () async {
+                                                  await showDialog(
+                                                      context: context,
+                                                      builder: (_) => imageDialog(currentPill.pillName, currentPill.url, context, currentPill)
+                                                  );
+                                                  _actualizar();
+                                                  //Ver la imagen/subir nueva imagen en pop up
+                                                },
+                                              ),
+                                              title: Text(
+                                                '${currentCosa.getPillName()}',
+                                                style: TextStyle(
+                                                  decoration:
+                                                  tomado?
+                                                  TextDecoration.lineThrough : TextDecoration.none,
+                                                ),
+                                              ),
                                               subtitle: Text(
                                                   'Cantidad: ${currentCosa
                                                       .getNumPills()} ud.'),
+                                              trailing:
+                                              Visibility(
+                                                visible: (getRoleId() != 2) &&
+                                                    (diaSeleccionado.isBefore(DateTime.now())),
+                                                child:IconButton(
+                                                  icon: Icon(Icons.edit),
+                                                  color: Colors.black,
+                                                  onPressed: () {
+                                                    debugPrint('ayyy ${stats.notTakenName}');
+                                                    debugPrint('ayyy2 ${stats.takenName}');
+                                                    tomado? _cambiarTomaDialog(context, 1, currentCosa, diaSeleccionado, stats) :
+                                                    _cambiarTomaDialog(context, 2, currentCosa, diaSeleccionado, stats);
+                                                  },
+                                                ),
+                                              ),
                                             ),
                                           );
                                         }
@@ -281,7 +388,6 @@ class PantallaInicial extends StatefulWidget {
 
 
                           Container(
-
                               child: ListView(
                                 shrinkWrap: true,
                                 physics: const NeverScrollableScrollPhysics(),
@@ -304,6 +410,12 @@ class PantallaInicial extends StatefulWidget {
                                       itemBuilder: (context, index) {
                                         if(cosas2.isNotEmpty) {
                                           Horario currentCosa = cosas2[index];
+                                          Pill currentPill = getPill(pills, currentCosa.pillName);
+                                          bool tomado = false;
+
+                                          if(esLaMisma(aux.takenQ, aux.takenName, currentCosa.getPillName()!, currentCosa.getNumPills()!))
+                                            tomado = true;
+
                                           return Container(
                                             decoration: BoxDecoration(
                                               border: Border.all(),
@@ -311,13 +423,43 @@ class PantallaInicial extends StatefulWidget {
                                                   .circular(12.0),
                                             ),
                                             child: ListTile(
-                                              onTap: () =>
-                                                  print('${cosas2[index]}'),
-                                              title: Text('${currentCosa
-                                                  .getPillName()}'),
+                                              leading: IconButton(
+                                                icon: Image.network(currentPill.url!),
+                                                onPressed: () async {
+                                                  await showDialog(
+                                                      context: context,
+                                                      builder: (_) => imageDialog(currentPill.pillName, currentPill.url, context, currentPill)
+                                                  );
+                                                  _actualizar();
+                                                  //Ver la imagen/subir nueva imagen en pop up
+                                                },
+                                              ),
+                                              title: Text(
+                                                '${currentCosa.getPillName()}',
+                                                style: TextStyle(
+                                                  decoration:
+                                                  tomado?
+                                                  TextDecoration.lineThrough : TextDecoration.none,
+                                                ),
+                                              ),
                                               subtitle: Text(
                                                   'Cantidad: ${currentCosa
                                                       .getNumPills()} ud.'),
+                                              trailing:
+                                              Visibility(
+                                                visible: (getRoleId() != 2) &&
+                                                    (diaSeleccionado.isBefore(DateTime.now())),
+                                                child:IconButton(
+                                                  icon: Icon(Icons.edit),
+                                                  color: Colors.black,
+                                                  onPressed: () {
+                                                    debugPrint('ayyy ${stats.notTakenName}');
+                                                    debugPrint('ayyy2 ${stats.takenName}');
+                                                    tomado? _cambiarTomaDialog(context, 1, currentCosa, diaSeleccionado, stats) :
+                                                    _cambiarTomaDialog(context, 2, currentCosa, diaSeleccionado, stats);
+                                                  },
+                                                ),
+                                              ),
                                             ),
                                           );
                                         }
@@ -337,7 +479,6 @@ class PantallaInicial extends StatefulWidget {
                             ),
 
                           Container(
-
                               child: ListView(
                                 shrinkWrap: true,
                                 physics: const NeverScrollableScrollPhysics(),
@@ -360,6 +501,12 @@ class PantallaInicial extends StatefulWidget {
                                       itemBuilder: (context, index) {
                                         if(cosas3.isNotEmpty) {
                                           Horario currentCosa = cosas3[index];
+                                          Pill currentPill = getPill(pills, currentCosa.pillName);
+                                          bool tomado = false;
+
+                                          if(esLaMisma(aux.takenQ, aux.takenName, currentCosa.getPillName()!, currentCosa.getNumPills()!))
+                                            tomado = true;
+
                                           return Container(
                                             decoration: BoxDecoration(
                                               border: Border.all(),
@@ -367,13 +514,43 @@ class PantallaInicial extends StatefulWidget {
                                                   .circular(12.0),
                                             ),
                                             child: ListTile(
-                                              onTap: () =>
-                                                  print('${cosas3[index]}'),
-                                              title: Text('${currentCosa
-                                                  .getPillName()}'),
+                                              leading: IconButton(
+                                                icon: Image.network(currentPill.url!),
+                                                onPressed: () async {
+                                                  await showDialog(
+                                                      context: context,
+                                                      builder: (_) => imageDialog(currentPill.pillName, currentPill.url, context, currentPill)
+                                                  );
+                                                  _actualizar();
+                                                  //Ver la imagen/subir nueva imagen en pop up
+                                                },
+                                              ),
+                                              title: Text(
+                                                '${currentCosa.getPillName()}',
+                                                style: TextStyle(
+                                                  decoration:
+                                                  tomado?
+                                                  TextDecoration.lineThrough : TextDecoration.none,
+                                                ),
+                                              ),
                                               subtitle: Text(
                                                   'Cantidad: ${currentCosa
                                                       .getNumPills()} ud.'),
+                                              trailing:
+                                              Visibility(
+                                                visible: (getRoleId() != 2) &&
+                                                    (diaSeleccionado.isBefore(DateTime.now())),
+                                                child:IconButton(
+                                                  icon: Icon(Icons.edit),
+                                                  color: Colors.black,
+                                                  onPressed: () {
+                                                    debugPrint('ayyy ${stats.notTakenName}');
+                                                    debugPrint('ayyy2 ${stats.takenName}');
+                                                    tomado? _cambiarTomaDialog(context, 1, currentCosa, diaSeleccionado, stats) :
+                                                    _cambiarTomaDialog(context, 2, currentCosa, diaSeleccionado, stats);
+                                                  },
+                                                ),
+                                              ),
                                             ),
                                           );
                                         }
@@ -416,6 +593,12 @@ class PantallaInicial extends StatefulWidget {
                                       itemBuilder: (context, index) {
                                         if(cosas4.isNotEmpty) {
                                           Horario currentCosa = cosas4[index];
+                                          Pill currentPill = getPill(pills, currentCosa.pillName);
+                                          bool tomado = false;
+
+                                          if(esLaMisma(aux.takenQ, aux.takenName, currentCosa.getPillName()!, currentCosa.getNumPills()!))
+                                            tomado = true;
+
                                           return Container(
                                             decoration: BoxDecoration(
                                               border: Border.all(),
@@ -423,13 +606,43 @@ class PantallaInicial extends StatefulWidget {
                                                   .circular(12.0),
                                             ),
                                             child: ListTile(
-                                              onTap: () =>
-                                                  print('${cosas4[index]}'),
-                                              title: Text('${currentCosa
-                                                  .getPillName()}'),
+                                              leading: IconButton(
+                                                icon: Image.network(currentPill.url!),
+                                                onPressed: () async {
+                                                  await showDialog(
+                                                      context: context,
+                                                      builder: (_) => imageDialog(currentPill.pillName, currentPill.url, context, currentPill)
+                                                  );
+                                                  _actualizar();
+                                                  //Ver la imagen/subir nueva imagen en pop up
+                                                },
+                                              ),
+                                              title: Text(
+                                                '${currentCosa.getPillName()}',
+                                                style: TextStyle(
+                                                  decoration:
+                                                  tomado?
+                                                  TextDecoration.lineThrough : TextDecoration.none,
+                                                ),
+                                              ),
                                               subtitle: Text(
                                                   'Cantidad: ${currentCosa
                                                       .getNumPills()} ud.'),
+                                              trailing:
+                                              Visibility(
+                                                visible: (getRoleId() != 2) &&
+                                                    (diaSeleccionado.isBefore(DateTime.now())),
+                                                child:IconButton(
+                                                  icon: Icon(Icons.edit),
+                                                  color: Colors.black,
+                                                  onPressed: () {
+                                                    debugPrint('ayyy ${stats.notTakenName}');
+                                                    debugPrint('ayyy2 ${stats.takenName}');
+                                                    tomado? _cambiarTomaDialog(context, 1, currentCosa, diaSeleccionado, stats) :
+                                                    _cambiarTomaDialog(context, 2, currentCosa, diaSeleccionado, stats);
+                                                  },
+                                                ),
+                                              ),
                                             ),
                                           );
                                         }
@@ -473,53 +686,56 @@ class PantallaInicial extends StatefulWidget {
                                       physics: const NeverScrollableScrollPhysics(),
                                       itemBuilder: (context, index) {
                                         Horario currentCosa = cosas0[index];
+                                        Pill currentPill = getPill(pills, currentCosa.pillName);
                                         bool tomado = false;
-                                        //debugPrint('wowowo ${aux.takenName}');
 
-                                        if(esLaMisma(aux.takenQ, aux.takenName, currentCosa.getPillName()!, currentCosa.getNumPills()!)){
+                                        if(esLaMisma(aux.takenQ, aux.takenName, currentCosa.getPillName()!, currentCosa.getNumPills()!))
                                           tomado = true;
-                                          //aux.takenQ.removeAt(aux.getTakenName().indexOf(currentCosa.getPillName()!));
-                                          //aux.takenName.remove(currentCosa.getPillName());
-                                          //debugPrint('wowowo2 ${aux.takenName}');
-                                        }
-                                        /*
-                                        debugPrint('${stats.taken}');
-                                        debugPrint('${stats.getTakenName()}');
-                                        debugPrint('${currentCosa.getPillName()}');
-                                        debugPrint('${stats.getTakenName().contains(currentCosa.getPillName())}');
-                                         */
-                                          return Container(
-                                            decoration: BoxDecoration(
-                                              border: Border.all(),
-                                              borderRadius: BorderRadius.circular(12.0),
+
+                                        return Container(
+                                          decoration: BoxDecoration(
+                                            border: Border.all(),
+                                            borderRadius: BorderRadius
+                                                .circular(12.0),
+                                          ),
+                                          child: ListTile(
+                                            leading: IconButton(
+                                              icon: Image.network(currentPill.url!),
+                                              onPressed: () async {
+                                                await showDialog(
+                                                    context: context,
+                                                    builder: (_) => imageDialog(currentPill.pillName, currentPill.url, context, currentPill)
+                                                );
+                                                _actualizar();
+                                                //Ver la imagen/subir nueva imagen en pop up
+                                              },
                                             ),
-                                            child: ListTile(
-                                              
-                                              title: Text(
-                                                  '${currentCosa.getPillName()}',
+                                            title: Text(
+                                              '${currentCosa.getPillName()}',
                                               style: TextStyle(
                                                 decoration:
                                                 tomado?
                                                 TextDecoration.lineThrough : TextDecoration.none,
                                               ),
+                                            ),
+                                            subtitle: Text(
+                                                'Cantidad: ${currentCosa
+                                                    .getNumPills()} ud.'),
+                                            trailing:
+                                            Visibility(
+                                              visible: (getRoleId() != 2) &&
+                                                  (diaSeleccionado.isBefore(DateTime.now())),
+                                              child:IconButton(
+                                                icon: Icon(Icons.edit),
+                                                color: Colors.black,
+                                                onPressed: () {
+                                                  debugPrint('ayyy ${stats.notTakenName}');
+                                                  debugPrint('ayyy2 ${stats.takenName}');
+                                                  tomado? _cambiarTomaDialog(context, 1, currentCosa, diaSeleccionado, stats) :
+                                                  _cambiarTomaDialog(context, 2, currentCosa, diaSeleccionado, stats);
+                                                },
                                               ),
-                                              subtitle: Text('Cantidad: ${currentCosa
-                                                  .getNumPills()} ud.     Tomar a las: ${currentCosa
-                                                  .getHour()}'),
-                                              trailing:
-                                              Visibility(
-                                                visible: (getRoleId() != 2),
-                                                child:IconButton(
-                                                  icon: Icon(Icons.edit),
-                                                  color: Colors.black,
-                                                  onPressed: () {
-                                                    debugPrint('ayyy ${stats.notTakenName}');
-                                                    debugPrint('ayyy2 ${stats.takenName}');
-                                                    tomado? _cambiarTomaDialog(context, 1, currentCosa, diaSeleccionado, stats) :
-                                                    _cambiarTomaDialog(context, 2, currentCosa, diaSeleccionado, stats);
-                                                  },
-                                                ),
-                                              ),
+                                            ),
                                             ),
                                           );
 
@@ -549,5 +765,68 @@ class PantallaInicial extends StatefulWidget {
           }
       return nuevaLista;
       }
+    Widget popUpImage(String pillName, String path, BuildContext context, int userId) {
+      final picker = ImagePicker();
+      final storageRef = FirebaseStorage.instance.ref();
+      return Dialog(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    pillName,
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  TextButton(
+                    child: Text('Añadir Foto'),
+                    onPressed: () async {
+                      final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+                      if (pickedFile != null) {
+                        path = pickedFile.path;
+                        File file = File(path);
+                        String name = "$userId-$pillName";
+                        UploadTask uploadTask = storageRef.child("/$name.jpg").putFile(file);
+                        sleep(const Duration(seconds: 3));
+                        final String url = await storageRef.child("/$name.jpg").getDownloadURL();
+                        debugPrint("The download URL is $url");
+                        setState(() {
+                          pillImageUrl = url;
+                        });
+                      }
+                      Navigator.of(context).pop();
+                      _actualizar();
+                    },
 
+                  ),
+                  TextButton(
+                    child: Text('Continuar'),
+                    onPressed: () async {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              width: 200,
+              height: 200,
+              child: Image.network(pillImageUrl),
+            ),
+          ],
+        ),
+      );}
+
+    Pill getPill(List<Pill> pills, String? pillName) {
+      Pill med = pills[0];
+      for(int i = 0; i < pills.length; i++) {
+        if (pills[i].pillName == pillName){
+          med = pills[i];
+        }
+      }
+      return med;
+    }
 }

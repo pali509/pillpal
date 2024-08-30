@@ -24,7 +24,7 @@ class _LoginAsState extends State<LoginAs> {
   int id_asociado;
   int op;
   _LoginAsState(this.id_asociado, this.op);
-
+  bool passVisible = false;
   @override
   TextEditingController _emailController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
@@ -49,13 +49,7 @@ class _LoginAsState extends State<LoginAs> {
             children: <Widget>[
               Padding(
                 padding: const EdgeInsets.only(top: 50.0, bottom: 50.0),
-                child: Center(
-                  child: Container(
-                    width: 200,
-                    height: 150,
-                    child: Image.asset('asset/images/flutter-logo.png'),
-                  ),
-                ),
+
               ),
               //const SizedBox(height: 30.0),
               Padding(
@@ -73,11 +67,23 @@ class _LoginAsState extends State<LoginAs> {
               Padding(
                 padding: EdgeInsets.only(left: 15.0, right: 15.0, top: 15, bottom: 0),
                 child: TextField(
-                  controller: _passwordController,
-                  obscureText: true,
-                  decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'Contraseña'
+                  obscureText: !passVisible,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'Contraseña',
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        passVisible
+                            ? Icons.visibility
+                            : Icons.visibility_off,
+                        color: Colors.grey,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          passVisible = !passVisible;
+                        });
+                      },
+                    ),
                   ),
                 ),
               ),
@@ -145,7 +151,8 @@ class _LoginAsState extends State<LoginAs> {
                   },
                   child: const SizedBox(
                     height: 130,
-                    child: Text('Usuario nuevo? Crea una cuenta'),
+                    child: Text('Usuario nuevo? Crea una cuenta',
+                      style: TextStyle(fontSize: 17),),
                   ),
                 ),
               ),

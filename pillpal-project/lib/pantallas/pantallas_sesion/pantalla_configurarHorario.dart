@@ -16,10 +16,10 @@ class ConfigurarHorario extends StatefulWidget {
 }
 
 class _ConfigurarHorarioState extends State<ConfigurarHorario> {
-  TimeOfDay _horaDesayuno = TimeOfDay.now();
-  TimeOfDay _horaComer = TimeOfDay.now();
-  TimeOfDay _horaCenar = TimeOfDay.now();
-  TimeOfDay _horaDormir = TimeOfDay.now();
+  TimeOfDay _horaDesayuno = TimeOfDay(hour: 8, minute: 0);
+  TimeOfDay _horaComer = TimeOfDay(hour: 14, minute: 0);
+  TimeOfDay _horaCenar = TimeOfDay(hour: 21, minute: 0);
+  TimeOfDay _horaDormir = TimeOfDay(hour: 23, minute: 0);
 
   @override
   Widget build(BuildContext context) {

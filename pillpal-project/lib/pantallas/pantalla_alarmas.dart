@@ -259,6 +259,9 @@ class _AlarmaScreenState extends State<AlarmaScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
+            Visibility(
+            visible: getRoleId() != 2,
+            child:
                 TextButton(
                   child: Text('Editar'),
                   onPressed: () {
@@ -266,6 +269,7 @@ class _AlarmaScreenState extends State<AlarmaScreen> {
                     _mostrarPopEdicionAlarma(context, alarma);
                   },
                 ),
+            ),
                 Spacer(), // Añadir Spacer para distribuir el espacio
                 TextButton(
                   child: Text('Aceptar'),
@@ -312,20 +316,24 @@ class _AlarmaScreenState extends State<AlarmaScreen> {
                     itemCount: snapshot.data!.length,
                     itemBuilder: (context, index) {
                       final alarma = snapshot.data![index];
-                      return ListTile(
-                        leading: Icon(Icons.medication), // Icono a la izquierda
-                        title: Text(alarma.getPillName()!), // Texto principal
-                        trailing: IconButton(
-                          icon: Icon(Icons.delete),
-                          color: Colors.redAccent,// Icono a la derecha
-                          onPressed: () {
-                            _showDeleteConfirmationDialog(context, alarma);
-                          },
-                        ),
-                        onTap: () {
-                          debugPrint('tapped.');
-                          _mostrarInformacionAlarma(context, alarma);
-                        },
+                      return Card(
+                          clipBehavior: Clip.hardEdge,
+                          child:ListTile(
+                          leading: Icon(Icons.medication), // Icono a la izquierda
+                            title: Text(alarma.getPillName()!), // Texto principal
+                            subtitle: Text('Cantidad a tomar: ${alarma.getNumPills()} ud.'),
+                            trailing: IconButton(
+                              icon: Icon(Icons.delete),
+                              color: Colors.redAccent,// Icono a la derecha
+                              onPressed: () {
+                                _showDeleteConfirmationDialog(context, alarma);
+                              },
+                            ),
+                            onTap: () {
+                              debugPrint('tapped.');
+                              _mostrarInformacionAlarma(context, alarma);
+                            },
+                          ),
                       );
                     },
                   );

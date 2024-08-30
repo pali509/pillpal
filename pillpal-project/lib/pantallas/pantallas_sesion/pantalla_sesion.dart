@@ -12,6 +12,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../email.dart';
 
+
 class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);
 
@@ -25,11 +26,13 @@ class _LoginDemoState extends State<Login> {
   String? email, password;
   final storageRef = FirebaseStorage.instance.ref();
   String getUrl = '';
+  bool passVisible = false;
 
   @override
   void initState() {
     super.initState();
     getImage();
+    passVisible = false;
   }
 
   @override
@@ -79,13 +82,27 @@ class _LoginDemoState extends State<Login> {
               padding: EdgeInsets.only(left: 15.0, right: 15.0, top: 15, bottom: 0),
               child: TextField(
                 controller: _passwordController,
-                obscureText: true,
-                decoration: const InputDecoration(
+                obscureText: !passVisible,
+                decoration: InputDecoration(
                   border: OutlineInputBorder(),
-                  labelText: 'Contraseña'
+                  labelText: 'Contraseña',
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      passVisible
+                          ? Icons.visibility
+                          : Icons.visibility_off,
+                      color: Colors.grey,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        passVisible = !passVisible;
+                      });
+                    },
+                  ),
+                ),
                 ),
               ),
-            ),
+
 
             Padding(
             padding: EdgeInsets.only(top: 30.0),
@@ -136,7 +153,8 @@ class _LoginDemoState extends State<Login> {
                 },
                 child: const SizedBox(
                   height: 130,
-                  child: Text('Usuario nuevo? Crea una cuenta'),
+                  child: Text('Usuario nuevo? Crea una cuenta',
+                    style: TextStyle(fontSize: 17),),
                 ),
               ),
             ),

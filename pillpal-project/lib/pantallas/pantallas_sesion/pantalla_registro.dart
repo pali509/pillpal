@@ -20,6 +20,7 @@ class _RegistroState extends State<Registro> {
   TextEditingController _nombreController = TextEditingController();
   String? email, password, nombre;
   String? rol;
+  bool passVisible = false;
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -62,11 +63,23 @@ class _RegistroState extends State<Registro> {
               padding: EdgeInsets.only(left: 15.0, right: 15.0, top: 35.0, bottom: 0),
               child: TextField(
                 controller: _passwordController,
-                obscureText: true,
-                decoration: const InputDecoration(
+                obscureText: !passVisible,
+                decoration: InputDecoration(
                   border: OutlineInputBorder(),
                   labelText: 'Contraseña',
-                  hintText: 'Inserta una contraseña segura',
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      passVisible
+                          ? Icons.visibility
+                          : Icons.visibility_off,
+                      color: Colors.grey,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        passVisible = !passVisible;
+                      });
+                    },
+                  ),
                 ),
               ),
             ),

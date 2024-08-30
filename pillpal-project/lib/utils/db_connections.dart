@@ -126,7 +126,7 @@ Future<void> deletePill(Pill pill) async {
 
 }
 
-Future<List<Pill>>? getPills(int userId) async {
+Future<List<Pill>> getPills(int userId) async {
   List<Map<String, dynamic>> mapPills = await databaseConnection
       .mappedResultsQuery("""
       SELECT * FROM "Pills" WHERE user_id = $userId """);

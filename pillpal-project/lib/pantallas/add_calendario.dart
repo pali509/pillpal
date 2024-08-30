@@ -69,12 +69,11 @@ class _AddCalendarioState extends State<AddCalendario> {
     return _listProducts;
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Programar pastilla'),
+        title: const Text('Programar medicamento'),
         backgroundColor: ColorsApp.toolBarColor,
       ),
       body: SingleChildScrollView(

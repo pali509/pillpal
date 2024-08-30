@@ -1324,29 +1324,7 @@ class _PantallaPerfilState extends State<PantallaPerfil> {
             ),
         ),
             const SizedBox(height: 15.0),
-            /*
-          Cosas que queremos que aparezcan:
 
-          HECHAS:
-          Informacion usuario:
-            Nombre usuario
-            Correo
-            Botón editar informacion usuario
-
-          TODO:
-          Centrar usuario y correo
-          Que editar info la edite de verdad xd
-          Informacion dependientes:
-            Sus nombres y sus correos
-            Boton editar informacion -> Que haga cosas
-          Informar de que dependiente se esta mirando ahora
-          Horario establecido -> Meterle las llamadas de las funciones
-          Boton para cambiarlo -> Ver como lo pongo
-          Boton cambiar dependiente -> Que haga cosas
-
-          Boton cerrar sesion -> Que se vea mas bonito y no te deje ir hacia atras
-          Boton eliminar cuenta -> Que se vea mas bonito
-           */
           ],
         ),
       ),
