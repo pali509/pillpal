@@ -831,6 +831,24 @@ Future<int> subPills(int user_id, int pill_id, int q) async {
   return final_q;
 }
 
+Future<void> changePills(int user_id, int pill_id, int q, int op) async {
+  List<Map<String, dynamic>> map = await databaseConnection.mappedResultsQuery(
+      """
+    select * from "Pills" p  where user_id = $user_id and pill_id = $pill_id
+  """);
+  int final_q = -1;
+  if (map[0].isNotEmpty) {
+    final_q = op == 1? map[0]['Pills']['pill_quantity'] + q : map[0]['Pills']['pill_quantity'] - q;
+    if (final_q < 0) final_q = 0;
+    await databaseConnection.query("""
+          UPDATE "Pills" 
+          SET pill_quantity  = $final_q
+          WHERE user_id = $user_id and pill_id = $pill_id;
+      """);
+  }
+
+}
+
 Future<void>actualizar_alarmas(int user_id, int alarm_id,
     int numPills, DateTime day, String hour, int timeOfDay, int period) async {
   await databaseConnection.query("""

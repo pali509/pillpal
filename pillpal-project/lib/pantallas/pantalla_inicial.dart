@@ -105,7 +105,6 @@ class PantallaInicial extends StatefulWidget {
                       nuevoSummary +=
                       "${stats.getTakenQ()[i]};${takenNames[i]};$pillId;Si;";
                     }
-                    debugPrint('socorrooo $nuevoSummary');
                   }
                   for (int i = 0; i < notTakenNames.length; i++) {
                     if (esLaMismaUna(stats.getNotTakenQ(), notTakenNames,
@@ -122,9 +121,9 @@ class PantallaInicial extends StatefulWidget {
                     }
                   }
 
-                  debugPrint('socorrooo $nuevoSummary');
                   nuevoSummary = nuevoSummary.substring(0, nuevoSummary.length - 1);
                   edit_stadistics(diaSeleccionado, getUserAsociadoId(), nuevoTaken, nuevoProgrammed, nuevoSummary);
+                  changePills(getUserAsociadoId(), pillId, currentCosa.getNumPills()!, op);
 
                   setState(() {});
                   Navigator.of(context).pop();

@@ -506,6 +506,7 @@ class PastilleroState extends State<Pastillero>{
                             const SizedBox(width: 45.0),
                             ElevatedButton(
                               onPressed: () async {
+                                String url = "https://firebasestorage.googleapis.com/v0/b/pillpal-45177.appspot.com/o/no.jpg?alt=media&token=ce7754c7-6aa0-47f5-9f07-17745cbca5ba";
                                 if (pillName == '') {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     const SnackBar(
@@ -534,6 +535,20 @@ class PastilleroState extends State<Pastillero>{
                                 else {
                                   if (valorSeleccionadoTipo != "Otro:")
                                     type = valorSeleccionadoTipo!;
+
+                                  await showDialog(
+                                      context: context,
+                                      builder: (_) => popUpImage(pillName, url, context, getUserAsociadoId())
+                                  );
+
+                                  insertPills(pillName, numberOfPills,
+                                      getUserAsociadoId(), type, pillImageUrl);
+
+                                  pillImageUrl = 'https://firebasestorage.googleapis.com/v0/b/pillpal-45177.appspot.com/o/no.jpg?alt=media&token=ce7754c7-6aa0-47f5-9f07-17745cbca5ba';
+                                  listaDePills = getPills(getUserAsociadoId());
+                                  _actualizar();
+                                  Navigator.of(context).pop();
+
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(builder: (context) =>

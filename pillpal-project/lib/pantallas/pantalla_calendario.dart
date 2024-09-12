@@ -93,10 +93,13 @@ class _PantallaCalendarioState extends State<PantallaCalendario> {
         children: [
           TableCalendar(
             locale: 'es_Es',
+            headerStyle: HeaderStyle(
+              formatButtonVisible : MediaQuery.of(context).orientation == Orientation.landscape ? false : true,
+            ),
             firstDay: DateTime.utc(2023, 10, 16),
             lastDay: DateTime.utc(2030, 3, 14),
             focusedDay: _focusedDay,
-            calendarFormat: _calendarFormat,
+            calendarFormat: MediaQuery.of(context).orientation == Orientation.portrait ? _calendarFormat : CalendarFormat.week,
             startingDayOfWeek: StartingDayOfWeek.monday,
             selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
             onDaySelected: (selectedDay, focusedDay) { //Cambiar dia seleccionado
