@@ -145,116 +145,116 @@ class _PantallaPerfilState extends State<PantallaPerfil> {
                     ],
                   ),
                   const SizedBox(height: 15.0),
-                Visibility(
-                  visible:getRoleId() != 2,
-                  child:
-                  ElevatedButton(
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) {
-                          String nuevoName = name;
-                          String nuevoCorreo = correo;
-                          String nuevaCont = "";
-                          bool cont = false;
-                          return SimpleDialog(
-                            contentPadding: const EdgeInsets.symmetric(horizontal: 12),
-                            children: [
-                              const SizedBox(height: 20),
-                              const Text('Editar nombre:'),
-                              TextFormField(
-                                initialValue: name,
-                                onChanged: (value) {
-                                  nuevoName = value;
-                                },
-                              ),
-                              const SizedBox(height: 15),
-                              const Text('Editar correo:'),
-                              TextFormField(
-                                initialValue: correo,
-                                onChanged: (value) {
-                                  nuevoCorreo = value;
-                                },
-                              ),
-                              const SizedBox(height: 15),
-                              const Text('Cambiar contraseña:'),
-                              TextFormField(
-                                initialValue: nuevaCont,
-                                onChanged: (value) {
-                                  cont = true;
-                                  nuevaCont = value;
-                                },
-                              ),
+                  Visibility(
+                    visible:getRoleId() != 2,
+                    child:
+                    ElevatedButton(
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            String nuevoName = name;
+                            String nuevoCorreo = correo;
+                            String nuevaCont = "";
+                            bool cont = false;
+                            return SimpleDialog(
+                              contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+                              children: [
+                                const SizedBox(height: 20),
+                                const Text('Editar nombre:'),
+                                TextFormField(
+                                  initialValue: name,
+                                  onChanged: (value) {
+                                    nuevoName = value;
+                                  },
+                                ),
+                                const SizedBox(height: 15),
+                                const Text('Editar correo:'),
+                                TextFormField(
+                                  initialValue: correo,
+                                  onChanged: (value) {
+                                    nuevoCorreo = value;
+                                  },
+                                ),
+                                const SizedBox(height: 15),
+                                const Text('Cambiar contraseña:'),
+                                TextFormField(
+                                  initialValue: nuevaCont,
+                                  onChanged: (value) {
+                                    cont = true;
+                                    nuevaCont = value;
+                                  },
+                                ),
 
-                              const SizedBox(height: 20),
-                              Row(
-                                children:[
-                                  ElevatedButton(
-                                    onPressed: () async {
-                                      if(cont)
-                                        updateUser(getUserId(), nuevoCorreo, nuevoName, nuevaCont, null, null, null, null);
-                                      else
-                                        updateUser(getUserId(), nuevoCorreo, nuevoName, null, null, null, null, null);
-                                      setState(() {
-                                        name = nuevoName;
-                                        correo = nuevoCorreo;
-                                        setUserEmail(correo);
-                                        setUserName(name);
-                                      });
-                                      Navigator.of(context).pop();
+                                const SizedBox(height: 20),
+                                Row(
+                                  children:[
+                                    ElevatedButton(
+                                      onPressed: () async {
+                                        if(cont)
+                                          updateUser(getUserId(), nuevoCorreo, nuevoName, nuevaCont, null, null, null, null);
+                                        else
+                                          updateUser(getUserId(), nuevoCorreo, nuevoName, null, null, null, null, null);
+                                        setState(() {
+                                          name = nuevoName;
+                                          correo = nuevoCorreo;
+                                          setUserEmail(correo);
+                                          setUserName(name);
+                                        });
+                                        Navigator.of(context).pop();
 
-                                    },
-                                    child: Text('Guardar cambios'),
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.green,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(20),
-                                      ),
-                                      textStyle: const TextStyle(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.bold,
+                                      },
+                                      child: Text('Guardar cambios'),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.green,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(20),
+                                        ),
+                                        textStyle: const TextStyle(
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  const SizedBox(width: 45.0),
-                                  ElevatedButton(
-                                    onPressed: () async {
-                                      Navigator.of(context).pop();
-                                    },
-                                    child: Text('Cancelar'),
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.red,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(20),
-                                      ),
-                                      textStyle: const TextStyle(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.bold,
+                                    const SizedBox(width: 45.0),
+                                    ElevatedButton(
+                                      onPressed: () async {
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: Text('Cancelar'),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.red,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(20),
+                                        ),
+                                        textStyle: const TextStyle(
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                ],
-                              ),
+                                  ],
+                                ),
 
-                            ],
-                          );
-                        },
-                      );
-                    },
-                    child: Text('Editar Información'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.purple,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-                      textStyle: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
+                              ],
+                            );
+                          },
+                        );
+                      },
+                      child: Text('Editar Información'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.purple,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                        textStyle: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ),
-                ),
                   const SizedBox(height: 10.0),
                 ],
               ),
@@ -664,20 +664,20 @@ class _PantallaPerfilState extends State<PantallaPerfil> {
                               const SizedBox(width: 20.0),
                               IconButton(
                                 onPressed: () async {
-                                    TimeOfDay? hora = await showTimePicker(
-                                      context: context,
-                                      initialTime: desayuno,
-                                      hourLabelText : "Seleccione hora",
-                                      minuteLabelText: "Seleccione minuto",
-                                      cancelText: "Cancelar",
-                                      helpText: "Seleccionar hora",
-                                    );
-                                    if (hora != null) {
-                                      setState(() {
-                                        _horaSeleccionada = hora;
-                                      });
-                                    }
-                                    hora_String = _horaSeleccionada.format(context);
+                                  TimeOfDay? hora = await showTimePicker(
+                                    context: context,
+                                    initialTime: desayuno,
+                                    hourLabelText : "Seleccione hora",
+                                    minuteLabelText: "Seleccione minuto",
+                                    cancelText: "Cancelar",
+                                    helpText: "Seleccionar hora",
+                                  );
+                                  if (hora != null) {
+                                    setState(() {
+                                      _horaSeleccionada = hora;
+                                    });
+                                  }
+                                  hora_String = _horaSeleccionada.format(context);
                                   actualizarHora(0, hora_String);
                                 },
                                 icon: Icon(
@@ -888,50 +888,131 @@ class _PantallaPerfilState extends State<PantallaPerfil> {
                                                       ),
 
                                                       const SizedBox(height: 20),
-                                                      Row(
+                                                      Column(
                                                         children: [
-                                                          ElevatedButton(
-                                                            onPressed: () async {
-                                                              await updateUser(
-                                                                  int.parse(currentUser[0]), nuevoCorreo, nuevoName, nuevaCont, null, null, null, null);
-                                                              listaUsers = getAsociados(getUserId());
-                                                              userAsociado = getUser(getUserAsociadoId());
-                                                              setState(() {});
-                                                              Navigator.of(context).pop();
-                                                              _actualizar();
-                                                            },
-                                                            child: Text('Guardar cambios'),
-                                                            style: ElevatedButton.styleFrom(
-                                                              backgroundColor: Colors.green,
-                                                              shape: RoundedRectangleBorder(
-                                                                borderRadius: BorderRadius.circular(20),
+                                                          Row(
+                                                            children: [
+                                                              ElevatedButton(
+                                                                onPressed: () async {
+                                                                  await updateUser(
+                                                                      int.parse(currentUser[0]), nuevoCorreo, nuevoName, nuevaCont, null, null, null, null);
+                                                                  listaUsers = getAsociados(getUserId());
+                                                                  userAsociado = getUser(getUserAsociadoId());
+                                                                  setState(() {});
+                                                                  Navigator.of(context).pop();
+                                                                  _actualizar();
+                                                                },
+                                                                child: Text('Guardar cambios'),
+                                                                style: ElevatedButton.styleFrom(
+                                                                  backgroundColor: Colors.green,
+                                                                  shape: RoundedRectangleBorder(
+                                                                    borderRadius: BorderRadius.circular(20),
+                                                                  ),
+                                                                  textStyle: const TextStyle(
+                                                                    fontSize: 15,
+                                                                    fontWeight: FontWeight.bold,
+                                                                  ),
+                                                                ),
                                                               ),
-                                                              textStyle: const TextStyle(
-                                                                fontSize: 15,
-                                                                fontWeight: FontWeight.bold,
+                                                              const SizedBox(width: 45.0),
+                                                              ElevatedButton(
+                                                                onPressed: () async {
+                                                                  Navigator.of(context).pop();
+                                                                },
+                                                                child: Text('Cancelar'),
+                                                                style: ElevatedButton.styleFrom(
+                                                                  backgroundColor: Colors.red,
+                                                                  shape: RoundedRectangleBorder(
+                                                                    borderRadius: BorderRadius.circular(20),
+                                                                  ),
+                                                                  textStyle: const TextStyle(
+                                                                    fontSize: 15,
+                                                                    fontWeight: FontWeight.bold,
+                                                                  ),
+                                                                ),
                                                               ),
-                                                            ),
+                                                            ],
                                                           ),
-                                                          const SizedBox(width: 45.0),
-                                                          ElevatedButton(
-                                                            onPressed: () async {
-                                                              Navigator.of(context).pop();
-                                                            },
-                                                            child: Text('Cancelar'),
-                                                            style: ElevatedButton.styleFrom(
-                                                              backgroundColor: Colors.red,
-                                                              shape: RoundedRectangleBorder(
-                                                                borderRadius: BorderRadius.circular(20),
-                                                              ),
-                                                              textStyle: const TextStyle(
-                                                                fontSize: 15,
-                                                                fontWeight: FontWeight.bold,
-                                                              ),
-                                                            ),
-                                                          ),
+                                                          const SizedBox(height: 15.0),
+                                                          Visibility(
+                                                              visible: int.parse(currentUser[0]) != getUserAsociadoId(),
+                                                              child: ElevatedButton(
+                                                                child: Text('Borrar cuenta'),
+                                                                style: ElevatedButton.styleFrom(
+                                                                  backgroundColor: Colors.red,
+                                                                  foregroundColor: Colors.black,
+                                                                  textStyle: const TextStyle(
+                                                                    //color: Colors.black,
+                                                                    fontSize: 15,
+                                                                    fontWeight: FontWeight.bold,
+                                                                  ),
+                                                                ),
+                                                                onPressed: () {
+                                                                  Navigator.of(context).pop();
+                                                                  showDialog(
+                                                                      context: context,
+                                                                      builder: (context)
+                                                                      {
+                                                                        return SimpleDialog(
+                                                                          contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+                                                                          children: [
+                                                                            const SizedBox(height: 20),
+                                                                            Text('¿Estas seguro de querer borrar la cuenta de este usuario?'),
+                                                                            const SizedBox(height: 20),
+                                                                            Row(
+                                                                              children: [
+                                                                                ElevatedButton(
+                                                                                  onPressed: () async {
+                                                                                    SharedPreferences prefs = await SharedPreferences
+                                                                                        .getInstance();
+                                                                                    await prefs.remove('username');
+                                                                                    deleteUser(int.parse(currentUser[0]));
+                                                                                    listaUsers = getAsociados(getUserId());
+                                                                                    setState(() {});
+                                                                                    Navigator.of(context).pop();
+                                                                                    _actualizar();
+                                                                                  },
+                                                                                  child: Text('Confirmar'),
+                                                                                  style: ElevatedButton.styleFrom(
+                                                                                    backgroundColor: Colors.green,
+                                                                                    shape: RoundedRectangleBorder(
+                                                                                      borderRadius: BorderRadius.circular(20),
+                                                                                    ),
+                                                                                    textStyle: const TextStyle(
+                                                                                      fontSize: 15,
+                                                                                      fontWeight: FontWeight.bold,
+                                                                                    ),
+                                                                                  ),
+                                                                                ),
+                                                                                const SizedBox(width: 45.0),
+                                                                                ElevatedButton(
+                                                                                  onPressed: () async {
+                                                                                    Navigator.of(context).pop();
+                                                                                  },
+                                                                                  child: Text('Cancelar'),
+                                                                                  style: ElevatedButton.styleFrom(
+                                                                                    backgroundColor: Colors.red,
+                                                                                    shape: RoundedRectangleBorder(
+                                                                                      borderRadius: BorderRadius.circular(20),
+                                                                                    ),
+                                                                                    textStyle: const TextStyle(
+                                                                                      fontSize: 15,
+                                                                                      fontWeight: FontWeight.bold,
+                                                                                    ),
+                                                                                  ),
+                                                                                ),
+                                                                              ],
+                                                                            ),
+                                                                          ],
+                                                                        );
+                                                                      }
+                                                                  );
+                                                                },
+
+                                                              )),
+
                                                         ],
                                                       ),
-
                                                     ],
                                                   );
                                                 },
@@ -973,11 +1054,11 @@ class _PantallaPerfilState extends State<PantallaPerfil> {
                                             final currentUser = users[index];
                                             //La lista de dependientes pero con un seleccionador
                                             return RadioListTile<int>(
-                                              title: Text(currentUser[1]),
-                                              value: index,
-                                              groupValue: selectedIndex,
-                                              onChanged: (value) => setState(() =>
-                                              selectedIndex = value!)
+                                                title: Text(currentUser[1]),
+                                                value: index,
+                                                groupValue: selectedIndex,
+                                                onChanged: (value) => setState(() =>
+                                                selectedIndex = value!)
                                             );
                                           },
                                         ),
@@ -1053,7 +1134,7 @@ class _PantallaPerfilState extends State<PantallaPerfil> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => LoginAs(id_asociado: getUserId(), op: 1,)));
+                                    builder: (context) => LoginAs(id_asociado: getUserId(), op: 1)));
                           },
                           child: Text('Añadir usuario dependiente'),
                           style: ElevatedButton.styleFrom(
@@ -1079,109 +1160,109 @@ class _PantallaPerfilState extends State<PantallaPerfil> {
             Visibility(
               visible: getRoleId() == 1,
               child:
-            ElevatedButton(
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (context) {
-                    return StatefulBuilder(builder: (context, setState){
-                      return SimpleDialog(
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 12),
-                        children: [
-                          const SizedBox(height: 20),
-                          Text('Selecciona usuario que desvincular',
-                            style: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),),
-                          const SizedBox(height: 10),
-                          SizedBox(
-                            width: 300,
-                            height: 300,
-                            child: ListView.builder(
-                              shrinkWrap: true,
-                              itemCount: users.length,
-                              itemBuilder: (context, index) {
-                                final currentUser = users[index];
-                                //La lista de dependientes pero con un seleccionador
-                                return RadioListTile<int>(
-                                    title: Text(currentUser[1]),
-                                    value: index,
-                                    groupValue: selectedIndex,
-                                    onChanged: (value) => setState(() =>
-                                    selectedIndex = value!)
-                                );
+              ElevatedButton(
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return StatefulBuilder(builder: (context, setState){
+                        return SimpleDialog(
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+                          children: [
+                            const SizedBox(height: 20),
+                            Text('Selecciona usuario que desvincular',
+                              style: const TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),),
+                            const SizedBox(height: 10),
+                            SizedBox(
+                              width: 300,
+                              height: 300,
+                              child: ListView.builder(
+                                shrinkWrap: true,
+                                itemCount: users.length,
+                                itemBuilder: (context, index) {
+                                  final currentUser = users[index];
+                                  //La lista de dependientes pero con un seleccionador
+                                  return RadioListTile<int>(
+                                      title: Text(currentUser[1]),
+                                      value: index,
+                                      groupValue: selectedIndex,
+                                      onChanged: (value) => setState(() =>
+                                      selectedIndex = value!)
+                                  );
+                                },
+                              ),
+                            ),
+
+                            const SizedBox(height: 20),
+
+                            ElevatedButton(
+                              onPressed: ()  async {
+                                debugPrint("'$selectedIndex'");
+                                await deleteRelationshipUna(getUserId(),int.parse(users[selectedIndex][0]));
+                                users.removeAt(selectedIndex);
+                                userAsociado = getUser(int.parse(users[0][0]));
+                                setUserAsociado(int.parse(users[0][0]),
+                                    users[0][3],users[0][4],
+                                    users[0][5], users[0][6]);
+                                listaUsers = getAsociados(getUserId());
+                                setState(() {});
+                                Navigator.of(context).pop();
+                                _actualizar();
                               },
-                            ),
-                          ),
-
-                          const SizedBox(height: 20),
-
-                          ElevatedButton(
-                            onPressed: ()  async {
-                              debugPrint("'$selectedIndex'");
-                              await deleteRelationshipUna(getUserId(),int.parse(users[selectedIndex][0]));
-                              users.removeAt(selectedIndex);
-                              userAsociado = getUser(int.parse(users[0][0]));
-                              setUserAsociado(int.parse(users[0][0]),
-                                  users[0][3],users[0][4],
-                                  users[0][5], users[0][6]);
-                              listaUsers = getAsociados(getUserId());
-                              setState(() {});
-                              Navigator.of(context).pop();
-                              _actualizar();
-                            },
-                            child: Text('Confirmar'),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.green,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              textStyle: const TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold,
+                              child: Text('Confirmar'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.green,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                textStyle: const TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
-                          ),
-                          const SizedBox(height: 15.0),
-                          ElevatedButton(
-                            onPressed: () async {
-                              selectedIndex = -1;
-                              Navigator.of(context).pop();
-                            },
-                            child: Text('Cancelar'),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.red,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              textStyle: const TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold,
+                            const SizedBox(height: 15.0),
+                            ElevatedButton(
+                              onPressed: () async {
+                                selectedIndex = -1;
+                                Navigator.of(context).pop();
+                              },
+                              child: Text('Cancelar'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.red,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                textStyle: const TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        );
+                      }
                       );
-                    }
-                    );
 
-                  },
-                );
-              },
-              child: Text('Desvincular un usuario'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.purple,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-                textStyle: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
+                    },
+                  );
+                },
+                child: Text('Desvincular un usuario'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.purple,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                  textStyle: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
-            ),
             ),
             const SizedBox(height: 20.0),
             ElevatedButton(
@@ -1252,77 +1333,77 @@ class _PantallaPerfilState extends State<PantallaPerfil> {
               ),
             ),
             const SizedBox(height: 20.0),
-        Visibility(
-          visible:getRoleId() != 2,
-          child:
-            ElevatedButton(
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (context) {
+            Visibility(
+              visible:getRoleId() != 2,
+              child:
+              ElevatedButton(
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) {
 
-                    return SimpleDialog(
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 12),
-                      children: [
-                        const SizedBox(height: 20),
-                        Text('¿Estas seguro de querer borrar tu cuenta?'),
-                        const SizedBox(height: 20),
-                        Row(
-                          children:[
-                            ElevatedButton(
-                              onPressed: () async {
-                                SharedPreferences prefs = await SharedPreferences.getInstance();
-                                await prefs.remove('username');
-                                deleteUser(getUserId());
-                                Navigator.of(context).pushNamedAndRemoveUntil('/cuenta', (Route route) => false);
-                              },
-                              child: Text('Confirmar'),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.green,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                textStyle: const TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 45.0),
-                            ElevatedButton(
-                              onPressed: () async {
-                                Navigator.of(context).pop();
-                              },
-                              child: Text('Cancelar'),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.red,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                textStyle: const TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold,
+                      return SimpleDialog(
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+                        children: [
+                          const SizedBox(height: 20),
+                          Text('¿Estas seguro de querer borrar tu cuenta?'),
+                          const SizedBox(height: 20),
+                          Row(
+                            children:[
+                              ElevatedButton(
+                                onPressed: () async {
+                                  SharedPreferences prefs = await SharedPreferences.getInstance();
+                                  await prefs.remove('username');
+                                  deleteUser(getUserId());
+                                  Navigator.of(context).pushNamedAndRemoveUntil('/cuenta', (Route route) => false);
+                                },
+                                child: Text('Confirmar'),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.green,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  textStyle: const TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    );
-                  },
-                );
-              },
-              child: Text('Borrar cuenta'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
-                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-                textStyle: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
+                              const SizedBox(width: 45.0),
+                              ElevatedButton(
+                                onPressed: () async {
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text('Cancelar'),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.red,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  textStyle: const TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
+                child: Text('Borrar cuenta'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red,
+                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                  textStyle: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ),
-        ),
             const SizedBox(height: 15.0),
 
           ],
